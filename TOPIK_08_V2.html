@@ -157,15 +157,20 @@
   .explanation.show { display:block; }
 
   /* Opcode viz */
+  .opcode-row { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; }
+  .opcode-group { display: flex; gap: 2px; align-items: center; }
   .opcode-bit {
-    display:inline-block; width:28px; height:28px; line-height:28px;
-    text-align:center; font-family:'JetBrains Mono',monospace; font-size:0.8rem;
-    border:1px solid var(--border); border-radius:4px;
+    display: flex; align-items: center; justify-content: center;
+    width: 26px; height: 26px;
+    font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; font-weight: 700;
+    border: 1px solid var(--border); border-radius: 4px;
+    transition: all 0.2s;
   }
-  .opcode-bit.fixed { background:rgba(124,179,235,0.15); color:#7dd3fc; }
-  .opcode-bit.dest { background:rgba(134,239,172,0.15); color:#86efac; }
-  .opcode-bit.src { background:rgba(253,230,138,0.15); color:#fde68a; }
-  .opcode-bit.imm-b { background:rgba(196,181,253,0.15); color:#c4b5fd; }
+  .opcode-bit.fixed { background: rgba(34, 211, 238, 0.1); color: #22d3ee; border-color: rgba(34, 211, 238, 0.3); }
+  .opcode-bit.dest { background: rgba(52, 211, 153, 0.15); color: #34d399; border-color: rgba(52, 211, 153, 0.4); }
+  .opcode-bit.src { background: rgba(251, 191, 36, 0.15); color: #fbbf24; border-color: rgba(251, 191, 36, 0.4); }
+  .opcode-bit.imm-b { background: rgba(168, 85, 247, 0.15); color: #a855f7; border-color: rgba(168, 85, 247, 0.4); }
+  .opcode-separator { color: #334155; font-size: 0.8rem; margin: 0 2px; font-weight: 300; }
 
   /* Progress */
   progress { appearance: none; }
@@ -591,38 +596,47 @@
               <div class="opcode-bit src">r</div>
               <div class="opcode-bit src">r</div>
             </div>
-            <div class="flex flex-wrap gap-3 text-xs mt-2">
-              <div class="flex items-center gap-1"><div class="opcode-bit fixed w-4 h-4 text-xs">x</div><span class="text-blue-300">Fixed bits</span></div>
-              <div class="flex items-center gap-1"><div class="opcode-bit dest w-4 h-4 text-xs">d</div><span class="text-green-300">Rd (destination)</span></div>
-              <div class="flex items-center gap-1"><div class="opcode-bit src w-4 h-4 text-xs">r</div><span class="text-yellow-300">Rr (source)</span></div>
+            <div class="flex flex-wrap gap-x-4 gap-y-2 text-[10px] sm:text-xs mt-3">
+              <div class="flex items-center gap-1.5"><div class="w-3 h-3 rounded bg-cyan-500/20 border border-cyan-500/40"></div><span class="text-slate-400">Fixed bits</span></div>
+              <div class="flex items-center gap-1.5"><div class="w-3 h-3 rounded bg-green-500/20 border border-green-500/40"></div><span class="text-slate-400">Rd (destination)</span></div>
+              <div class="flex items-center gap-1.5"><div class="w-3 h-3 rounded bg-yellow-500/20 border border-yellow-500/40"></div><span class="text-slate-400">Rr (source)</span></div>
+              <div class="flex items-center gap-1.5"><div class="w-3 h-3 rounded bg-purple-500/20 border border-purple-500/40"></div><span class="text-slate-400">Immediate (K)</span></div>
             </div>
           </div>
-          <div class="space-y-2">
-            <p class="text-xs text-slate-400">ADD R1, R5 → Rd=1 (00001), Rr=5 (00101)</p>
-            <div class="flex flex-wrap gap-1">
-              <div class="opcode-bit fixed">0</div>
-              <div class="opcode-bit fixed">0</div>
-              <div class="opcode-bit fixed">0</div>
-              <div class="opcode-bit fixed">0</div>
-              <span class="text-slate-600 text-xs mx-1">|</span>
-              <div class="opcode-bit fixed">1</div>
-              <div class="opcode-bit fixed">1</div>
-              <div class="opcode-bit src">0</div>
-              <div class="opcode-bit dest">0</div>
-              <span class="text-slate-600 text-xs mx-1">|</span>
-              <div class="opcode-bit dest">0</div>
-              <div class="opcode-bit dest">0</div>
-              <div class="opcode-bit dest">0</div>
-              <div class="opcode-bit dest">1</div>
-              <span class="text-slate-600 text-xs mx-1">|</span>
-              <div class="opcode-bit src">0</div>
-              <div class="opcode-bit src">1</div>
-              <div class="opcode-bit src">0</div>
-              <div class="opcode-bit src">1</div>
+          <div class="space-y-4">
+            <p class="text-xs text-slate-400 font-medium">Rd=1 (00001), Rr=5 (00101)</p>
+            <div class="opcode-row">
+              <div class="opcode-group">
+                <div class="opcode-bit fixed">0</div>
+                <div class="opcode-bit fixed">0</div>
+                <div class="opcode-bit fixed">0</div>
+                <div class="opcode-bit fixed">0</div>
+              </div>
+              <div class="opcode-separator">|</div>
+              <div class="opcode-group">
+                <div class="opcode-bit fixed">1</div>
+                <div class="opcode-bit fixed">1</div>
+                <div class="opcode-bit src">0</div>
+                <div class="opcode-bit dest">0</div>
+              </div>
+              <div class="opcode-separator">|</div>
+              <div class="opcode-group">
+                <div class="opcode-bit dest">0</div>
+                <div class="opcode-bit dest">0</div>
+                <div class="opcode-bit dest">0</div>
+                <div class="opcode-bit dest">1</div>
+              </div>
+              <div class="opcode-separator">|</div>
+              <div class="opcode-group">
+                <div class="opcode-bit src">0</div>
+                <div class="opcode-bit src">1</div>
+                <div class="opcode-bit src">0</div>
+                <div class="opcode-bit src">1</div>
+              </div>
             </div>
             <div class="callout-tip text-xs">
-              <p class="text-green-400 font-bold">Hasil: 0000 1100 0001 0101</p>
-              <p class="text-slate-300 mt-1">Hex: <strong>0C15</strong>. Karena AVR menyimpan dengan <strong>little-endian</strong>, byte ditukar → disimpan sebagai <strong>150C</strong>.</p>
+              <p class="text-green-400 font-bold">Hasil Binary: 0000 1101 0001 0101</p>
+              <p class="text-slate-300 mt-1">Hex: <strong>0D15</strong>. Karena AVR Little-endian, byte ditukar → disimpan: <strong>150D</strong>.</p>
             </div>
           </div>
         </div>
@@ -631,58 +645,74 @@
         <div class="space-y-4">
           <h4 class="text-sm font-semibold text-yellow-400">Contoh: ANDI R20, 85</h4>
           <div class="space-y-2">
-            <p class="text-xs text-slate-400">Format 16-bit opcode untuk instruksi ANDI:</p>
-            <div class="flex flex-wrap gap-1 items-center">
-              <div class="opcode-bit fixed">0</div>
-              <div class="opcode-bit fixed">1</div>
-              <div class="opcode-bit fixed">1</div>
-              <div class="opcode-bit fixed">1</div>
-              <span class="text-slate-600 text-xs mx-1">|</span>
-              <div class="opcode-bit imm-b">K</div>
-              <div class="opcode-bit imm-b">K</div>
-              <div class="opcode-bit imm-b">K</div>
-              <div class="opcode-bit imm-b">K</div>
-              <span class="text-slate-600 text-xs mx-1">|</span>
-              <div class="opcode-bit dest">d</div>
-              <div class="opcode-bit dest">d</div>
-              <div class="opcode-bit dest">d</div>
-              <div class="opcode-bit dest">d</div>
-              <span class="text-slate-600 text-xs mx-1">|</span>
-              <div class="opcode-bit imm-b">K</div>
-              <div class="opcode-bit imm-b">K</div>
-              <div class="opcode-bit imm-b">K</div>
-              <div class="opcode-bit imm-b">K</div>
+            <p class="text-xs text-slate-400 font-medium">Format 16-bit opcode ANDI:</p>
+            <div class="opcode-row">
+              <div class="opcode-group">
+                <div class="opcode-bit fixed">0</div>
+                <div class="opcode-bit fixed">1</div>
+                <div class="opcode-bit fixed">1</div>
+                <div class="opcode-bit fixed">1</div>
+              </div>
+              <div class="opcode-separator">|</div>
+              <div class="opcode-group">
+                <div class="opcode-bit imm-b">K</div>
+                <div class="opcode-bit imm-b">K</div>
+                <div class="opcode-bit imm-b">K</div>
+                <div class="opcode-bit imm-b">K</div>
+              </div>
+              <div class="opcode-separator">|</div>
+              <div class="opcode-group">
+                <div class="opcode-bit dest">d</div>
+                <div class="opcode-bit dest">d</div>
+                <div class="opcode-bit dest">d</div>
+                <div class="opcode-bit dest">d</div>
+              </div>
+              <div class="opcode-separator">|</div>
+              <div class="opcode-group">
+                <div class="opcode-bit imm-b">K</div>
+                <div class="opcode-bit imm-b">K</div>
+                <div class="opcode-bit imm-b">K</div>
+                <div class="opcode-bit imm-b">K</div>
+              </div>
             </div>
           </div>
           <div class="callout-warn text-xs">
             <p class="text-yellow-400 font-bold mb-1">Perhatian! d hanya 4 bit (R16–R31)</p>
             <p class="text-slate-300">ANDI Rd,K: Operand d rentang 16–31. Karena itu d dikurangi 16 sebelum dikodekan ke opcode.<br/>R20 → d = 20−16 = <strong>4</strong> = 0100</p>
           </div>
-          <div class="space-y-1 text-xs">
-            <p class="text-slate-400">ANDI R20, 85: d=4 (0100), K=85=01010101</p>
-            <div class="flex flex-wrap gap-1">
-              <div class="opcode-bit fixed">0</div>
-              <div class="opcode-bit fixed">1</div>
-              <div class="opcode-bit fixed">1</div>
-              <div class="opcode-bit fixed">1</div>
-              <span class="text-slate-600 text-xs mx-1">|</span>
-              <div class="opcode-bit imm-b">0</div>
-              <div class="opcode-bit imm-b">1</div>
-              <div class="opcode-bit imm-b">0</div>
-              <div class="opcode-bit imm-b">1</div>
-              <span class="text-slate-600 text-xs mx-1">|</span>
-              <div class="opcode-bit dest">0</div>
-              <div class="opcode-bit dest">1</div>
-              <div class="opcode-bit dest">0</div>
-              <div class="opcode-bit dest">0</div>
-              <span class="text-slate-600 text-xs mx-1">|</span>
-              <div class="opcode-bit imm-b">0</div>
-              <div class="opcode-bit imm-b">1</div>
-              <div class="opcode-bit imm-b">0</div>
-              <div class="opcode-bit imm-b">1</div>
+          <div class="space-y-2 text-xs">
+            <p class="text-slate-400 font-medium">Contoh Real: d=4 (0100), K=01010101</p>
+            <div class="opcode-row">
+              <div class="opcode-group">
+                <div class="opcode-bit fixed">0</div>
+                <div class="opcode-bit fixed">1</div>
+                <div class="opcode-bit fixed">1</div>
+                <div class="opcode-bit fixed">1</div>
+              </div>
+              <div class="opcode-separator">|</div>
+              <div class="opcode-group">
+                <div class="opcode-bit imm-b">0</div>
+                <div class="opcode-bit imm-b">1</div>
+                <div class="opcode-bit imm-b">0</div>
+                <div class="opcode-bit imm-b">1</div>
+              </div>
+              <div class="opcode-separator">|</div>
+              <div class="opcode-group">
+                <div class="opcode-bit dest">0</div>
+                <div class="opcode-bit dest">1</div>
+                <div class="opcode-bit dest">0</div>
+                <div class="opcode-bit dest">0</div>
+              </div>
+              <div class="opcode-separator">|</div>
+              <div class="opcode-group">
+                <div class="opcode-bit imm-b">0</div>
+                <div class="opcode-bit imm-b">1</div>
+                <div class="opcode-bit imm-b">0</div>
+                <div class="opcode-bit imm-b">1</div>
+              </div>
             </div>
             <div class="callout-tip mt-2">
-              <p class="text-green-400 font-bold">Hasil: 0111 0101 0100 0101</p>
+              <p class="text-green-400 font-bold">Hasil Binary: 0111 0101 0100 0101</p>
               <p class="text-slate-300 mt-1">Hex: <strong>7545</strong> → Little-endian: <strong>4575</strong></p>
             </div>
           </div>
