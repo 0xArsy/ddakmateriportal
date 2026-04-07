@@ -231,7 +231,8 @@
   <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
     <div class="flex items-center gap-3">
       <div class="w-8 h-8 rounded-lg bg-cyan-500/20 border border-cyan-500/40 flex items-center justify-center">
-        <i data-lucide="cpu" class="w-4 h-4 text-cyan-400"></i>
+        <!-- SVG CPU Logo instead of data-lucide -->
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-cyan-400"><rect width="16" height="16" x="4" y="4" rx="2"/><rect width="6" height="6" x="9" y="9" rx="1"/><path d="M15 2v2"/><path d="M15 20v2"/><path d="M2 15h2"/><path d="M2 9h2"/><path d="M20 15h2"/><path d="M20 9h2"/><path d="M9 2v2"/><path d="M9 20v2"/></svg>
       </div>
       <div>
         <div class="text-sm font-bold text-white leading-tight">TOPIK 08</div>
@@ -563,11 +564,11 @@
     </div>
 
     <!-- Opcode Visualization -->
-    <div class="card p-6 space-y-6">
+    <div class="card p-6 space-y-6 overflow-hidden">
       <div class="flex items-center gap-3">
-        <i data-lucide="binary" class="w-6 h-6 text-yellow-400"></i>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-yellow-400"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M10 10v4"/><path d="M14 10v4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M7 10v4"/><path d="M17 10v4"/></svg>
         <h3 class="text-xl font-bold">Visualisasi Opcode</h3>
-        <span class="text-xs text-slate-500">— Cara membaca 16-bit opcode instruksi AVR</span>
+        <span class="text-xs text-slate-500">— Cara membaca 16-bit opcode AVR</span>
       </div>
 
       <div class="grid lg:grid-cols-2 gap-8">
