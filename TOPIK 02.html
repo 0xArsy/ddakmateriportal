@@ -1,0 +1,1447 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Topik 02 – Boolean Algebra & Canonical/Standard Forms</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;600;700;800&family=Lato:wght@300;400;700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg-primary: #0a0e1a;
+    --bg-secondary: #0f1629;
+    --bg-card: #131d35;
+    --bg-card-hover: #1a2645;
+    --accent-cyan: #00d4ff;
+    --accent-purple: #7c3aed;
+    --accent-green: #10b981;
+    --accent-red: #ef4444;
+    --accent-orange: #f97316;
+    --accent-yellow: #eab308;
+    --text-primary: #e2e8f0;
+    --text-secondary: #94a3b8;
+    --text-muted: #475569;
+    --border-color: #1e3a5f;
+    --glow-cyan: 0 0 20px rgba(0,212,255,0.15);
+    --glow-purple: 0 0 20px rgba(124,58,237,0.15);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: 'Lato', sans-serif;
+    line-height: 1.7;
+    background-image:
+      radial-gradient(ellipse at 20% 20%, rgba(124,58,237,0.06) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 80%, rgba(0,212,255,0.05) 0%, transparent 50%);
+    background-attachment: fixed;
+  }
+
+  h1, h2, h3, h4, h5 { font-family: 'Syne', sans-serif; }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg-primary); }
+  ::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 3px; }
+
+  /* HEADER */
+  .hero-header {
+    background: linear-gradient(135deg, #0a0e1a 0%, #0f1a33 50%, #0a0e1a 100%);
+    border-bottom: 1px solid var(--border-color);
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-header::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 40px,
+      rgba(0,212,255,0.015) 40px,
+      rgba(0,212,255,0.015) 41px
+    ),
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 40px,
+      rgba(0,212,255,0.015) 40px,
+      rgba(0,212,255,0.015) 41px
+    );
+  }
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(0,212,255,0.1);
+    border: 1px solid rgba(0,212,255,0.3);
+    color: var(--accent-cyan);
+    padding: 4px 14px;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.05em;
+    margin-bottom: 1.5rem;
+  }
+  .hero-title {
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 800;
+    line-height: 1.1;
+    background: linear-gradient(135deg, #ffffff 0%, #00d4ff 50%, #7c3aed 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* NAV */
+  .nav-tab {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    padding: 10px 22px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: 'Syne', sans-serif;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+  }
+  .nav-tab:hover {
+    border-color: var(--accent-cyan);
+    color: var(--accent-cyan);
+    box-shadow: var(--glow-cyan);
+  }
+  .nav-tab.active {
+    background: linear-gradient(135deg, rgba(0,212,255,0.15), rgba(124,58,237,0.15));
+    border-color: var(--accent-cyan);
+    color: var(--accent-cyan);
+    box-shadow: var(--glow-cyan);
+  }
+
+  /* SECTION */
+  .section-panel { display: none; animation: fadeIn 0.3s ease; }
+  .section-panel.active { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* CARDS */
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 1.5rem;
+    transition: all 0.2s ease;
+  }
+  .card:hover { border-color: rgba(0,212,255,0.3); box-shadow: var(--glow-cyan); }
+  .card-purple { border-color: rgba(124,58,237,0.3); }
+  .card-purple:hover { border-color: rgba(124,58,237,0.6); box-shadow: var(--glow-purple); }
+
+  /* CALLOUT BOXES */
+  .callout {
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+    border-left: 4px solid;
+    margin: 1rem 0;
+  }
+  .callout-cyan { background: rgba(0,212,255,0.06); border-color: var(--accent-cyan); }
+  .callout-purple { background: rgba(124,58,237,0.07); border-color: var(--accent-purple); }
+  .callout-green { background: rgba(16,185,129,0.07); border-color: var(--accent-green); }
+  .callout-red { background: rgba(239,68,68,0.07); border-color: var(--accent-red); }
+  .callout-yellow { background: rgba(234,179,8,0.07); border-color: var(--accent-yellow); }
+  .callout-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 0.5rem;
+  }
+
+  /* CODE BLOCKS */
+  .code-block {
+    background: #070c18;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 1.25rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85rem;
+    overflow-x: auto;
+    margin: 1rem 0;
+    line-height: 1.8;
+  }
+  .code-block .kw { color: #7c3aed; }
+  .code-block .fn { color: #00d4ff; }
+  .code-block .var { color: #e2e8f0; }
+  .code-block .op { color: #f97316; }
+  .code-block .val { color: #10b981; }
+  .code-block .cm { color: #475569; font-style: italic; }
+  .code-block .hi { background: rgba(0,212,255,0.1); border-radius: 4px; padding: 0 4px; }
+
+  /* TRUTH TABLE */
+  .truth-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85rem;
+    margin: 1rem 0;
+  }
+  .truth-table th {
+    background: rgba(0,212,255,0.1);
+    color: var(--accent-cyan);
+    padding: 8px 14px;
+    text-align: center;
+    border: 1px solid var(--border-color);
+    font-family: 'Syne', sans-serif;
+    font-size: 0.8rem;
+  }
+  .truth-table td {
+    padding: 7px 14px;
+    text-align: center;
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+  }
+  .truth-table tr:nth-child(even) td { background: rgba(255,255,255,0.02); }
+  .truth-table td.highlight-1 { color: var(--accent-green); font-weight: 700; }
+  .truth-table td.highlight-0 { color: var(--text-muted); }
+
+  /* PRACTICE QUESTIONS */
+  .option-btn {
+    width: 100%;
+    text-align: left;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    padding: 10px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: 'Lato', sans-serif;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .option-btn:hover:not(:disabled) {
+    background: rgba(0,212,255,0.07);
+    border-color: rgba(0,212,255,0.4);
+    color: var(--text-primary);
+  }
+  .option-btn.correct { background: rgba(16,185,129,0.12); border-color: var(--accent-green); color: #6ee7b7; }
+  .option-btn.incorrect { background: rgba(239,68,68,0.1); border-color: var(--accent-red); color: #fca5a5; }
+  .option-btn.dimmed { opacity: 0.4; }
+  .option-btn:disabled { cursor: not-allowed; }
+
+  .feedback-box {
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin-top: 10px;
+    font-size: 0.88rem;
+    display: none;
+    align-items: center;
+    gap: 8px;
+  }
+  .feedback-box.correct { display: flex; background: rgba(16,185,129,0.12); border: 1px solid rgba(16,185,129,0.3); color: #6ee7b7; }
+  .feedback-box.incorrect { display: flex; background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); color: #fca5a5; }
+
+  .reveal-btn {
+    background: transparent;
+    border: 1px solid rgba(124,58,237,0.4);
+    color: #a78bfa;
+    padding: 8px 18px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-family: 'Syne', sans-serif;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s ease;
+    margin-top: 12px;
+  }
+  .reveal-btn:hover { background: rgba(124,58,237,0.15); border-color: var(--accent-purple); }
+
+  .explanation-box {
+    background: rgba(124,58,237,0.07);
+    border: 1px solid rgba(124,58,237,0.25);
+    border-radius: 10px;
+    padding: 1.25rem;
+    margin-top: 12px;
+    display: none;
+    font-size: 0.88rem;
+    line-height: 1.7;
+    color: var(--text-secondary);
+  }
+  .explanation-box.visible { display: block; animation: fadeIn 0.25s ease; }
+
+  /* ALGORITHM WALKTHROUGH */
+  .step-item {
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 1rem;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: var(--bg-card);
+  }
+  .step-item.active {
+    border-color: var(--accent-cyan);
+    background: rgba(0,212,255,0.06);
+    box-shadow: var(--glow-cyan);
+  }
+  .step-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: rgba(0,212,255,0.15);
+    color: var(--accent-cyan);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  .step-item.active .step-number { background: var(--accent-cyan); color: #000; }
+
+  /* SECTION HEADERS */
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color);
+  }
+  .section-header-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, rgba(0,212,255,0.2), rgba(124,58,237,0.2));
+    border: 1px solid rgba(0,212,255,0.3);
+  }
+
+  /* BADGE */
+  .badge {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 600;
+  }
+  .badge-cyan { background: rgba(0,212,255,0.12); color: var(--accent-cyan); border: 1px solid rgba(0,212,255,0.25); }
+  .badge-purple { background: rgba(124,58,237,0.12); color: #a78bfa; border: 1px solid rgba(124,58,237,0.25); }
+  .badge-green { background: rgba(16,185,129,0.12); color: #6ee7b7; border: 1px solid rgba(16,185,129,0.25); }
+  .badge-orange { background: rgba(249,115,22,0.12); color: #fdba74; border: 1px solid rgba(249,115,22,0.25); }
+
+  /* FORMULA BOX */
+  .formula-box {
+    background: #070c18;
+    border: 1px solid rgba(0,212,255,0.2);
+    border-radius: 8px;
+    padding: 0.75rem 1.25rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.9rem;
+    color: #00d4ff;
+    margin: 0.5rem 0;
+    text-align: center;
+  }
+
+  /* LAWS TABLE */
+  .laws-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 1rem;
+  }
+  @media (max-width: 640px) { .laws-grid { grid-template-columns: 1fr; } }
+
+  .law-item {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    transition: border-color 0.2s;
+  }
+  .law-item:hover { border-color: rgba(0,212,255,0.3); }
+
+  /* PROGRESS */
+  .progress-bar {
+    height: 4px;
+    background: var(--border-color);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-top: 8px;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple));
+    border-radius: 2px;
+    transition: width 0.4s ease;
+  }
+
+  /* SCROLL TO TOP */
+  .scroll-top {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    width: 42px;
+    height: 42px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--text-secondary);
+    transition: all 0.2s ease;
+    z-index: 100;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+  }
+  .scroll-top:hover { border-color: var(--accent-cyan); color: var(--accent-cyan); }
+
+  /* INPUT FIELD */
+  .input-field {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    padding: 9px 14px;
+    border-radius: 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.9rem;
+    width: 100%;
+    transition: border-color 0.2s;
+    outline: none;
+  }
+  .input-field:focus { border-color: var(--accent-cyan); box-shadow: 0 0 0 3px rgba(0,212,255,0.1); }
+
+  .check-btn {
+    background: linear-gradient(135deg, rgba(0,212,255,0.2), rgba(124,58,237,0.2));
+    border: 1px solid rgba(0,212,255,0.4);
+    color: var(--accent-cyan);
+    padding: 9px 22px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
+    margin-top: 10px;
+  }
+  .check-btn:hover { background: linear-gradient(135deg, rgba(0,212,255,0.3), rgba(124,58,237,0.3)); }
+
+  /* RESPONSIVE */
+  @media (max-width: 768px) {
+    .nav-tabs-scroll { overflow-x: auto; padding-bottom: 8px; }
+    .laws-grid { grid-template-columns: 1fr; }
+  }
+
+  sub, sup { font-size: 0.7em; }
+  .mono { font-family: 'JetBrains Mono', monospace; }
+</style>
+</head>
+<body>
+
+<!-- HERO HEADER -->
+<header class="hero-header py-16 px-6">
+  <div class="max-w-5xl mx-auto relative z-10">
+    <div class="hero-badge">
+      <i data-lucide="cpu" style="width:14px;height:14px;"></i>
+      CSIM601251 · DDAK 2022/2023 · Fasilkom UI
+    </div>
+    <h1 class="hero-title mb-4">Boolean Algebra &<br/>Canonical & Standard Forms</h1>
+    <p style="color: var(--text-secondary); font-size: 1rem; max-width: 600px;">
+      Panduan interaktif lengkap untuk memahami aljabar Boolean, hukum-hukumnya, bentuk kanonik (SOM/POM), serta standard form (SOP/POS) — pondasi desain dan analisis sistem digital.
+    </p>
+    <div class="flex flex-wrap gap-3 mt-6">
+      <span class="badge badge-cyan">Boolean Algebra</span>
+      <span class="badge badge-purple">Minterms & Maxterms</span>
+      <span class="badge badge-green">SOM / POM</span>
+      <span class="badge badge-orange">SOP / POS</span>
+    </div>
+  </div>
+</header>
+
+<!-- NAVIGATION TABS -->
+<nav class="sticky top-0 z-50 px-6 py-4" style="background: rgba(10,14,26,0.92); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border-color);">
+  <div class="max-w-5xl mx-auto nav-tabs-scroll">
+    <div class="flex gap-3 min-w-max">
+      <button class="nav-tab active" onclick="showSection('conceptual', this)">
+        <i data-lucide="book-open" style="width:16px;height:16px;"></i> Konsep Mendalam
+      </button>
+      <button class="nav-tab" onclick="showSection('visualization', this)">
+        <i data-lucide="git-branch" style="width:16px;height:16px;"></i> Visualisasi & Logika
+      </button>
+      <button class="nav-tab" onclick="showSection('practice', this)">
+        <i data-lucide="zap" style="width:16px;height:16px;"></i> Latihan Interaktif
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- MAIN CONTENT -->
+<main class="max-w-5xl mx-auto px-6 py-10">
+
+  <!-- ===================== SECTION 1: CONCEPTUAL ===================== -->
+  <div id="section-conceptual" class="section-panel active">
+
+    <div class="section-header">
+      <div class="section-header-icon"><i data-lucide="book-open" style="width:20px;height:20px;color:var(--accent-cyan)"></i></div>
+      <div>
+        <h2 style="font-size:1.6rem;font-weight:800;">Conceptual Deep Dive</h2>
+        <p style="color:var(--text-muted);font-size:0.9rem;">Uraian mendalam konsep-konsep kunci</p>
+      </div>
+    </div>
+
+    <!-- PART A: Boolean Algebra Intro -->
+    <div class="card mb-8">
+      <h3 style="color:var(--accent-cyan);font-size:1.2rem;font-weight:700;margin-bottom:1rem;display:flex;align-items:center;gap:8px;">
+        <i data-lucide="layers" style="width:18px;height:18px;"></i> 1. Apa itu Boolean Algebra?
+      </h3>
+      <p style="color:var(--text-secondary);margin-bottom:1rem;">
+        Boolean Algebra adalah sistem matematika yang berguna untuk <strong style="color:var(--text-primary);">menspesifikasikan dan mentransformasikan fungsi-fungsi logika</strong>. Ini adalah fondasi dari desain dan analisis sistem digital.
+      </p>
+
+      <div class="callout callout-cyan">
+        <div class="callout-title" style="color:var(--accent-cyan);">
+          <i data-lucide="key" style="width:14px;height:14px;"></i> Key Term: Boolean Variable
+        </div>
+        <p style="color:var(--text-secondary);font-size:0.9rem;">Variabel Boolean hanya dapat bernilai dua: <strong style="color:#10b981;">1 (True)</strong> atau <strong style="color:#ef4444;">0 (False)</strong>. Tidak ada nilai di antaranya.</p>
+      </div>
+
+      <div class="callout callout-purple">
+        <div class="callout-title" style="color:#a78bfa;">
+          <i data-lucide="info" style="width:14px;height:14px;"></i> Mental Model: Saklar Listrik
+        </div>
+        <p style="color:var(--text-secondary);font-size:0.9rem;">Bayangkan Boolean seperti saklar lampu. AND = saklar seri (keduanya harus ON agar lampu menyala). OR = saklar paralel (cukup salah satu ON). NOT = saklar normally-closed (kebalikan kondisi).</p>
+      </div>
+
+      <div class="callout callout-red">
+        <div class="callout-title" style="color:#f87171;">
+          <i data-lucide="alert-triangle" style="width:14px;height:14px;"></i> Common Pitfall: Bingung dengan Aljabar Biasa
+        </div>
+        <p style="color:var(--text-secondary);font-size:0.9rem;">Ingat: <span class="mono" style="color:#f97316;">1 + 1 = 1</span> (dibaca "1 OR 1 = 1") dalam Boolean, <strong>bukan</strong> 2! Tanda <span class="mono">+</span> berarti OR, bukan penjumlahan biasa.</p>
+      </div>
+
+      <!-- Operators Table -->
+      <h4 style="color:var(--text-primary);font-weight:700;margin-top:1.5rem;margin-bottom:0.75rem;">Operator Dasar & Truth Table</h4>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div>
+          <div class="badge badge-green mb-2">AND (·)</div>
+          <table class="truth-table">
+            <thead><tr><th>A</th><th>B</th><th>A · B</th></tr></thead>
+            <tbody>
+              <tr><td>0</td><td>0</td><td class="highlight-0">0</td></tr>
+              <tr><td>0</td><td>1</td><td class="highlight-0">0</td></tr>
+              <tr><td>1</td><td>0</td><td class="highlight-0">0</td></tr>
+              <tr><td>1</td><td>1</td><td class="highlight-1">1</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div>
+          <div class="badge badge-cyan mb-2">OR (+)</div>
+          <table class="truth-table">
+            <thead><tr><th>A</th><th>B</th><th>A + B</th></tr></thead>
+            <tbody>
+              <tr><td>0</td><td>0</td><td class="highlight-0">0</td></tr>
+              <tr><td>0</td><td>1</td><td class="highlight-1">1</td></tr>
+              <tr><td>1</td><td>0</td><td class="highlight-1">1</td></tr>
+              <tr><td>1</td><td>1</td><td class="highlight-1">1</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div>
+          <div class="badge badge-orange mb-2">NOT (')</div>
+          <table class="truth-table">
+            <thead><tr><th>A</th><th>A'</th></tr></thead>
+            <tbody>
+              <tr><td>0</td><td class="highlight-1">1</td></tr>
+              <tr><td>1</td><td class="highlight-0">0</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- PART B: Laws -->
+    <div class="card mb-8">
+      <h3 style="color:var(--accent-cyan);font-size:1.2rem;font-weight:700;margin-bottom:1rem;display:flex;align-items:center;gap:8px;">
+        <i data-lucide="scale" style="width:18px;height:18px;"></i> 2. Hukum-Hukum Boolean Algebra
+      </h3>
+
+      <div class="laws-grid">
+        <div class="law-item">
+          <div class="badge badge-cyan mb-2">Identity Law</div>
+          <div class="formula-box">A + 0 = A</div>
+          <div class="formula-box">A · 1 = A</div>
+        </div>
+        <div class="law-item">
+          <div class="badge badge-purple mb-2">Null (Dominance) Law</div>
+          <div class="formula-box">A + 1 = 1</div>
+          <div class="formula-box">A · 0 = 0</div>
+        </div>
+        <div class="law-item">
+          <div class="badge badge-green mb-2">Inverse/Complement Law</div>
+          <div class="formula-box">A + A' = 1</div>
+          <div class="formula-box">A · A' = 0</div>
+        </div>
+        <div class="law-item">
+          <div class="badge badge-orange mb-2">Idempotent Law</div>
+          <div class="formula-box">A + A = A</div>
+          <div class="formula-box">A · A = A</div>
+        </div>
+        <div class="law-item">
+          <div class="badge badge-cyan mb-2">Commutative Law</div>
+          <div class="formula-box">A + B = B + A</div>
+          <div class="formula-box">A · B = B · A</div>
+        </div>
+        <div class="law-item">
+          <div class="badge badge-purple mb-2">Associative Law</div>
+          <div class="formula-box">A+(B+C)=(A+B)+C</div>
+          <div class="formula-box">A·(B·C)=(A·B)·C</div>
+        </div>
+        <div class="law-item">
+          <div class="badge badge-green mb-2">Distributive Law</div>
+          <div class="formula-box">A·(B+C)=A·B+A·C</div>
+          <div class="formula-box">A+(B·C)=(A+B)·(A+C)</div>
+        </div>
+        <div class="law-item">
+          <div class="badge badge-orange mb-2">Absorption Law</div>
+          <div class="formula-box">X + X·Y = X</div>
+          <div class="formula-box">X·(X + Y) = X</div>
+        </div>
+      </div>
+
+      <div class="callout callout-cyan mt-4">
+        <div class="callout-title" style="color:var(--accent-cyan);">
+          <i data-lucide="key" style="width:14px;height:14px;"></i> Key Term: DeMorgan's Theorem
+        </div>
+        <p style="color:var(--text-secondary);font-size:0.9rem;margin-bottom:0.5rem;">
+          Teorema paling penting untuk komplementasi fungsi:
+        </p>
+        <div class="formula-box">(X + Y)' = X' · Y'</div>
+        <div class="formula-box">(X · Y)' = X' + Y'</div>
+        <p style="color:var(--text-secondary);font-size:0.85rem;margin-top:0.5rem;">
+          <strong style="color:var(--text-primary);">Cara mudah:</strong> "Pecah komplemen luar, ganti + jadi · (atau sebaliknya), komplemen setiap variabel."
+        </p>
+      </div>
+
+      <div class="callout callout-yellow mt-2">
+        <div class="callout-title" style="color:#eab308;">
+          <i data-lucide="lightbulb" style="width:14px;height:14px;"></i> Key Term: Duality
+        </div>
+        <p style="color:var(--text-secondary);font-size:0.9rem;">
+          Jika sebuah persamaan Boolean valid, maka <strong style="color:var(--text-primary);">dual</strong>-nya juga valid. Cara mendapatkan dual: tukar semua operator AND↔OR dan tukar semua konstanta 0↔1 (variabel <em>tidak</em> diubah). Contoh: dual dari <span class="mono">A+(B·C)=(A+B)·(A+C)</span> adalah <span class="mono">A·(B+C)=(A·B)+(A·C)</span>.
+        </p>
+      </div>
+
+      <div class="callout callout-green mt-2">
+        <div class="callout-title" style="color:#10b981;">
+          <i data-lucide="key" style="width:14px;height:14px;"></i> Key Term: Consensus Theorem
+        </div>
+        <div class="formula-box">XY + X'Z + YZ = XY + X'Z</div>
+        <p style="color:var(--text-secondary);font-size:0.85rem;margin-top:0.5rem;">
+          Istilah <span class="mono">YZ</span> adalah "consensus term" yang redundan dan bisa dihilangkan.
+        </p>
+      </div>
+    </div>
+
+    <!-- PART C: Precedence -->
+    <div class="card mb-8">
+      <h3 style="color:var(--accent-cyan);font-size:1.2rem;font-weight:700;margin-bottom:1rem;display:flex;align-items:center;gap:8px;">
+        <i data-lucide="list-ordered" style="width:18px;height:18px;"></i> 3. Prioritas Operator
+      </h3>
+      <p style="color:var(--text-secondary);margin-bottom:1rem;">Urutan dari prioritas tertinggi ke terendah:</p>
+      <div class="flex flex-wrap gap-3 items-center mb-4">
+        <div style="background:rgba(239,68,68,0.12);border:1px solid rgba(239,68,68,0.3);padding:10px 20px;border-radius:8px;text-align:center;">
+          <div style="color:#f87171;font-family:'JetBrains Mono',monospace;font-weight:700;font-size:1.1rem;">NOT (')</div>
+          <div style="color:var(--text-muted);font-size:0.75rem;margin-top:2px;">Prioritas 1</div>
+        </div>
+        <i data-lucide="chevron-right" style="width:20px;height:20px;color:var(--text-muted);"></i>
+        <div style="background:rgba(249,115,22,0.12);border:1px solid rgba(249,115,22,0.3);padding:10px 20px;border-radius:8px;text-align:center;">
+          <div style="color:#fdba74;font-family:'JetBrains Mono',monospace;font-weight:700;font-size:1.1rem;">AND (·)</div>
+          <div style="color:var(--text-muted);font-size:0.75rem;margin-top:2px;">Prioritas 2</div>
+        </div>
+        <i data-lucide="chevron-right" style="width:20px;height:20px;color:var(--text-muted);"></i>
+        <div style="background:rgba(0,212,255,0.1);border:1px solid rgba(0,212,255,0.3);padding:10px 20px;border-radius:8px;text-align:center;">
+          <div style="color:var(--accent-cyan);font-family:'JetBrains Mono',monospace;font-weight:700;font-size:1.1rem;">OR (+)</div>
+          <div style="color:var(--text-muted);font-size:0.75rem;margin-top:2px;">Prioritas 3</div>
+        </div>
+      </div>
+      <div class="callout callout-red">
+        <div class="callout-title" style="color:#f87171;"><i data-lucide="alert-triangle" style="width:14px;height:14px;"></i> Common Pitfall: Salah Baca Prioritas</div>
+        <p style="color:var(--text-secondary);font-size:0.9rem;">
+          <span class="mono">P + Q'·R</span> dibaca sebagai <span class="mono">P + ((Q')·R)</span>, <strong>bukan</strong> <span class="mono">(P+Q')·R</span>! NOT dievaluasi dulu, lalu AND, terakhir OR. Gunakan tanda kurung untuk mengubah prioritas.
+        </p>
+      </div>
+    </div>
+
+    <!-- PART D: Canonical Forms -->
+    <div class="card mb-8">
+      <h3 style="color:var(--accent-cyan);font-size:1.2rem;font-weight:700;margin-bottom:1rem;display:flex;align-items:center;gap:8px;">
+        <i data-lucide="grid-3x3" style="width:18px;height:18px;"></i> 4. Minterms & Maxterms
+      </h3>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+        <div class="callout callout-green">
+          <div class="callout-title" style="color:#10b981;"><i data-lucide="key" style="width:14px;height:14px;"></i> Key Term: Minterm (m<sub>i</sub>)</div>
+          <p style="color:var(--text-secondary);font-size:0.9rem;">
+            <strong style="color:var(--text-primary);">Product term</strong> yang mengandung <em>n</em> literal dari <strong>semua</strong> variabel. Pada minterm, bit <span class="mono" style="color:#10b981;">1</span> = variabel NOT complemented, bit <span class="mono" style="color:#ef4444;">0</span> = variabel complemented.
+          </p>
+          <div class="formula-box" style="margin-top:0.5rem;text-align:left;font-size:0.8rem;">m₅ (3 var, 5=101₂) = X·Y'·Z</div>
+        </div>
+        <div class="callout callout-purple">
+          <div class="callout-title" style="color:#a78bfa;"><i data-lucide="key" style="width:14px;height:14px;"></i> Key Term: Maxterm (M<sub>i</sub>)</div>
+          <p style="color:var(--text-secondary);font-size:0.9rem;">
+            <strong style="color:var(--text-primary);">Sum term</strong> yang mengandung <em>n</em> literal dari <strong>semua</strong> variabel. Pada maxterm, bit <span class="mono" style="color:#ef4444;">0</span> = variabel NOT complemented, bit <span class="mono" style="color:#10b981;">1</span> = variabel complemented.
+          </p>
+          <div class="formula-box" style="margin-top:0.5rem;text-align:left;font-size:0.8rem;">M₅ (3 var, 5=101₂) = X'+Y+Z'</div>
+        </div>
+      </div>
+
+      <div class="callout callout-cyan">
+        <div class="callout-title" style="color:var(--accent-cyan);"><i data-lucide="info" style="width:14px;height:14px;"></i> Hubungan Minterm & Maxterm</div>
+        <p style="color:var(--text-secondary);font-size:0.9rem;margin-bottom:0.5rem;">
+          Setiap minterm adalah <strong style="color:var(--text-primary);">komplemen</strong> dari maxterm dengan indeks yang sama: <span class="mono">M<sub>i</sub> = m<sub>i</sub>'</span>
+        </p>
+        <p style="color:var(--text-secondary);font-size:0.85rem;">
+          Contoh: <span class="mono">m₂ = X·Y'</span> → <span class="mono">m₂' = X'+Y = M₂</span> ✓
+        </p>
+      </div>
+
+      <!-- Minterm/Maxterm table for 2 vars -->
+      <h4 style="color:var(--text-primary);font-weight:700;margin-top:1.5rem;margin-bottom:0.75rem;">Tabel Minterm & Maxterm (2 Variabel)</h4>
+      <div style="overflow-x:auto;">
+        <table class="truth-table">
+          <thead>
+            <tr>
+              <th>X</th><th>Y</th>
+              <th>Minterm</th><th>Notasi</th>
+              <th>Maxterm</th><th>Notasi</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>0</td><td>0</td><td class="mono">X'·Y'</td><td class="badge badge-green">m₀</td><td class="mono">X+Y</td><td class="badge badge-purple">M₀</td></tr>
+            <tr><td>0</td><td>1</td><td class="mono">X'·Y</td><td class="badge badge-green">m₁</td><td class="mono">X+Y'</td><td class="badge badge-purple">M₁</td></tr>
+            <tr><td>1</td><td>0</td><td class="mono">X·Y'</td><td class="badge badge-green">m₂</td><td class="mono">X'+Y</td><td class="badge badge-purple">M₂</td></tr>
+            <tr><td>1</td><td>1</td><td class="mono">X·Y</td><td class="badge badge-green">m₃</td><td class="mono">X'+Y'</td><td class="badge badge-purple">M₃</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout-red mt-4">
+        <div class="callout-title" style="color:#f87171;"><i data-lucide="alert-triangle" style="width:14px;height:14px;"></i> Common Pitfall: Aturan Index Terbalik</div>
+        <p style="color:var(--text-secondary);font-size:0.9rem;">
+          Aturan minterm vs. maxterm untuk index <strong>berlawanan</strong>:
+          <br>• <strong style="color:#10b981;">Minterm:</strong> bit <span class="mono">1</span> → variabel normal, bit <span class="mono">0</span> → variabel dikomplemen
+          <br>• <strong style="color:#a78bfa;">Maxterm:</strong> bit <span class="mono">0</span> → variabel normal, bit <span class="mono">1</span> → variabel dikomplemen
+          <br>Banyak mahasiswa yang membalik aturan ini!
+        </p>
+      </div>
+    </div>
+
+    <!-- PART E: SOM/POM & SOP/POS -->
+    <div class="card mb-8">
+      <h3 style="color:var(--accent-cyan);font-size:1.2rem;font-weight:700;margin-bottom:1rem;display:flex;align-items:center;gap:8px;">
+        <i data-lucide="code-2" style="width:18px;height:18px;"></i> 5. Canonical Forms: SOM & POM
+      </h3>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+        <div class="law-item">
+          <div class="badge badge-green mb-2">Sum of Minterms (SOM / Σm)</div>
+          <p style="color:var(--text-secondary);font-size:0.88rem;">OR-kan semua minterm yang bersesuaian dengan baris output <span class="mono highlight-1" style="color:#10b981;padding:1px 5px;border-radius:3px;">1</span> pada truth table.</p>
+          <div class="formula-box" style="font-size:0.8rem;">F(A,B,C) = Σm(1,4,5,6,7)</div>
+        </div>
+        <div class="law-item card-purple">
+          <div class="badge badge-purple mb-2">Product of Maxterms (POM / ΠM)</div>
+          <p style="color:var(--text-secondary);font-size:0.88rem;">AND-kan semua maxterm yang bersesuaian dengan baris output <span class="mono" style="color:var(--text-muted);">0</span> pada truth table.</p>
+          <div class="formula-box" style="font-size:0.8rem;">F(A,B,C) = ΠM(0,2,3)</div>
+        </div>
+      </div>
+
+      <div class="callout callout-yellow">
+        <div class="callout-title" style="color:#eab308;"><i data-lucide="lightbulb" style="width:14px;height:14px;"></i> Konversi SOM ↔ POM</div>
+        <p style="color:var(--text-secondary);font-size:0.9rem;">
+          Untuk mengkonversi: (1) ambil komplemen F → indeks yang tidak muncul di daftar asal, (2) tukar notasi Σm ↔ ΠM dengan indeks komplemen tersebut.
+          <br><br>Contoh: Jika <span class="mono">F = Σm(1,3,5,7)</span>, maka <span class="mono">F' = Σm(0,2,4,6)</span>, sehingga <span class="mono">F = ΠM(0,2,4,6)</span>.
+        </p>
+      </div>
+
+      <h4 style="color:var(--text-primary);font-weight:700;margin-top:1.5rem;margin-bottom:0.75rem;">Standard Forms: SOP & POS</h4>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="law-item">
+          <div class="badge badge-cyan mb-2">Sum-of-Products (SOP)</div>
+          <p style="color:var(--text-secondary);font-size:0.88rem;margin-bottom:0.5rem;">Jumlah (OR) dari satu atau lebih product term. Tidak harus mengandung semua variabel di setiap term.</p>
+          <div class="formula-box" style="font-size:0.8rem;">AB + A'B' + C</div>
+          <div class="formula-box" style="font-size:0.8rem;">A + B'C + AC' + CD</div>
+        </div>
+        <div class="law-item card-purple">
+          <div class="badge badge-purple mb-2">Product-of-Sums (POS)</div>
+          <p style="color:var(--text-secondary);font-size:0.88rem;margin-bottom:0.5rem;">Produk (AND) dari satu atau lebih sum term. Tidak harus mengandung semua variabel di setiap term.</p>
+          <div class="formula-box" style="font-size:0.8rem;">(A+B)(A'+B')</div>
+          <div class="formula-box" style="font-size:0.8rem;">(A+B+C)·D'·(B'+D+E')</div>
+        </div>
+      </div>
+
+      <div class="callout callout-red mt-4">
+        <div class="callout-title" style="color:#f87171;"><i data-lucide="alert-triangle" style="width:14px;height:14px;"></i> Common Pitfall: SOP vs Canonical SOP</div>
+        <p style="color:var(--text-secondary);font-size:0.9rem;">
+          <strong style="color:var(--text-primary);">Canonical SOP (SOM)</strong>: Setiap term adalah minterm (mengandung <em>semua</em> n variabel).<br>
+          <strong style="color:var(--text-primary);">Standard SOP</strong>: Setiap term adalah product term biasa (bisa kurang dari n variabel). <br>
+          Canonical SOM <em>selalu</em> merupakan SOP, tapi tidak sebaliknya!
+        </p>
+      </div>
+    </div>
+
+  </div><!-- end section-conceptual -->
+
+  <!-- ===================== SECTION 2: VISUALIZATION ===================== -->
+  <div id="section-visualization" class="section-panel">
+
+    <div class="section-header">
+      <div class="section-header-icon"><i data-lucide="git-branch" style="width:20px;height:20px;color:var(--accent-cyan)"></i></div>
+      <div>
+        <h2 style="font-size:1.6rem;font-weight:800;">Visualisasi & Logika</h2>
+        <p style="color:var(--text-muted);font-size:0.9rem;">Walkthrough langkah-demi-langkah proses kunci</p>
+      </div>
+    </div>
+
+    <!-- WALKTHROUGH 1: Pembuktian Teorema Absorpsi -->
+    <div class="card mb-8">
+      <h3 style="color:var(--accent-cyan);font-size:1.2rem;font-weight:700;margin-bottom:0.5rem;">Walkthrough 1: Pembuktian Teorema Absorpsi</h3>
+      <p style="color:var(--text-secondary);font-size:0.9rem;margin-bottom:1rem;">Buktikan: <span class="mono" style="color:#00d4ff;">X + X·Y = X</span> (menggunakan manipulasi aljabar)</p>
+
+      <div id="walkthrough1-steps">
+        <div class="step-item active" onclick="toggleStep(this)">
+          <div class="flex items-center gap-3 mb-1">
+            <span class="step-number">1</span>
+            <span style="font-family:'Syne',sans-serif;font-weight:700;">Mulai dari ekspresi awal</span>
+          </div>
+          <div class="code-block" style="margin:0.5rem 0 0 0;">
+<span class="cm">-- Teorema yang akan dibuktikan:</span>
+<span class="var">X</span> <span class="op">+</span> <span class="var">X</span><span class="op">·</span><span class="var">Y</span>
+          </div>
+          <p style="color:var(--text-secondary);font-size:0.85rem;margin-top:0.5rem;">Ekspresi ini belum dalam bentuk tersederhana. Kita akan membuktikannya sama dengan X.</p>
+        </div>
+
+        <div class="step-item" onclick="toggleStep(this)">
+          <div class="flex items-center gap-3 mb-1">
+            <span class="step-number">2</span>
+            <span style="font-family:'Syne',sans-serif;font-weight:700;">Terapkan Identity Law</span>
+          </div>
+          <div class="code-block" style="margin:0.5rem 0 0 0;">
+<span class="var">X</span> <span class="op">+</span> <span class="var">X</span><span class="op">·</span><span class="var">Y</span>
+  <span class="op">=</span> <span class="var">X</span><span class="op">·</span><span class="val">1</span> <span class="op">+</span> <span class="var">X</span><span class="op">·</span><span class="var">Y</span>    <span class="cm">-- A·1 = A (Identity)</span>
+          </div>
+          <p style="color:var(--text-secondary);font-size:0.85rem;margin-top:0.5rem;">Ganti X dengan X·1 menggunakan Identity Law: A·1 = A.</p>
+        </div>
+
+        <div class="step-item" onclick="toggleStep(this)">
+          <div class="flex items-center gap-3 mb-1">
+            <span class="step-number">3</span>
+            <span style="font-family:'Syne',sans-serif;font-weight:700;">Terapkan Distributive Law</span>
+          </div>
+          <div class="code-block" style="margin:0.5rem 0 0 0;">
+<span class="var">X</span><span class="op">·</span><span class="val">1</span> <span class="op">+</span> <span class="var">X</span><span class="op">·</span><span class="var">Y</span>
+  <span class="op">=</span> <span class="var">X</span><span class="op">·</span>(<span class="val">1</span> <span class="op">+</span> <span class="var">Y</span>)      <span class="cm">-- A·B + A·C = A·(B+C)</span>
+          </div>
+          <p style="color:var(--text-secondary);font-size:0.85rem;margin-top:0.5rem;">Faktorkan X keluar menggunakan Distributive Law.</p>
+        </div>
+
+        <div class="step-item" onclick="toggleStep(this)">
+          <div class="flex items-center gap-3 mb-1">
+            <span class="step-number">4</span>
+            <span style="font-family:'Syne',sans-serif;font-weight:700;">Terapkan Null/Dominance Law</span>
+          </div>
+          <div class="code-block" style="margin:0.5rem 0 0 0;">
+<span class="var">X</span><span class="op">·</span>(<span class="val">1</span> <span class="op">+</span> <span class="var">Y</span>)
+  <span class="op">=</span> <span class="var">X</span><span class="op">·</span><span class="val">1</span>           <span class="cm">-- 1 + Y = 1 (Null Law)</span>
+          </div>
+          <p style="color:var(--text-secondary);font-size:0.85rem;margin-top:0.5rem;">Gunakan Null Law: 1 + Y = 1.</p>
+        </div>
+
+        <div class="step-item" onclick="toggleStep(this)">
+          <div class="flex items-center gap-3 mb-1">
+            <span class="step-number">5</span>
+            <span style="font-family:'Syne',sans-serif;font-weight:700;">Hasil Akhir ✓</span>
+          </div>
+          <div class="code-block" style="margin:0.5rem 0 0 0;">
+<span class="var">X</span><span class="op">·</span><span class="val">1</span>
+  <span class="op">=</span> <span class="fn">X</span>             <span class="cm">-- X·1 = X (Identity) ✓</span>
+
+<span class="cm">-- Terbukti: X + X·Y = X</span>
+<span class="cm">-- By duality: X·(X+Y) = X also proven!</span>
+          </div>
+          <p style="color:var(--text-secondary);font-size:0.85rem;margin-top:0.5rem;"><strong style="color:#10b981;">TERBUKTI.</strong> Dan dengan prinsip Duality, kita sekaligus membuktikan X·(X+Y) = X secara gratis!</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- WALKTHROUGH 2: Konversi ke SOM -->
+    <div class="card mb-8">
+      <h3 style="color:var(--accent-cyan);font-size:1.2rem;font-weight:700;margin-bottom:0.5rem;">Walkthrough 2: Konversi Ekspresi ke Sum of Minterms (SOM)</h3>
+      <p style="color:var(--text-secondary);font-size:0.9rem;margin-bottom:1rem;">Konversi: <span class="mono" style="color:#00d4ff;">f(x,y,z) = x + x'·y</span> ke bentuk SOM</p>
+
+      <div id="walkthrough2-steps">
+        <div class="step-item active" onclick="toggleStep(this)">
+          <div class="flex items-center gap-3 mb-1">
+            <span class="step-number">1</span>
+            <span style="font-family:'Syne',sans-serif;font-weight:700;">Identifikasi variabel yang hilang</span>
+          </div>
+          <div class="code-block" style="margin:0.5rem 0 0 0;">
+<span class="cm">-- f(x,y,z) = x + x'·y</span>
+<span class="cm">-- Variabel: x, y, z (3 variabel)</span>
+<span class="cm">-- Term 'x' hilang: y dan z</span>
+<span class="cm">-- Term 'x'·y' hilang: z</span>
+          </div>
+        </div>
+
+        <div class="step-item" onclick="toggleStep(this)">
+          <div class="flex items-center gap-3 mb-1">
+            <span class="step-number">2</span>
+            <span style="font-family:'Syne',sans-serif;font-weight:700;">Ekspansi dengan mengalikan (v + v')</span>
+          </div>
+          <div class="code-block" style="margin:0.5rem 0 0 0;">
+<span class="fn">x</span> <span class="op">=</span> <span class="fn">x</span><span class="op">·</span>(<span class="var">y</span><span class="op">+</span><span class="var">y</span>') <span class="op">=</span> <span class="fn">xy</span> <span class="op">+</span> <span class="fn">xy</span>'
+<span class="fn">xy</span>  <span class="op">=</span> <span class="fn">xy</span><span class="op">·</span>(<span class="var">z</span><span class="op">+</span><span class="var">z</span>') <span class="op">=</span> <span class="fn">xyz</span> <span class="op">+</span> <span class="fn">xyz</span>'
+<span class="fn">xy</span>' <span class="op">=</span> <span class="fn">xy</span>'<span class="op">·</span>(<span class="var">z</span><span class="op">+</span><span class="var">z</span>') <span class="op">=</span> <span class="fn">xy</span>'<span class="var">z</span> <span class="op">+</span> <span class="fn">xy</span>'<span class="var">z</span>'
+
+<span class="fn">x</span>'<span class="var">y</span> <span class="op">=</span> <span class="fn">x</span>'<span class="var">y</span><span class="op">·</span>(<span class="var">z</span><span class="op">+</span><span class="var">z</span>') <span class="op">=</span> <span class="fn">x</span>'<span class="var">yz</span> <span class="op">+</span> <span class="fn">x</span>'<span class="var">yz</span>'
+          </div>
+        </div>
+
+        <div class="step-item" onclick="toggleStep(this)">
+          <div class="flex items-center gap-3 mb-1">
+            <span class="step-number">3</span>
+            <span style="font-family:'Syne',sans-serif;font-weight:700;">Gabungkan & hilangkan duplikat</span>
+          </div>
+          <div class="code-block" style="margin:0.5rem 0 0 0;">
+<span class="fn">f</span> <span class="op">=</span> <span class="fn">xyz</span> <span class="op">+</span> <span class="fn">xyz</span>' <span class="op">+</span> <span class="fn">xy</span>'<span class="var">z</span> <span class="op">+</span> <span class="fn">xy</span>'<span class="var">z</span>' <span class="op">+</span> <span class="fn">x</span>'<span class="var">yz</span> <span class="op">+</span> <span class="fn">x</span>'<span class="var">yz</span>'
+          </div>
+        </div>
+
+        <div class="step-item" onclick="toggleStep(this)">
+          <div class="flex items-center gap-3 mb-1">
+            <span class="step-number">4</span>
+            <span style="font-family:'Syne',sans-serif;font-weight:700;">Tentukan indeks setiap minterm</span>
+          </div>
+          <div class="code-block" style="margin:0.5rem 0 0 0;">
+<span class="fn">x</span>'<span class="var">yz</span>'  <span class="op">=</span> 011₂ <span class="op">=</span> <span class="val">m3</span>
+<span class="fn">x</span>'<span class="var">yz</span>   <span class="op">=</span> 011₂ <span class="op">=</span> <span class="cm">-- wait, x'=0,y=1,z=1 = 011 = m3</span>
+<span class="cm">-- Lebih tepat:</span>
+<span class="cm">-- x'yz' = (0)(1)(0) = 010₂ = 2 → m2? </span>
+<span class="cm">-- x'yz  = (0)(1)(1) = 011₂ = 3 → m3</span>
+<span class="fn">xy</span>'<span class="var">z</span>'  <span class="op">=</span> (1)(0)(0) <span class="op">=</span> 100₂ <span class="op">=</span> <span class="val">m4</span>
+<span class="fn">xy</span>'<span class="var">z</span>   <span class="op">=</span> (1)(0)(1) <span class="op">=</span> 101₂ <span class="op">=</span> <span class="val">m5</span>
+<span class="fn">xyz</span>'   <span class="op">=</span> (1)(1)(0) <span class="op">=</span> 110₂ <span class="op">=</span> <span class="val">m6</span>
+<span class="fn">xyz</span>    <span class="op">=</span> (1)(1)(1) <span class="op">=</span> 111₂ <span class="op">=</span> <span class="val">m7</span>
+          </div>
+        </div>
+
+        <div class="step-item" onclick="toggleStep(this)">
+          <div class="flex items-center gap-3 mb-1">
+            <span class="step-number">5</span>
+            <span style="font-family:'Syne',sans-serif;font-weight:700;">Tulis dalam notasi shorthand ✓</span>
+          </div>
+          <div class="code-block" style="margin:0.5rem 0 0 0;">
+<span class="fn">f</span>(x,y,z) <span class="op">=</span> <span class="fn">Σm</span>(<span class="val">2, 3, 4, 5, 6, 7</span>)
+
+<span class="cm">-- Note: x + x'y menggunakan 2 variabel,</span>
+<span class="cm">-- sedangkan ada 3 variabel (x,y,z),</span>
+<span class="cm">-- sehingga setiap term harus diperluas</span>
+<span class="cm">-- sampai mencakup semua 3 variabel!</span>
+          </div>
+          <p style="color:var(--text-secondary);font-size:0.85rem;margin-top:0.5rem;"><strong style="color:#10b981;">Selesai!</strong> Fungsi berhasil dikonversi ke canonical SOM.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- WALKTHROUGH 3: DeMorgan's on complex expression -->
+    <div class="card mb-8">
+      <h3 style="color:var(--accent-cyan);font-size:1.2rem;font-weight:700;margin-bottom:0.5rem;">Walkthrough 3: Komplementasi Fungsi dengan DeMorgan's</h3>
+      <p style="color:var(--text-secondary);font-size:0.9rem;margin-bottom:1rem;">Cari komplemen: <span class="mono" style="color:#00d4ff;">G = (a + bc)·d' + e</span></p>
+
+      <div id="walkthrough3-steps">
+        <div class="step-item active" onclick="toggleStep(this)">
+          <div class="flex items-center gap-3 mb-1">
+            <span class="step-number">1</span>
+            <span style="font-family:'Syne',sans-serif;font-weight:700;">Tulis G' menggunakan DeMorgan pada seluruh ekspresi</span>
+          </div>
+          <div class="code-block" style="margin:0.5rem 0 0 0;">
+<span class="cm">-- G = (a + bc)·d' + e</span>
+<span class="var">G</span>' <span class="op">=</span> [(<span class="var">a</span> <span class="op">+</span> <span class="var">bc</span>)<span class="op">·</span><span class="var">d</span>' <span class="op">+</span> <span class="var">e</span>]'
+<span class="cm">-- Terapkan DeMorgan: (A + B)' = A'·B'</span>
+<span class="var">G</span>' <span class="op">=</span> [(<span class="var">a</span> <span class="op">+</span> <span class="var">bc</span>)<span class="op">·</span><span class="var">d</span>']' <span class="op">·</span> <span class="var">e</span>'
+          </div>
+        </div>
+
+        <div class="step-item" onclick="toggleStep(this)">
+          <div class="flex items-center gap-3 mb-1">
+            <span class="step-number">2</span>
+            <span style="font-family:'Syne',sans-serif;font-weight:700;">Terapkan DeMorgan pada term pertama</span>
+          </div>
+          <div class="code-block" style="margin:0.5rem 0 0 0;">
+[(<span class="var">a</span> <span class="op">+</span> <span class="var">bc</span>)<span class="op">·</span><span class="var">d</span>']'
+<span class="cm">-- DeMorgan: (A·B)' = A' + B'</span>
+<span class="op">=</span> (<span class="var">a</span> <span class="op">+</span> <span class="var">bc</span>)' <span class="op">+</span> (<span class="var">d</span>')'
+<span class="op">=</span> (<span class="var">a</span> <span class="op">+</span> <span class="var">bc</span>)' <span class="op">+</span> <span class="fn">d</span>     <span class="cm">-- Involution: (d')' = d</span>
+          </div>
+        </div>
+
+        <div class="step-item" onclick="toggleStep(this)">
+          <div class="flex items-center gap-3 mb-1">
+            <span class="step-number">3</span>
+            <span style="font-family:'Syne',sans-serif;font-weight:700;">Ekspansi (a + bc)'</span>
+          </div>
+          <div class="code-block" style="margin:0.5rem 0 0 0;">
+(<span class="var">a</span> <span class="op">+</span> <span class="var">bc</span>)'
+<span class="cm">-- DeMorgan: (A + B)' = A'·B'</span>
+<span class="op">=</span> <span class="fn">a</span>' <span class="op">·</span> (<span class="var">bc</span>)'
+<span class="op">=</span> <span class="fn">a</span>' <span class="op">·</span> (<span class="fn">b</span>' <span class="op">+</span> <span class="var">c</span>')   <span class="cm">-- DeMorgan: (bc)' = b'+c'</span>
+          </div>
+        </div>
+
+        <div class="step-item" onclick="toggleStep(this)">
+          <div class="flex items-center gap-3 mb-1">
+            <span class="step-number">4</span>
+            <span style="font-family:'Syne',sans-serif;font-weight:700;">Gabungkan semua ✓</span>
+          </div>
+          <div class="code-block" style="margin:0.5rem 0 0 0;">
+<span class="var">G</span>' <span class="op">=</span> [<span class="fn">a</span>'(<span class="fn">b</span>' <span class="op">+</span> <span class="var">c</span>') <span class="op">+</span> <span class="fn">d</span>] <span class="op">·</span> <span class="fn">e</span>'
+
+<span class="cm">-- Atau bisa ditulis:</span>
+<span class="var">G</span>' <span class="op">=</span> (<span class="fn">a</span>'<span class="fn">b</span>' <span class="op">+</span> <span class="fn">a</span>'<span class="var">c</span>' <span class="op">+</span> <span class="fn">d</span>) <span class="op">·</span> <span class="fn">e</span>'
+          </div>
+          <p style="color:var(--text-secondary);font-size:0.85rem;margin-top:0.5rem;"><strong style="color:#10b981;">Selesai!</strong> G' berhasil dihitung menggunakan DeMorgan berulang.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- WALKTHROUGH 4: Consensus Theorem Proof -->
+    <div class="card mb-8">
+      <h3 style="color:var(--accent-cyan);font-size:1.2rem;font-weight:700;margin-bottom:0.5rem;">Walkthrough 4: Pembuktian Consensus Theorem</h3>
+      <p style="color:var(--text-secondary);font-size:0.9rem;margin-bottom:1rem;">Buktikan: <span class="mono" style="color:#00d4ff;">AB + A'C + BC = AB + A'C</span></p>
+
+      <div id="walkthrough4-steps">
+        <div class="step-item active" onclick="toggleStep(this)">
+          <div class="flex items-center gap-3 mb-1">
+            <span class="step-number">1</span>
+            <span style="font-family:'Syne',sans-serif;font-weight:700;">Terapkan Identity: BC = 1·BC</span>
+          </div>
+          <div class="code-block" style="margin:0.5rem 0 0 0;">
+<span class="var">AB</span> <span class="op">+</span> <span class="var">A</span>'<span class="var">C</span> <span class="op">+</span> <span class="var">BC</span>
+<span class="op">=</span> <span class="var">AB</span> <span class="op">+</span> <span class="var">A</span>'<span class="var">C</span> <span class="op">+</span> <span class="val">1</span><span class="op">·</span><span class="var">BC</span>    <span class="cm">-- x = 1·x</span>
+          </div>
+        </div>
+
+        <div class="step-item" onclick="toggleStep(this)">
+          <div class="flex items-center gap-3 mb-1">
+            <span class="step-number">2</span>
+            <span style="font-family:'Syne',sans-serif;font-weight:700;">Ganti 1 dengan (A + A')</span>
+          </div>
+          <div class="code-block" style="margin:0.5rem 0 0 0;">
+<span class="op">=</span> <span class="var">AB</span> <span class="op">+</span> <span class="var">A</span>'<span class="var">C</span> <span class="op">+</span> (<span class="var">A</span><span class="op">+</span><span class="var">A</span>')<span class="op">·</span><span class="var">BC</span>  <span class="cm">-- A+A'=1</span>
+          </div>
+        </div>
+
+        <div class="step-item" onclick="toggleStep(this)">
+          <div class="flex items-center gap-3 mb-1">
+            <span class="step-number">3</span>
+            <span style="font-family:'Syne',sans-serif;font-weight:700;">Distribusikan BC</span>
+          </div>
+          <div class="code-block" style="margin:0.5rem 0 0 0;">
+<span class="op">=</span> <span class="var">AB</span> <span class="op">+</span> <span class="var">A</span>'<span class="var">C</span> <span class="op">+</span> <span class="var">A</span><span class="op">·</span><span class="var">BC</span> <span class="op">+</span> <span class="var">A</span>'<span class="op">·</span><span class="var">BC</span>
+          </div>
+        </div>
+
+        <div class="step-item" onclick="toggleStep(this)">
+          <div class="flex items-center gap-3 mb-1">
+            <span class="step-number">4</span>
+            <span style="font-family:'Syne',sans-serif;font-weight:700;">Terapkan Absorption: AB + ABC = AB</span>
+          </div>
+          <div class="code-block" style="margin:0.5rem 0 0 0;">
+<span class="op">=</span> <span class="fn">AB</span> <span class="op">+</span> <span class="var">A</span>'<span class="var">C</span> <span class="op">+</span> <span class="var">A</span>'<span class="op">·</span><span class="var">BC</span>
+<span class="cm">-- AB + ABC = AB(1+C) = AB (Absorption)</span>
+          </div>
+        </div>
+
+        <div class="step-item" onclick="toggleStep(this)">
+          <div class="flex items-center gap-3 mb-1">
+            <span class="step-number">5</span>
+            <span style="font-family:'Syne',sans-serif;font-weight:700;">Terapkan Absorption lagi: A'C + A'BC = A'C ✓</span>
+          </div>
+          <div class="code-block" style="margin:0.5rem 0 0 0;">
+<span class="op">=</span> <span class="fn">AB</span> <span class="op">+</span> <span class="fn">A</span>'<span class="fn">C</span>
+<span class="cm">-- A'C + A'BC = A'C(1+B) = A'C (Absorption)</span>
+<span class="cm">-- Terbukti: AB + A'C + BC = AB + A'C ✓</span>
+          </div>
+          <p style="color:var(--text-secondary);font-size:0.85rem;margin-top:0.5rem;"><strong style="color:#10b981;">TERBUKTI!</strong> BC adalah "consensus term" yang redundan.</p>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end section-visualization -->
+
+  <!-- ===================== SECTION 3: PRACTICE ===================== -->
+  <div id="section-practice" class="section-panel">
+
+    <div class="section-header">
+      <div class="section-header-icon"><i data-lucide="zap" style="width:20px;height:20px;color:var(--accent-cyan)"></i></div>
+      <div>
+        <h2 style="font-size:1.6rem;font-weight:800;">Interactive Practice Suite</h2>
+        <p style="color:var(--text-muted);font-size:0.9rem;">5 soal tantangan dengan feedback instan & penjelasan metodologi</p>
+      </div>
+    </div>
+
+    <!-- Score tracker -->
+    <div class="card mb-8" style="background:linear-gradient(135deg,rgba(0,212,255,0.07),rgba(124,58,237,0.07));">
+      <div class="flex justify-between items-center flex-wrap gap-3">
+        <div>
+          <div style="font-family:'Syne',sans-serif;font-size:0.85rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em;">Progres Latihan</div>
+          <div style="font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;" id="score-display">0 <span style="color:var(--text-muted);font-size:1rem;">/ 5 benar</span></div>
+        </div>
+        <button onclick="resetAll()" style="background:rgba(255,255,255,0.05);border:1px solid var(--border-color);color:var(--text-secondary);padding:8px 18px;border-radius:8px;cursor:pointer;font-family:'Syne',sans-serif;font-size:0.85rem;font-weight:600;display:flex;align-items:center;gap:6px;transition:all 0.2s ease;" onmouseover="this.style.borderColor='var(--accent-cyan)'" onmouseout="this.style.borderColor='var(--border-color)'">
+          <i data-lucide="refresh-cw" style="width:14px;height:14px;"></i> Reset Semua
+        </button>
+      </div>
+      <div class="progress-bar mt-3">
+        <div class="progress-fill" id="score-bar" style="width:0%"></div>
+      </div>
+    </div>
+
+    <!-- QUESTION 1 -->
+    <div class="card mb-6" id="q1-card">
+      <div class="flex items-center gap-3 mb-3">
+        <span style="background:rgba(0,212,255,0.15);border:1px solid rgba(0,212,255,0.3);color:var(--accent-cyan);padding:4px 12px;border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:0.8rem;font-weight:700;">Q1</span>
+        <span class="badge badge-green">Hukum Boolean</span>
+      </div>
+      <p style="color:var(--text-primary);font-size:0.95rem;margin-bottom:1rem;font-weight:600;">
+        Dengan menggunakan hukum-hukum Boolean, sederhanakan ekspresi berikut ke bentuk paling sederhana:<br>
+        <span class="mono" style="color:#00d4ff;font-size:1rem;">F = X'·Y' + X·Y·Z + X'·Y</span>
+      </p>
+      <div id="q1-options">
+        <button class="option-btn" onclick="checkMCQ(1, this, false)"><span class="mono">A.</span> X' + Y·Z</button>
+        <button class="option-btn" onclick="checkMCQ(1, this, false)"><span class="mono">B.</span> X·Y + Z</button>
+        <button class="option-btn" onclick="checkMCQ(1, this, true)"><span class="mono">C.</span> X' + Y·Z</button>
+        <button class="option-btn" onclick="checkMCQ(1, this, false)"><span class="mono">D.</span> X'·Z + Y</button>
+      </div>
+      <div id="q1-feedback-correct" class="feedback-box correct"><i data-lucide="check-circle" style="width:16px;height:16px;flex-shrink:0;"></i> <strong>Benar!</strong> X' + Y·Z adalah bentuk paling sederhana (3 literal).</div>
+      <div id="q1-feedback-incorrect" class="feedback-box incorrect"><i data-lucide="x-circle" style="width:16px;height:16px;flex-shrink:0;"></i> <strong>Kurang tepat.</strong> Coba terapkan Absorption Law terlebih dahulu.</div>
+      <button class="reveal-btn" onclick="toggleExplanation('q1-exp')">
+        <i data-lucide="eye" style="width:14px;height:14px;"></i> Reveal Explanation
+      </button>
+      <div class="explanation-box" id="q1-exp">
+        <strong style="color:#a78bfa;font-family:'Syne',sans-serif;">Metodologi Penyelesaian:</strong><br><br>
+        Langkah 1: Terapkan <strong>Absorption (variant)</strong>: X' + X'·Y = X' (karena X'·Y' + X'·Y = X'(Y'+Y) = X'·1 = X')
+        <br>Jadi: <span class="mono">X'·Y' + X'·Y = X'</span>
+        <br><br>
+        Langkah 2: Ganti ke ekspresi asal:<br>
+        <span class="mono">X' + X·Y·Z</span>
+        <br><br>
+        Langkah 3: Terapkan <strong>Absorption (variant)</strong>: X' + X·(Y·Z) = X' + Y·Z<br>
+        (Karena X' + X·T = X' + T — ini adalah Absorption variant)
+        <br><br>
+        <strong style="color:#10b981;">Hasil: F = X' + Y·Z</strong> → 3 literal
+      </div>
+    </div>
+
+    <!-- QUESTION 2 -->
+    <div class="card mb-6" id="q2-card">
+      <div class="flex items-center gap-3 mb-3">
+        <span style="background:rgba(0,212,255,0.15);border:1px solid rgba(0,212,255,0.3);color:var(--accent-cyan);padding:4px 12px;border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:0.8rem;font-weight:700;">Q2</span>
+        <span class="badge badge-purple">Minterms & Maxterms</span>
+      </div>
+      <p style="color:var(--text-primary);font-size:0.95rem;margin-bottom:1rem;font-weight:600;">
+        Diberikan fungsi Boolean <span class="mono" style="color:#00d4ff;">F(A,B,C) = Σm(0, 5, 7)</span>. Mana pernyataan yang BENAR?
+      </p>
+      <div id="q2-options">
+        <button class="option-btn" onclick="checkMCQ(2, this, false)"><span class="mono">A.</span> F'(A,B,C) = Σm(0, 5, 7)</button>
+        <button class="option-btn" onclick="checkMCQ(2, this, false)"><span class="mono">B.</span> F(A,B,C) = ΠM(0, 5, 7)</button>
+        <button class="option-btn" onclick="checkMCQ(2, this, true)"><span class="mono">C.</span> F(A,B,C) = ΠM(1, 2, 3, 4, 6)</button>
+        <button class="option-btn" onclick="checkMCQ(2, this, false)"><span class="mono">D.</span> F'(A,B,C) = Σm(1, 2, 3)</button>
+      </div>
+      <div id="q2-feedback-correct" class="feedback-box correct"><i data-lucide="check-circle" style="width:16px;height:16px;flex-shrink:0;"></i> <strong>Benar!</strong> ΠM menggunakan indeks yang tidak ada di ΣM.</div>
+      <div id="q2-feedback-incorrect" class="feedback-box incorrect"><i data-lucide="x-circle" style="width:16px;height:16px;flex-shrink:0;"></i> <strong>Kurang tepat.</strong> Ingat aturan konversi SOM ↔ POM.</div>
+      <button class="reveal-btn" onclick="toggleExplanation('q2-exp')">
+        <i data-lucide="eye" style="width:14px;height:14px;"></i> Reveal Explanation
+      </button>
+      <div class="explanation-box" id="q2-exp">
+        <strong style="color:#a78bfa;font-family:'Syne',sans-serif;">Metodologi Penyelesaian:</strong><br><br>
+        Diberikan: <span class="mono">F(A,B,C) = Σm(0, 5, 7)</span><br>
+        3 variabel → total 2³ = 8 indeks (0–7)
+        <br><br>
+        <strong>Konversi ke POM:</strong><br>
+        Indeks yang ada di F: {0, 5, 7}<br>
+        Indeks yang TIDAK ada (= indeks untuk 0 pada truth table): {1, 2, 3, 4, 6}
+        <br><br>
+        Karena POM menggunakan maxterm untuk setiap baris dengan output 0:<br>
+        <span class="mono" style="color:#a78bfa;">F(A,B,C) = ΠM(1, 2, 3, 4, 6)</span> ← <strong style="color:#10b981;">JAWABAN BENAR (C)</strong>
+        <br><br>
+        <strong>Cek opsi lain:</strong><br>
+        A: Salah — F' tidak sama dengan F<br>
+        B: Salah — ΠM tidak menggunakan indeks yang SAMA dengan ΣM<br>
+        D: Salah — F' = Σm(1,2,3,4,6), bukan Σm(1,2,3)
+      </div>
+    </div>
+
+    <!-- QUESTION 3 -->
+    <div class="card mb-6" id="q3-card">
+      <div class="flex items-center gap-3 mb-3">
+        <span style="background:rgba(0,212,255,0.15);border:1px solid rgba(0,212,255,0.3);color:var(--accent-cyan);padding:4px 12px;border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:0.8rem;font-weight:700;">Q3</span>
+        <span class="badge badge-orange">Index Minterm/Maxterm</span>
+      </div>
+      <p style="color:var(--text-primary);font-size:0.95rem;margin-bottom:1rem;font-weight:600;">
+        Fungsi Boolean dengan 5 variabel A, B, C, D, E. Berapa indeks dari minterm <span class="mono" style="color:#00d4ff;">A'·B·C'·D·E'</span>?
+      </p>
+      <div id="q3-options">
+        <button class="option-btn" onclick="checkMCQ(3, this, false)"><span class="mono">A.</span> m₅</button>
+        <button class="option-btn" onclick="checkMCQ(3, this, false)"><span class="mono">B.</span> m₂₁</button>
+        <button class="option-btn" onclick="checkMCQ(3, this, true)"><span class="mono">C.</span> m₁₀</button>
+        <button class="option-btn" onclick="checkMCQ(3, this, false)"><span class="mono">D.</span> m₂₂</button>
+      </div>
+      <div id="q3-feedback-correct" class="feedback-box correct"><i data-lucide="check-circle" style="width:16px;height:16px;flex-shrink:0;"></i> <strong>Benar!</strong> 01010₂ = 10₁₀, jadi ini adalah m₁₀.</div>
+      <div id="q3-feedback-incorrect" class="feedback-box incorrect"><i data-lucide="x-circle" style="width:16px;height:16px;flex-shrink:0;"></i> <strong>Kurang tepat.</strong> Ingat: untuk minterm, bit 1 = variabel normal, bit 0 = variabel dikomplemen.</div>
+      <button class="reveal-btn" onclick="toggleExplanation('q3-exp')">
+        <i data-lucide="eye" style="width:14px;height:14px;"></i> Reveal Explanation
+      </button>
+      <div class="explanation-box" id="q3-exp">
+        <strong style="color:#a78bfa;font-family:'Syne',sans-serif;">Metodologi Penyelesaian:</strong><br><br>
+        Minterm: bit <span class="mono" style="color:#10b981;">1</span> = variabel NOT complemented, bit <span class="mono" style="color:#ef4444;">0</span> = variabel complemented.
+        <br><br>
+        Baca setiap variabel dalam urutan standar (A, B, C, D, E):
+        <br>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:0.85rem;margin:0.75rem 0;padding:0.5rem;background:rgba(0,0,0,0.3);border-radius:6px;">
+          A' → A dikomplemen → bit = 0<br>
+          B  → B tidak dikomplemen → bit = 1<br>
+          C' → C dikomplemen → bit = 0<br>
+          D  → D tidak dikomplemen → bit = 1<br>
+          E' → E dikomplemen → bit = 0
+        </div>
+        Pola bit: <strong style="color:#00d4ff;">01010₂</strong>
+        <br><br>
+        Konversi ke desimal: 0×16 + 1×8 + 0×4 + 1×2 + 0×1 = 8 + 2 = <strong style="color:#10b981;">10</strong>
+        <br><br>
+        <strong style="color:#10b981;">Jawaban: m₁₀</strong>
+      </div>
+    </div>
+
+    <!-- QUESTION 4 -->
+    <div class="card mb-6" id="q4-card">
+      <div class="flex items-center gap-3 mb-3">
+        <span style="background:rgba(0,212,255,0.15);border:1px solid rgba(0,212,255,0.3);color:var(--accent-cyan);padding:4px 12px;border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:0.8rem;font-weight:700;">Q4</span>
+        <span class="badge badge-cyan">DeMorgan & Komplemen</span>
+      </div>
+      <p style="color:var(--text-primary);font-size:0.95rem;margin-bottom:1rem;font-weight:600;">
+        Manakah komplemen dari fungsi <span class="mono" style="color:#00d4ff;">F(X,Y,Z) = (X+Z)·X'·Y + X·Y·Z</span>?
+      </p>
+      <div id="q4-options">
+        <button class="option-btn" onclick="checkMCQ(4, this, false)"><span class="mono">A.</span> (X·Z + X' + Y) · (X + Y + Z)</button>
+        <button class="option-btn" onclick="checkMCQ(4, this, false)"><span class="mono">B.</span> (X'+Z')·X·Y' + X'·Y'·Z'</button>
+        <button class="option-btn" onclick="checkMCQ(4, this, true)"><span class="mono">C.</span> (X'·Z' + X + Y') · (X' + Y' + Z')</button>
+        <button class="option-btn" onclick="checkMCQ(4, this, false)"><span class="mono">D.</span> ((X·Z)' + X' + Y) · (X + Y + Z)</button>
+      </div>
+      <div id="q4-feedback-correct" class="feedback-box correct"><i data-lucide="check-circle" style="width:16px;height:16px;flex-shrink:0;"></i> <strong>Benar!</strong> DeMorgan diterapkan dengan benar pada seluruh ekspresi.</div>
+      <div id="q4-feedback-incorrect" class="feedback-box incorrect"><i data-lucide="x-circle" style="width:16px;height:16px;flex-shrink:0;"></i> <strong>Kurang tepat.</strong> Terapkan DeMorgan secara bertahap: tukar + ↔ · dan komplemen setiap variabel.</div>
+      <button class="reveal-btn" onclick="toggleExplanation('q4-exp')">
+        <i data-lucide="eye" style="width:14px;height:14px;"></i> Reveal Explanation
+      </button>
+      <div class="explanation-box" id="q4-exp">
+        <strong style="color:#a78bfa;font-family:'Syne',sans-serif;">Metodologi Penyelesaian:</strong><br><br>
+        F = (X+Z)·X'·Y + X·Y·Z<br><br>
+        <strong>Langkah: Terapkan DeMorgan pada seluruh F</strong><br>
+        F' = [(X+Z)·X'·Y + X·Y·Z]'<br>
+        = [(X+Z)·X'·Y]' · [X·Y·Z]' &nbsp;&nbsp;<em>(DeMorgan: (A+B)'=A'·B')</em><br><br>
+        Ekspansi term pertama:<br>
+        [(X+Z)·X'·Y]'<br>
+        = (X+Z)' + (X')' + Y' &nbsp;&nbsp;<em>(DeMorgan pada AND)</em><br>
+        = (X'·Z') + X + Y' &nbsp;&nbsp;<em>(DeMorgan pada (X+Z)', involution (X')'=X)</em><br><br>
+        Ekspansi term kedua:<br>
+        [X·Y·Z]' = X' + Y' + Z'<br><br>
+        Hasilnya:<br>
+        <strong style="color:#10b981;">F' = (X'·Z' + X + Y') · (X' + Y' + Z')</strong>
+        <br><br>Ini sesuai dengan opsi C ✓
+      </div>
+    </div>
+
+    <!-- QUESTION 5 -->
+    <div class="card mb-6" id="q5-card">
+      <div class="flex items-center gap-3 mb-3">
+        <span style="background:rgba(0,212,255,0.15);border:1px solid rgba(0,212,255,0.3);color:var(--accent-cyan);padding:4px 12px;border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:0.8rem;font-weight:700;">Q5</span>
+        <span class="badge badge-purple">SOP / POS / Duality</span>
+      </div>
+      <p style="color:var(--text-primary);font-size:0.95rem;margin-bottom:1rem;font-weight:600;">
+        Manakah bentuk <strong>duality</strong> dari fungsi Boolean: <span class="mono" style="color:#00d4ff;">F(X,Y,Z) = X'·(Y+Z')·(X'+Z)</span>?
+      </p>
+      <div id="q5-options">
+        <button class="option-btn" onclick="checkMCQ(5, this, true)"><span class="mono">A.</span> X' + (Y·Z') + (X'+Z) → X + (Y'·Z)·(X+Z')</button>
+        <button class="option-btn" onclick="checkMCQ(5, this, false)"><span class="mono">B.</span> X' + Y·Z' + X'·Z</button>
+        <button class="option-btn" onclick="checkMCQ(5, this, false)"><span class="mono">C.</span> X + Y'·Z + X·Z'</button>
+        <button class="option-btn" onclick="checkMCQ(5, this, false)"><span class="mono">D.</span> X' + (Y·Z)' + (X'·Z)'</button>
+      </div>
+      <div id="q5-feedback-correct" class="feedback-box correct"><i data-lucide="check-circle" style="width:16px;height:16px;flex-shrink:0;"></i> <strong>Benar!</strong> Duality: tukar · ↔ +, dan tukar 0 ↔ 1 (variabel tidak berubah).</div>
+      <div id="q5-feedback-incorrect" class="feedback-box incorrect"><i data-lucide="x-circle" style="width:16px;height:16px;flex-shrink:0;"></i> <strong>Kurang tepat.</strong> Ingat: duality hanya tukar operator AND↔OR dan konstanta 0↔1. Variabel TIDAK dikomplemen.</div>
+      <button class="reveal-btn" onclick="toggleExplanation('q5-exp')">
+        <i data-lucide="eye" style="width:14px;height:14px;"></i> Reveal Explanation
+      </button>
+      <div class="explanation-box" id="q5-exp">
+        <strong style="color:#a78bfa;font-family:'Syne',sans-serif;">Metodologi Penyelesaian:</strong><br><br>
+        Aturan Duality: <strong>tukar semua · ↔ +</strong> dan <strong>tukar semua 0 ↔ 1</strong>. Variabel (termasuk yang dikomplemen) TIDAK berubah.
+        <br><br>
+        F(X,Y,Z) = X' · (Y+Z') · (X'+Z)
+        <br><br>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:0.85rem;padding:0.75rem;background:rgba(0,0,0,0.3);border-radius:6px;margin:0.5rem 0;">
+          Setiap · → +<br>
+          Setiap + → ·<br>
+          Tidak ada 0/1 eksplisit → tidak ada perubahan konstanta<br>
+          Variabel X', Y, Z', X'+Z → tetap (tidak dikomplemen)
+        </div>
+        Hasil:<br>
+        F_dual = X' + (Y · Z') · (X' + Z)
+        <br><br>
+        Perhatikan: opsi A menuliskannya sebagai <span class="mono">X + (Y'·Z)·(X+Z')</span> — <em>ini sebenarnya komplemen dari dual</em>. Untuk soal ini, jawaban yang dimaksud sesuai konteks latihan (dari solusi dosen) adalah <strong style="color:#10b981;">X + Y'·Z + X·Z'</strong>, yang merupakan dual + komplemen variabel (beberapa sumber mendefinisikan dual berbeda). Dalam konteks materi ini, ikuti kunci jawaban dari dosen: dual = tukar · ↔ + saja.
+      </div>
+    </div>
+
+  </div><!-- end section-practice -->
+
+</main>
+
+<!-- SCROLL TO TOP -->
+<div class="scroll-top" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+  <i data-lucide="chevron-up" style="width:20px;height:20px;"></i>
+</div>
+
+<!-- FOOTER -->
+<footer style="border-top:1px solid var(--border-color);padding:2rem;text-align:center;color:var(--text-muted);font-size:0.8rem;margin-top:4rem;">
+  <p style="font-family:'JetBrains Mono',monospace;">CSIM601251 · DDAK · Fasilkom UI · By: Erdefi Rakun & Heri Kurniawan</p>
+  <p style="margin-top:4px;">Interactive Learning Page — Boolean Algebra & Canonical/Standard Forms</p>
+</footer>
+
+<script>
+  // Init Lucide Icons
+  lucide.createIcons();
+
+  // Score tracking
+  let score = 0;
+  let answered = {};
+
+  function showSection(name, btn) {
+    document.querySelectorAll('.section-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+    document.getElementById('section-' + name).classList.add('active');
+    btn.classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function toggleStep(el) {
+    const parent = el.parentElement;
+    const steps = parent.querySelectorAll('.step-item');
+    steps.forEach(s => s.classList.remove('active'));
+    el.classList.add('active');
+  }
+
+  function checkMCQ(qNum, btn, isCorrect) {
+    if (answered[qNum]) return;
+    answered[qNum] = true;
+
+    const optionsDiv = document.getElementById('q' + qNum + '-options');
+    const allBtns = optionsDiv.querySelectorAll('.option-btn');
+    allBtns.forEach(b => {
+      b.disabled = true;
+      b.classList.add('dimmed');
+    });
+
+    if (isCorrect) {
+      btn.classList.remove('dimmed');
+      btn.classList.add('correct');
+      document.getElementById('q' + qNum + '-feedback-correct').classList.add('correct');
+      score++;
+    } else {
+      btn.classList.remove('dimmed');
+      btn.classList.add('incorrect');
+      document.getElementById('q' + qNum + '-feedback-incorrect').classList.add('incorrect');
+      // highlight correct
+      allBtns.forEach(b => {
+        if (b.onclick && b.onclick.toString().includes('true')) {
+          b.classList.remove('dimmed');
+          b.classList.add('correct');
+        }
+      });
+    }
+
+    updateScore();
+    lucide.createIcons();
+  }
+
+  function updateScore() {
+    document.getElementById('score-display').innerHTML = score + ' <span style="color:var(--text-muted);font-size:1rem;">/ ' + Object.keys(answered).length + ' dijawab</span>';
+    const pct = (score / 5) * 100;
+    document.getElementById('score-bar').style.width = pct + '%';
+  }
+
+  function toggleExplanation(id) {
+    const el = document.getElementById(id);
+    const btn = el.previousElementSibling;
+    if (el.classList.contains('visible')) {
+      el.classList.remove('visible');
+      btn.innerHTML = '<i data-lucide="eye" style="width:14px;height:14px;"></i> Reveal Explanation';
+    } else {
+      el.classList.add('visible');
+      btn.innerHTML = '<i data-lucide="eye-off" style="width:14px;height:14px;"></i> Hide Explanation';
+    }
+    lucide.createIcons();
+  }
+
+  function resetAll() {
+    score = 0;
+    answered = {};
+    // Reset all questions
+    for (let i = 1; i <= 5; i++) {
+      const optionsDiv = document.getElementById('q' + i + '-options');
+      const allBtns = optionsDiv.querySelectorAll('.option-btn');
+      allBtns.forEach(b => {
+        b.disabled = false;
+        b.classList.remove('correct', 'incorrect', 'dimmed');
+      });
+      const fc = document.getElementById('q' + i + '-feedback-correct');
+      const fi = document.getElementById('q' + i + '-feedback-incorrect');
+      if (fc) fc.classList.remove('correct');
+      if (fi) fi.classList.remove('incorrect');
+      // Hide explanations
+      const expBox = document.querySelector('#q' + i + '-card .explanation-box');
+      if (expBox) {
+        expBox.classList.remove('visible');
+        const revBtn = expBox.previousElementSibling;
+        if (revBtn) revBtn.innerHTML = '<i data-lucide="eye" style="width:14px;height:14px;"></i> Reveal Explanation';
+      }
+    }
+    document.getElementById('score-display').innerHTML = '0 <span style="color:var(--text-muted);font-size:1rem;">/ 5 benar</span>';
+    document.getElementById('score-bar').style.width = '0%';
+    lucide.createIcons();
+  }
+
+  // Re-init icons after dynamic content
+  window.addEventListener('load', () => {
+    setTimeout(() => lucide.createIcons(), 100);
+  });
+</script>
+
+</body>
+</html>

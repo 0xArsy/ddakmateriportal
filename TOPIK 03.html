@@ -1,0 +1,1375 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Topik 03 – Karnaugh Maps (K-Maps)</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg-primary: #0a0e1a;
+    --bg-card: #111827;
+    --bg-card2: #0f172a;
+    --accent: #38bdf8;
+    --accent2: #818cf8;
+    --accent3: #34d399;
+    --accent4: #fb923c;
+    --danger: #f87171;
+    --text-primary: #e2e8f0;
+    --text-muted: #94a3b8;
+    --border: rgba(148,163,184,0.12);
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+  }
+  h1,h2,h3,h4 { font-family: 'Syne', sans-serif; }
+  code, pre, .mono { font-family: 'JetBrains Mono', monospace; }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: #0a0e1a; }
+  ::-webkit-scrollbar-thumb { background: #38bdf8; border-radius: 99px; }
+
+  /* Hero gradient */
+  .hero-bg {
+    background: radial-gradient(ellipse 80% 60% at 50% -10%, rgba(56,189,248,0.18) 0%, transparent 70%),
+                radial-gradient(ellipse 60% 40% at 90% 80%, rgba(129,140,248,0.12) 0%, transparent 60%),
+                var(--bg-primary);
+  }
+
+  /* Glow card */
+  .glow-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    position: relative;
+    overflow: hidden;
+    transition: box-shadow 0.3s, border-color 0.3s;
+  }
+  .glow-card:hover {
+    box-shadow: 0 0 32px rgba(56,189,248,0.08);
+    border-color: rgba(56,189,248,0.25);
+  }
+  .glow-card::before {
+    content:'';
+    position:absolute;
+    inset:0;
+    background: linear-gradient(135deg, rgba(56,189,248,0.04) 0%, transparent 60%);
+    pointer-events:none;
+  }
+
+  /* Key Term box */
+  .keyterm {
+    border-left: 3px solid var(--accent);
+    background: rgba(56,189,248,0.06);
+    border-radius: 0 10px 10px 0;
+    padding: 12px 16px;
+    margin: 10px 0;
+  }
+  /* Pitfall box */
+  .pitfall {
+    border-left: 3px solid var(--danger);
+    background: rgba(248,113,113,0.06);
+    border-radius: 0 10px 10px 0;
+    padding: 12px 16px;
+    margin: 10px 0;
+  }
+  /* Tip box */
+  .tipbox {
+    border-left: 3px solid var(--accent3);
+    background: rgba(52,211,153,0.06);
+    border-radius: 0 10px 10px 0;
+    padding: 12px 16px;
+    margin: 10px 0;
+  }
+
+  /* K-Map table */
+  .kmap-table { border-collapse: collapse; font-family: 'JetBrains Mono', monospace; }
+  .kmap-table td, .kmap-table th {
+    border: 1.5px solid rgba(148,163,184,0.2);
+    width: 48px; height: 48px;
+    text-align: center;
+    vertical-align: middle;
+    font-size: 0.95rem;
+    transition: background 0.2s;
+  }
+  .kmap-table .kmap-header {
+    background: rgba(56,189,248,0.08);
+    color: var(--accent);
+    font-weight: 700;
+    font-size: 0.75rem;
+  }
+  .kmap-table .cell-one { background: rgba(52,211,153,0.18); color: #34d399; font-weight:700; }
+  .kmap-table .cell-zero { background: rgba(15,23,42,0.5); color: var(--text-muted); }
+  .kmap-table .cell-x { background: rgba(251,146,60,0.12); color: var(--accent4); font-style:italic; }
+  .kmap-table .cell-label { background: transparent; border: none; color: var(--text-muted); font-size:0.7rem; }
+
+  /* Code block */
+  .code-block {
+    background: #0d1117;
+    border: 1px solid rgba(56,189,248,0.15);
+    border-radius: 12px;
+    overflow-x: auto;
+    padding: 20px;
+    position: relative;
+  }
+  .code-block pre { margin:0; color: #e2e8f0; font-size:0.85rem; line-height:1.7; }
+  .kw { color: #79c0ff; }
+  .cm { color: #8b949e; font-style:italic; }
+  .str { color: #a5d6ff; }
+  .var { color: #ffa657; }
+  .num { color: #79c0ff; }
+  .fn { color: #d2a8ff; }
+
+  /* Step highlight */
+  .step-item { border-radius:10px; padding:10px 14px; border-left: 3px solid transparent; transition: all 0.3s; }
+  .step-item.active { border-left-color: var(--accent); background: rgba(56,189,248,0.07); }
+  .step-item:not(.active) { opacity: 0.55; }
+
+  /* Quiz */
+  .quiz-option {
+    cursor: pointer;
+    border: 1.5px solid rgba(148,163,184,0.18);
+    border-radius: 10px;
+    padding: 10px 16px;
+    transition: all 0.2s;
+    user-select: none;
+    background: rgba(15,23,42,0.6);
+  }
+  .quiz-option:hover:not(.disabled) { border-color: var(--accent); background: rgba(56,189,248,0.07); }
+  .quiz-option.correct { border-color: var(--accent3) !important; background: rgba(52,211,153,0.12) !important; }
+  .quiz-option.wrong { border-color: var(--danger) !important; background: rgba(248,113,113,0.10) !important; }
+  .quiz-option.disabled { cursor: default; }
+
+  /* Reveal */
+  .reveal-panel {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.5s cubic-bezier(0.4,0,0.2,1);
+  }
+  .reveal-panel.open { max-height: 800px; }
+
+  /* Nav dot */
+  .nav-dot {
+    width:10px; height:10px; border-radius:50%;
+    background: rgba(148,163,184,0.25);
+    transition: background 0.2s, transform 0.2s;
+    cursor: pointer;
+  }
+  .nav-dot.active { background: var(--accent); transform: scale(1.3); }
+
+  /* Badge */
+  .badge {
+    display:inline-flex; align-items:center; gap:5px;
+    font-size:0.7rem; font-weight:700; letter-spacing:0.05em;
+    padding:3px 10px; border-radius:99px;
+    font-family:'JetBrains Mono',monospace;
+    text-transform:uppercase;
+  }
+  .badge-blue { background:rgba(56,189,248,0.15); color:var(--accent); }
+  .badge-purple { background:rgba(129,140,248,0.15); color:var(--accent2); }
+  .badge-green { background:rgba(52,211,153,0.15); color:var(--accent3); }
+  .badge-orange { background:rgba(251,146,60,0.15); color:var(--accent4); }
+
+  /* Progress bar */
+  .prog-bar { height:4px; border-radius:99px; background: rgba(148,163,184,0.1); }
+  .prog-fill { height:100%; border-radius:99px; background: linear-gradient(90deg, var(--accent), var(--accent2)); transition: width 0.5s ease; }
+
+  /* Separator */
+  .sep { border:none; border-top:1px solid var(--border); margin: 32px 0; }
+
+  /* Tooltip */
+  .tooltip-wrap { position:relative; display:inline-block; }
+  .tooltip-wrap:hover .tooltip-box { opacity:1; pointer-events:auto; transform:translateY(0); }
+  .tooltip-box {
+    position:absolute; bottom:calc(100% + 8px); left:50%; transform:translateX(-50%) translateY(4px);
+    background:#1e293b; border:1px solid var(--border); border-radius:8px;
+    padding:6px 12px; font-size:0.75rem; white-space:nowrap; color:var(--text-primary);
+    opacity:0; pointer-events:none; transition: all 0.2s; z-index:50;
+  }
+
+  /* Section anchor offset */
+  .section-anchor { scroll-margin-top: 80px; }
+
+  /* Animated gradient text */
+  .grad-text {
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 50%, var(--accent3) 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  }
+
+  /* Sidebar nav */
+  #sidebar { position: fixed; top: 0; left:0; height:100vh; width:220px; z-index:40; }
+  #main-content { margin-left: 220px; }
+  @media(max-width:768px) {
+    #sidebar { display:none; }
+    #main-content { margin-left:0; }
+  }
+
+  /* Sticky nav mobile */
+  #mobile-topbar {
+    position:fixed; top:0; left:0; right:0; z-index:50;
+    background: rgba(10,14,26,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom:1px solid var(--border);
+    display:none;
+  }
+  @media(max-width:768px) { #mobile-topbar { display:flex; } }
+
+  /* Pulse dot */
+  @keyframes pulse { 0%,100%{opacity:1}50%{opacity:0.4} }
+  .pulse { animation: pulse 2s infinite; }
+
+  /* Fade in */
+  @keyframes fadeInUp { from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)} }
+  .fade-in { animation: fadeInUp 0.6s ease both; }
+  .delay-1 { animation-delay:0.1s; }
+  .delay-2 { animation-delay:0.2s; }
+  .delay-3 { animation-delay:0.3s; }
+
+  /* Group highlight for K-Map walkthrough */
+  .grp-1 { background: rgba(56,189,248,0.22) !important; }
+  .grp-2 { background: rgba(129,140,248,0.22) !important; }
+  .grp-3 { background: rgba(52,211,153,0.22) !important; }
+</style>
+</head>
+<body>
+
+<!-- Sidebar Desktop -->
+<nav id="sidebar" class="hero-bg border-r" style="border-color:var(--border);padding:28px 0;">
+  <div class="px-6 mb-8">
+    <div class="badge badge-blue mb-2"><span>CSIM601251</span></div>
+    <div class="text-xs text-slate-400 mt-1">Circuit Optimization</div>
+    <div class="grad-text font-bold text-lg mt-1" style="font-family:Syne,sans-serif;">Karnaugh Maps</div>
+  </div>
+  <ul class="space-y-1 px-3 text-sm">
+    <li><a href="#intro" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/5 text-slate-300 hover:text-white transition-all"><i data-lucide="book-open" class="w-4 h-4 text-sky-400"></i>Pendahuluan</a></li>
+    <li><a href="#konsep" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/5 text-slate-300 hover:text-white transition-all"><i data-lucide="brain" class="w-4 h-4 text-indigo-400"></i>Konsep Utama</a></li>
+    <li><a href="#kmap-var" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/5 text-slate-300 hover:text-white transition-all"><i data-lucide="grid-3x3" class="w-4 h-4 text-emerald-400"></i>Variasi K-Map</a></li>
+    <li><a href="#prime" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/5 text-slate-300 hover:text-white transition-all"><i data-lucide="zap" class="w-4 h-4 text-orange-400"></i>Prime Implicants</a></li>
+    <li><a href="#dont-care" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/5 text-slate-300 hover:text-white transition-all"><i data-lucide="help-circle" class="w-4 h-4 text-yellow-400"></i>Don't Care</a></li>
+    <li><a href="#algo" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/5 text-slate-300 hover:text-white transition-all"><i data-lucide="code-2" class="w-4 h-4 text-sky-400"></i>Algoritma SOP</a></li>
+    <li><a href="#latihan" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/5 text-slate-300 hover:text-white transition-all"><i data-lucide="clipboard-check" class="w-4 h-4 text-pink-400"></i>Latihan Interaktif</a></li>
+  </ul>
+  <div class="absolute bottom-6 left-0 right-0 px-6">
+    <div class="text-xs text-slate-500">Fasilkom UI • DDAK 2022/2023</div>
+  </div>
+</nav>
+
+<!-- Mobile top bar -->
+<div id="mobile-topbar" class="items-center justify-between px-4 py-3">
+  <div class="grad-text font-bold text-base" style="font-family:Syne,sans-serif;">K-Maps</div>
+  <div class="flex gap-2 text-xs">
+    <a href="#konsep" class="badge badge-blue">Konsep</a>
+    <a href="#latihan" class="badge badge-green">Latihan</a>
+  </div>
+</div>
+
+<!-- Main Content -->
+<main id="main-content" class="px-6 md:px-10 pb-24 pt-4 md:pt-0">
+  <div class="max-w-4xl mx-auto">
+
+    <!-- HERO -->
+    <section id="intro" class="section-anchor hero-bg pt-16 pb-10 -mx-6 md:-mx-10 px-6 md:px-10 mb-10">
+      <div class="max-w-4xl mx-auto">
+        <div class="fade-in">
+          <span class="badge badge-blue mb-4"><i data-lucide="cpu" class="w-3 h-3"></i> Topik 03</span>
+          <h1 class="text-4xl md:text-5xl font-extrabold mt-3 mb-4 leading-tight" style="font-family:Syne,sans-serif;">
+            Karnaugh Maps<br/><span class="grad-text">(K-Maps)</span>
+          </h1>
+          <p class="text-slate-400 text-lg max-w-2xl mb-6">
+            Teknik grafis sistematis untuk menyederhanakan ekspresi Boolean menjadi Sum-of-Products (SOP) atau Product-of-Sums (POS) yang optimal — lebih cepat, lebih murah, lebih efisien.
+          </p>
+          <div class="flex flex-wrap gap-3">
+            <div class="badge badge-blue">Circuit Optimization</div>
+            <div class="badge badge-purple">Boolean Algebra</div>
+            <div class="badge badge-green">SOP / POS</div>
+            <div class="badge badge-orange">Logic Gates</div>
+          </div>
+        </div>
+        <!-- Quick Stats -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-10 fade-in delay-2">
+          <div class="glow-card p-4 text-center">
+            <div class="text-2xl font-extrabold grad-text" style="font-family:Syne,sans-serif;">3</div>
+            <div class="text-xs text-slate-400 mt-1">Teknik Simplifikasi</div>
+          </div>
+          <div class="glow-card p-4 text-center">
+            <div class="text-2xl font-extrabold" style="color:var(--accent2);font-family:Syne,sans-serif;">≤6</div>
+            <div class="text-xs text-slate-400 mt-1">Variabel Maks K-Map</div>
+          </div>
+          <div class="glow-card p-4 text-center">
+            <div class="text-2xl font-extrabold" style="color:var(--accent3);font-family:Syne,sans-serif;">2ⁿ</div>
+            <div class="text-xs text-slate-400 mt-1">Sel dalam n-var K-Map</div>
+          </div>
+          <div class="glow-card p-4 text-center">
+            <div class="text-2xl font-extrabold" style="color:var(--accent4);font-family:Syne,sans-serif;">Gray</div>
+            <div class="text-xs text-slate-400 mt-1">Kode Urutan Kolom</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SECTION 1: KONSEP UTAMA -->
+    <!-- ============================================================ -->
+    <section id="konsep" class="section-anchor mb-14">
+      <div class="flex items-center gap-3 mb-6">
+        <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background:rgba(129,140,248,0.15);">
+          <i data-lucide="brain" class="w-4 h-4" style="color:var(--accent2);"></i>
+        </div>
+        <h2 class="text-2xl font-bold">Conceptual Deep Dive</h2>
+      </div>
+
+      <!-- Why Simplify -->
+      <div class="glow-card p-6 mb-6 fade-in">
+        <h3 class="text-lg font-bold mb-3 flex items-center gap-2"><i data-lucide="lightbulb" class="w-4 h-4 text-yellow-400"></i> Mengapa Harus Disederhanakan?</h3>
+        <p class="text-slate-300 text-sm mb-4">Ekspresi Boolean yang sederhana = lebih sedikit <em>logic gate</em> = lebih murah, lebih hemat daya, dan (kadang) lebih cepat.</p>
+        <div class="grid md:grid-cols-3 gap-4 text-sm">
+          <div class="keyterm">
+            <div class="font-bold text-sky-400 mb-1">Algebraic</div>
+            <p class="text-slate-300">Menggunakan teorema Boolean. Fleksibel, tapi membutuhkan keahlian dan bersifat <em>open-ended</em>.</p>
+          </div>
+          <div class="keyterm" style="border-color:var(--accent2);background:rgba(129,140,248,0.06);">
+            <div class="font-bold mb-1" style="color:var(--accent2);">Karnaugh Maps ← INI</div>
+            <p class="text-slate-300">Metode grafis, mudah digunakan. Terbatas pada ≤ 6 variabel.</p>
+          </div>
+          <div class="keyterm" style="border-color:var(--accent4);background:rgba(251,146,60,0.06);">
+            <div class="font-bold mb-1" style="color:var(--accent4);">Quine-McCluskey</div>
+            <p class="text-slate-300">Cocok untuk otomasi (CAD). Bisa menangani banyak variabel namun berat secara komputasi.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cost Criteria -->
+      <div class="glow-card p-6 mb-6">
+        <h3 class="text-lg font-bold mb-4 flex items-center gap-2"><i data-lucide="calculator" class="w-4 h-4 text-sky-400"></i> Kriteria Biaya (Cost Criteria)</h3>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm text-left">
+            <thead>
+              <tr style="border-bottom:1px solid var(--border);">
+                <th class="py-2 pr-4 text-sky-400">Notasi</th>
+                <th class="py-2 pr-4 text-sky-400">Nama</th>
+                <th class="py-2 text-sky-400">Definisi</th>
+              </tr>
+            </thead>
+            <tbody class="text-slate-300">
+              <tr style="border-bottom:1px solid var(--border);">
+                <td class="py-2 pr-4 font-bold mono text-emerald-400">L</td>
+                <td class="py-2 pr-4">Literal Cost</td>
+                <td class="py-2">Jumlah <em>kemunculan</em> variabel (termasuk komplemen) dalam ekspresi Boolean.</td>
+              </tr>
+              <tr style="border-bottom:1px solid var(--border);">
+                <td class="py-2 pr-4 font-bold mono text-orange-400">G</td>
+                <td class="py-2 pr-4">Gate Input Cost</td>
+                <td class="py-2">L + jumlah term (eksklusif single-literal terms). Inverter TIDAK dihitung.</td>
+              </tr>
+              <tr>
+                <td class="py-2 pr-4 font-bold mono text-indigo-400">GN</td>
+                <td class="py-2 pr-4">Gate Input Cost w/ NOTs</td>
+                <td class="py-2">G + jumlah <em>distinct complemented single literals</em> (inverter dihitung).</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="pitfall mt-4">
+          <div class="flex items-center gap-2 mb-1"><i data-lucide="alert-triangle" class="w-4 h-4" style="color:var(--danger);"></i><span class="font-bold text-red-400">Jebakan Umum</span></div>
+          <p class="text-sm text-slate-300">L (literal cost) yang sama belum tentu berarti G atau GN yang sama! Selalu hitung ketiganya untuk memilih ekspresi terbaik.</p>
+        </div>
+      </div>
+
+      <!-- K-Map Definition -->
+      <div class="glow-card p-6 mb-6">
+        <h3 class="text-lg font-bold mb-4 flex items-center gap-2"><i data-lucide="grid-3x3" class="w-4 h-4 text-emerald-400"></i> Apa itu K-Map?</h3>
+        <p class="text-slate-300 text-sm mb-4">K-Map adalah reorganisasi truth table dalam bentuk grid 2D, di mana <strong>setiap sel mewakili satu minterm</strong>, dan sel-sel yang berdekatan hanya berbeda <strong>satu bit</strong> (kode Gray).</p>
+        <div class="grid md:grid-cols-2 gap-4">
+          <div>
+            <div class="keyterm mb-2">
+              <div class="font-bold text-sky-400 text-sm mb-1">🔑 Minterm</div>
+              <p class="text-xs text-slate-300">Setiap kombinasi input bernilai 1. Direpresentasikan sebagai angka "<strong>1</strong>" pada sel K-Map.</p>
+            </div>
+            <div class="keyterm mb-2">
+              <div class="font-bold text-sky-400 text-sm mb-1">🔑 Adjacency (Ketetanggaan)</div>
+              <p class="text-xs text-slate-300">Dua sel disebut <em>adjacent</em> jika hanya berbeda <strong>satu variabel</strong>. Sel di tepi kiri dan kanan map juga adjacent (melingkar seperti silinder).</p>
+            </div>
+            <div class="keyterm">
+              <div class="font-bold text-sky-400 text-sm mb-1">🔑 Rectangle / Grouping</div>
+              <p class="text-xs text-slate-300">Kelompok sel bernilai 1 yang membentuk persegi panjang dengan ukuran <strong>pangkat 2</strong> (1, 2, 4, 8, 16…). Semakin besar grupnya, semakin sedikit variabel dalam product term.</p>
+            </div>
+          </div>
+          <div class="bg-slate-900/60 rounded-xl p-4 flex flex-col items-center justify-center">
+            <div class="text-xs text-slate-400 mb-3 text-center">K-Map 2-Variabel</div>
+            <table class="kmap-table">
+              <tr>
+                <td class="kmap-header cell-label"></td>
+                <td class="kmap-header">y=0</td>
+                <td class="kmap-header">y=1</td>
+              </tr>
+              <tr>
+                <td class="kmap-header">x=0</td>
+                <td class="cell-zero">m₀<br/><span style="font-size:0.6rem;color:var(--text-muted)">x'y'</span></td>
+                <td class="cell-zero">m₁<br/><span style="font-size:0.6rem;color:var(--text-muted)">x'y</span></td>
+              </tr>
+              <tr>
+                <td class="kmap-header">x=1</td>
+                <td class="cell-one">m₂<br/><span style="font-size:0.6rem;color:#34d399">xy'</span></td>
+                <td class="cell-one">m₃<br/><span style="font-size:0.6rem;color:#34d399">xy</span></td>
+              </tr>
+            </table>
+            <div class="text-xs text-slate-400 mt-3 text-center">F(x,y) = x (gabungkan m₂ & m₃)</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Aturan Combining Squares -->
+      <div class="glow-card p-6 mb-6">
+        <h3 class="text-lg font-bold mb-4 flex items-center gap-2"><i data-lucide="merge" class="w-4 h-4 text-indigo-400"></i> Aturan Menggabungkan Sel</h3>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead>
+              <tr style="border-bottom:1px solid var(--border);">
+                <th class="py-2 pr-4 text-left text-slate-400">Jumlah Sel (k-var)</th>
+                <th class="py-2 pr-4 text-left text-slate-400">Hasil Product Term</th>
+                <th class="py-2 text-left text-slate-400">Contoh (3-var)</th>
+              </tr>
+            </thead>
+            <tbody class="text-slate-300 text-sm">
+              <tr style="border-bottom:1px solid var(--border);"><td class="py-2 pr-4 mono text-sky-400">1 sel</td><td class="py-2 pr-4">3 variabel (minterm)</td><td class="py-2 mono text-slate-400">xyz</td></tr>
+              <tr style="border-bottom:1px solid var(--border);"><td class="py-2 pr-4 mono text-indigo-400">2 sel</td><td class="py-2 pr-4">2 variabel</td><td class="py-2 mono text-slate-400">xz</td></tr>
+              <tr style="border-bottom:1px solid var(--border);"><td class="py-2 pr-4 mono text-emerald-400">4 sel</td><td class="py-2 pr-4">1 variabel</td><td class="py-2 mono text-slate-400">y</td></tr>
+              <tr><td class="py-2 pr-4 mono text-orange-400">8 sel</td><td class="py-2 pr-4">0 variabel (konstanta 1)</td><td class="py-2 mono text-slate-400">1</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="tipbox mt-4">
+          <div class="flex items-center gap-2 mb-1"><i data-lucide="lightbulb" class="w-4 h-4" style="color:var(--accent3);"></i><span class="font-bold" style="color:var(--accent3);">Tips</span></div>
+          <p class="text-sm text-slate-300">Pada K-Map n-variabel: grup 2ᵏ sel menghasilkan product term dengan (n − k) variabel. Prioritaskan grup terbesar!</p>
+        </div>
+      </div>
+    </section>
+
+    <hr class="sep"/>
+
+    <!-- ============================================================ -->
+    <!-- SECTION 2: VARIASI K-MAP -->
+    <!-- ============================================================ -->
+    <section id="kmap-var" class="section-anchor mb-14">
+      <div class="flex items-center gap-3 mb-6">
+        <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background:rgba(52,211,153,0.12);">
+          <i data-lucide="grid-3x3" class="w-4 h-4" style="color:var(--accent3);"></i>
+        </div>
+        <h2 class="text-2xl font-bold">Variasi K-Map</h2>
+      </div>
+
+      <!-- Tabs 3-var vs 4-var -->
+      <div class="glow-card p-6 mb-6">
+        <div class="flex gap-2 mb-6 flex-wrap">
+          <button onclick="showKmapTab('t3')" id="tab-t3" class="badge badge-blue cursor-pointer">3 Variabel</button>
+          <button onclick="showKmapTab('t4')" id="tab-t4" class="badge cursor-pointer" style="background:rgba(148,163,184,0.1);color:var(--text-muted);">4 Variabel</button>
+          <button onclick="showKmapTab('t5')" id="tab-t5" class="badge cursor-pointer" style="background:rgba(148,163,184,0.1);color:var(--text-muted);">5+ Variabel</button>
+        </div>
+
+        <!-- 3-variable tab -->
+        <div id="tab-content-t3">
+          <p class="text-slate-300 text-sm mb-4">K-Map 3 variabel memiliki <strong>8 sel</strong> (2×4). Kolom diurutkan menggunakan <em>Gray Code</em>: 00, 01, 11, 10.</p>
+          <div class="flex flex-col md:flex-row gap-6 items-start">
+            <div>
+              <div class="text-xs text-slate-400 mb-2 text-center">Struktur K-Map 3-Var (x,y,z)</div>
+              <table class="kmap-table">
+                <tr>
+                  <td class="kmap-header cell-label"></td>
+                  <td class="kmap-header">yz=00</td>
+                  <td class="kmap-header">yz=01</td>
+                  <td class="kmap-header" style="color:var(--accent2);">yz=11</td>
+                  <td class="kmap-header">yz=10</td>
+                </tr>
+                <tr>
+                  <td class="kmap-header">x=0</td>
+                  <td class="cell-zero">m₀</td>
+                  <td class="cell-zero">m₁</td>
+                  <td class="cell-zero" style="color:var(--accent2);">m₃</td>
+                  <td class="cell-zero">m₂</td>
+                </tr>
+                <tr>
+                  <td class="kmap-header">x=1</td>
+                  <td class="cell-zero">m₄</td>
+                  <td class="cell-zero">m₅</td>
+                  <td class="cell-zero" style="color:var(--accent2);">m₇</td>
+                  <td class="cell-zero">m₆</td>
+                </tr>
+              </table>
+              <div class="text-xs text-slate-500 mt-2">⚠️ m₀ dan m₂ (kolom kiri-kanan) juga adjacent!</div>
+            </div>
+            <div class="flex-1">
+              <div class="text-xs text-slate-400 mb-2">Contoh: F(x,y,z) = Σm(2,3,6,7)</div>
+              <table class="kmap-table mb-3">
+                <tr>
+                  <td class="kmap-header cell-label"></td>
+                  <td class="kmap-header">00</td>
+                  <td class="kmap-header">01</td>
+                  <td class="kmap-header">11</td>
+                  <td class="kmap-header">10</td>
+                </tr>
+                <tr>
+                  <td class="kmap-header">x=0</td>
+                  <td class="cell-zero">0</td>
+                  <td class="cell-zero">0</td>
+                  <td class="cell-one">1</td>
+                  <td class="cell-one">1</td>
+                </tr>
+                <tr>
+                  <td class="kmap-header">x=1</td>
+                  <td class="cell-zero">0</td>
+                  <td class="cell-zero">0</td>
+                  <td class="cell-one">1</td>
+                  <td class="cell-one">1</td>
+                </tr>
+              </table>
+              <div class="keyterm text-sm">
+                Keempat sel "1" membentuk persegi 2×2 → semua berbagi <strong>y=1</strong>.<br/>
+                <span class="mono font-bold text-sky-400">F = y</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4-variable tab -->
+        <div id="tab-content-t4" class="hidden">
+          <p class="text-slate-300 text-sm mb-4">K-Map 4 variabel memiliki <strong>16 sel</strong> (4×4). Baris (wx) dan kolom (yz) keduanya menggunakan urutan Gray Code. Semua tepi (atas-bawah, kiri-kanan) saling adjacent.</p>
+          <div class="flex flex-col md:flex-row gap-6 items-start">
+            <div>
+              <div class="text-xs text-slate-400 mb-2 text-center">Struktur K-Map 4-Var (w,x,y,z)</div>
+              <table class="kmap-table text-xs">
+                <tr>
+                  <td class="kmap-header cell-label">wx\yz</td>
+                  <td class="kmap-header">00</td>
+                  <td class="kmap-header">01</td>
+                  <td class="kmap-header" style="color:var(--accent2);">11</td>
+                  <td class="kmap-header">10</td>
+                </tr>
+                <tr>
+                  <td class="kmap-header">00</td>
+                  <td class="cell-zero">0</td>
+                  <td class="cell-zero">1</td>
+                  <td class="cell-zero">3</td>
+                  <td class="cell-zero">2</td>
+                </tr>
+                <tr>
+                  <td class="kmap-header">01</td>
+                  <td class="cell-zero">4</td>
+                  <td class="cell-zero">5</td>
+                  <td class="cell-zero">7</td>
+                  <td class="cell-zero">6</td>
+                </tr>
+                <tr>
+                  <td class="kmap-header" style="color:var(--accent2);">11</td>
+                  <td class="cell-zero">12</td>
+                  <td class="cell-zero">13</td>
+                  <td class="cell-zero">15</td>
+                  <td class="cell-zero">14</td>
+                </tr>
+                <tr>
+                  <td class="kmap-header">10</td>
+                  <td class="cell-zero">8</td>
+                  <td class="cell-zero">9</td>
+                  <td class="cell-zero">11</td>
+                  <td class="cell-zero">10</td>
+                </tr>
+              </table>
+            </div>
+            <div class="flex-1">
+              <div class="tipbox text-sm">
+                <strong>Ukuran grup dalam 4-var K-Map:</strong>
+                <ul class="mt-2 space-y-1 text-slate-300 text-xs">
+                  <li>• 1 sel → 4 variabel (minterm penuh)</li>
+                  <li>• 2 sel → 3 variabel</li>
+                  <li>• 4 sel → 2 variabel</li>
+                  <li>• 8 sel → 1 variabel</li>
+                  <li>• 16 sel → 0 variabel (konstanta 1)</li>
+                </ul>
+              </div>
+              <div class="pitfall mt-3 text-xs">
+                <strong class="text-red-400">Ingat:</strong> Baris 00 dan baris 10 adjacent (atas-bawah melingkar). Kolom 00 dan kolom 10 juga adjacent (kiri-kanan melingkar).
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 5+ variable tab -->
+        <div id="tab-content-t5" class="hidden">
+          <p class="text-slate-300 text-sm mb-4">K-Map 5 variabel direpresentasikan sebagai <strong>dua K-Map 4-variabel</strong> (satu untuk v=0, satu untuk v=1). Sel yang berposisi sama di kedua K-Map dianggap adjacent.</p>
+          <div class="keyterm text-sm mb-3">
+            <strong class="text-sky-400">Visualisasi 5-Var:</strong> Bayangkan dua K-Map 4-var bertumpuk. Sel di posisi yang sama di kedua K-Map saling adjacent seperti dua lapisan yang bersentuhan.
+          </div>
+          <div class="pitfall text-sm">
+            <strong class="text-red-400">⚠️ Batas Praktis:</strong> K-Map 6 variabel sudah mendekati batas kemampuan pengenalan pola manusia. K-Map lebih dari 6 variabel hampir tidak digunakan secara manual — gunakan Quine-McCluskey atau CAD tools.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <hr class="sep"/>
+
+    <!-- ============================================================ -->
+    <!-- SECTION 3: PRIME IMPLICANTS -->
+    <!-- ============================================================ -->
+    <section id="prime" class="section-anchor mb-14">
+      <div class="flex items-center gap-3 mb-6">
+        <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background:rgba(251,146,60,0.12);">
+          <i data-lucide="zap" class="w-4 h-4" style="color:var(--accent4);"></i>
+        </div>
+        <h2 class="text-2xl font-bold">Prime Implicants & Optimization</h2>
+      </div>
+
+      <div class="grid md:grid-cols-2 gap-6 mb-6">
+        <div class="glow-card p-6">
+          <div class="keyterm" style="border-color:var(--accent4);background:rgba(251,146,60,0.06);">
+            <div class="font-bold mb-1" style="color:var(--accent4);">🔑 Prime Implicant (PI)</div>
+            <p class="text-sm text-slate-300">Grup sel "1" terbesar yang dapat dibentuk (persegi panjang dengan ukuran pangkat 2) dan <strong>tidak dapat diperbesar lagi</strong> tanpa memasukkan sel "0".</p>
+          </div>
+          <div class="mt-4 keyterm" style="border-color:var(--danger);background:rgba(248,113,113,0.06);">
+            <div class="font-bold mb-1 text-red-400">🔑 Essential Prime Implicant (EPI)</div>
+            <p class="text-sm text-slate-300">Prime implicant yang merupakan <strong>satu-satunya PI yang mencakup</strong> minimal satu minterm tertentu. EPI <em>wajib</em> dimasukkan dalam solusi.</p>
+          </div>
+        </div>
+        <div class="glow-card p-6">
+          <h4 class="font-bold text-sm mb-3 text-sky-400">Algoritma Optimasi SOP</h4>
+          <ol class="space-y-2 text-sm text-slate-300">
+            <li class="flex gap-2"><span class="badge badge-blue text-xs w-5 h-5 flex items-center justify-center p-0 shrink-0 rounded-full" style="font-size:0.65rem;">1</span><span>Temukan <strong>semua Prime Implicants</strong> pada K-Map.</span></li>
+            <li class="flex gap-2"><span class="badge badge-blue text-xs w-5 h-5 flex items-center justify-center p-0 shrink-0 rounded-full" style="font-size:0.65rem;">2</span><span>Masukkan <strong>semua Essential Prime Implicants</strong> ke dalam solusi.</span></li>
+            <li class="flex gap-2"><span class="badge badge-blue text-xs w-5 h-5 flex items-center justify-center p-0 shrink-0 rounded-full" style="font-size:0.65rem;">3</span><span>Pilih set PI non-esensial dengan biaya minimum untuk menutup sisa minterm yang belum tercakup.</span></li>
+          </ol>
+          <div class="tipbox mt-4 text-xs">
+            <strong style="color:var(--accent3);">Selection Rule:</strong> Minimimalkan overlap antar Prime Implicants. Setiap PI yang dipilih harus mencakup minimal satu minterm yang belum dicakup PI lain.
+          </div>
+        </div>
+      </div>
+
+      <!-- Interactive K-Map Example -->
+      <div class="glow-card p-6 mb-6">
+        <h3 class="text-lg font-bold mb-2 flex items-center gap-2"><i data-lucide="mouse-pointer-click" class="w-4 h-4 text-indigo-400"></i> Contoh Interaktif: Identifikasi PI</h3>
+        <p class="text-slate-400 text-sm mb-4">F(A,B,C,D) = Σm(0,2,4,5,6,7,8,10,13,15) — Klik tombol grup untuk menyorot:</p>
+        <div class="flex flex-wrap gap-2 mb-4">
+          <button onclick="highlightGroup('grp-none')" class="badge" style="background:rgba(148,163,184,0.1);color:var(--text-muted);cursor:pointer;">Reset</button>
+          <button onclick="highlightGroup('grp-1')" class="badge badge-blue cursor-pointer">Grup W'Z' (m0,2,8,10)</button>
+          <button onclick="highlightGroup('grp-2')" class="badge badge-purple cursor-pointer">Grup XY (m5,7,13,15)</button>
+          <button onclick="highlightGroup('grp-3')" class="badge badge-green cursor-pointer">Grup W'X (m4,5,6,7)</button>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="kmap-table" id="demo-kmap">
+            <tr>
+              <td class="kmap-header cell-label">AB\CD</td>
+              <td class="kmap-header">00</td>
+              <td class="kmap-header">01</td>
+              <td class="kmap-header" style="color:var(--accent2);">11</td>
+              <td class="kmap-header">10</td>
+            </tr>
+            <tr>
+              <td class="kmap-header">00</td>
+              <td class="cell-one" data-groups="grp-1">1</td>
+              <td class="cell-zero">0</td>
+              <td class="cell-zero">0</td>
+              <td class="cell-one" data-groups="grp-1">1</td>
+            </tr>
+            <tr>
+              <td class="kmap-header">01</td>
+              <td class="cell-one" data-groups="grp-3">1</td>
+              <td class="cell-one" data-groups="grp-2 grp-3">1</td>
+              <td class="cell-one" data-groups="grp-2 grp-3">1</td>
+              <td class="cell-one" data-groups="grp-3">1</td>
+            </tr>
+            <tr>
+              <td class="kmap-header" style="color:var(--accent2);">11</td>
+              <td class="cell-zero">0</td>
+              <td class="cell-one" data-groups="grp-2">1</td>
+              <td class="cell-one" data-groups="grp-2">1</td>
+              <td class="cell-zero">0</td>
+            </tr>
+            <tr>
+              <td class="kmap-header">10</td>
+              <td class="cell-one" data-groups="grp-1">1</td>
+              <td class="cell-zero">0</td>
+              <td class="cell-zero">0</td>
+              <td class="cell-one" data-groups="grp-1">1</td>
+            </tr>
+          </table>
+        </div>
+        <div id="grp-info" class="mt-4 text-sm text-slate-400">← Pilih grup di atas untuk melihat penjelasan</div>
+      </div>
+    </section>
+
+    <hr class="sep"/>
+
+    <!-- ============================================================ -->
+    <!-- SECTION 4: DON'T CARE -->
+    <!-- ============================================================ -->
+    <section id="dont-care" class="section-anchor mb-14">
+      <div class="flex items-center gap-3 mb-6">
+        <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background:rgba(251,146,60,0.12);">
+          <i data-lucide="help-circle" class="w-4 h-4 text-yellow-400"></i>
+        </div>
+        <h2 class="text-2xl font-bold">Don't Care Conditions</h2>
+      </div>
+
+      <div class="glow-card p-6 mb-6">
+        <p class="text-slate-300 text-sm mb-4">
+          <em>Don't care</em> (dilambangkan "<strong class="text-orange-400">X</strong>" atau "<strong class="text-orange-400">d</strong>") adalah kondisi di mana nilai output tidak terdefinisi, karena:
+        </p>
+        <div class="grid md:grid-cols-2 gap-4 mb-4">
+          <div class="keyterm" style="border-color:var(--accent4);background:rgba(251,146,60,0.06);">
+            <div class="font-bold mb-1" style="color:var(--accent4);">Input tidak pernah terjadi</div>
+            <p class="text-xs text-slate-300">Contoh: Kode BCD hanya menggunakan 0–9. Kombinasi 1010–1111 tidak akan pernah muncul → tandai sebagai don't care.</p>
+          </div>
+          <div class="keyterm" style="border-color:var(--accent4);background:rgba(251,146,60,0.06);">
+            <div class="font-bold mb-1" style="color:var(--accent4);">Output tidak digunakan</div>
+            <p class="text-xs text-slate-300">Rangkaian penerima mengabaikan output untuk kondisi tertentu → nilai output tidak perlu dispesifikasikan.</p>
+          </div>
+        </div>
+        <div class="tipbox mb-4">
+          <strong style="color:var(--accent3);">Cara Menggunakan Don't Care dalam K-Map:</strong>
+          <ul class="mt-2 space-y-1 text-sm text-slate-300">
+            <li>• Sel don't care (X) <strong>boleh</strong> dimasukkan dalam grup untuk memperbesar grup → hasil product term lebih sederhana.</li>
+            <li>• Sel don't care <strong>tidak wajib</strong> dicakup oleh prime implicant manapun.</li>
+            <li>• Untuk SOP: X bisa diperlakukan sebagai 1 jika membantu memperbesar grup.</li>
+            <li>• Untuk POS (mencari F̄): X juga bisa dianggap 0 saat mengelompokkan sel "0".</li>
+          </ul>
+        </div>
+        <div class="pitfall text-sm">
+          <strong class="text-red-400">Jebakan:</strong> X dalam solusi SOP mungkin bernilai "1", namun X dalam solusi POS (dari F̄) mungkin bernilai "0". Hasilnya bisa berbeda dan keduanya valid!
+        </div>
+        <!-- Don't care example -->
+        <div class="mt-5">
+          <div class="text-xs text-slate-400 mb-2">Contoh: BCD "5 atau lebih" — F₁(w,x,y,z)</div>
+          <table class="kmap-table text-xs">
+            <tr>
+              <td class="kmap-header cell-label">wx\yz</td>
+              <td class="kmap-header">00</td>
+              <td class="kmap-header">01</td>
+              <td class="kmap-header">11</td>
+              <td class="kmap-header">10</td>
+            </tr>
+            <tr>
+              <td class="kmap-header">00</td>
+              <td class="cell-zero">0</td>
+              <td class="cell-zero">0</td>
+              <td class="cell-zero">0</td>
+              <td class="cell-zero">0</td>
+            </tr>
+            <tr>
+              <td class="kmap-header">01</td>
+              <td class="cell-zero">0</td>
+              <td class="cell-one">1</td>
+              <td class="cell-one">1</td>
+              <td class="cell-one">1</td>
+            </tr>
+            <tr>
+              <td class="kmap-header">11</td>
+              <td class="cell-x">X</td>
+              <td class="cell-x">X</td>
+              <td class="cell-x">X</td>
+              <td class="cell-x">X</td>
+            </tr>
+            <tr>
+              <td class="kmap-header">10</td>
+              <td class="cell-one">1</td>
+              <td class="cell-one">1</td>
+              <td class="cell-x">X</td>
+              <td class="cell-x">X</td>
+            </tr>
+          </table>
+          <div class="keyterm mt-3 text-xs">
+            Dengan memanfaatkan X: <span class="mono font-bold text-sky-400">F₁ = w + xz + xy</span> (G=7)<br/>
+            Tanpa X: F₂ = w̄xz + w̄xy + wx̄ȳ (G=12) — jauh lebih mahal!
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <hr class="sep"/>
+
+    <!-- ============================================================ -->
+    <!-- SECTION 5: ALGORITHM WALKTHROUGH -->
+    <!-- ============================================================ -->
+    <section id="algo" class="section-anchor mb-14">
+      <div class="flex items-center gap-3 mb-6">
+        <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background:rgba(56,189,248,0.12);">
+          <i data-lucide="code-2" class="w-4 h-4" style="color:var(--accent);"></i>
+        </div>
+        <h2 class="text-2xl font-bold">Algoritma & Logic Walkthrough</h2>
+      </div>
+
+      <div class="glow-card p-6 mb-6">
+        <h3 class="text-lg font-bold mb-2">Prosedur Simplifikasi K-Map (SOP)</h3>
+        <p class="text-slate-400 text-sm mb-4">Klik langkah untuk highlight penjelasannya:</p>
+
+        <div class="grid md:grid-cols-2 gap-6">
+          <!-- Steps list -->
+          <div class="space-y-2" id="algo-steps">
+            <div class="step-item active cursor-pointer" onclick="setStep(0)">
+              <div class="font-bold text-sm text-sky-400">Langkah 1: Isi K-Map</div>
+              <p class="text-xs text-slate-400 mt-1">Tempatkan nilai "1" pada sel yang sesuai dengan minterm fungsi. Sel lain diisi "0" (atau "X" untuk don't care).</p>
+            </div>
+            <div class="step-item cursor-pointer" onclick="setStep(1)">
+              <div class="font-bold text-sm text-indigo-400">Langkah 2: Identifikasi Semua PI</div>
+              <p class="text-xs text-slate-400 mt-1">Temukan semua rectangle berukuran pangkat 2 yang tidak dapat diperbesar lagi. Ini adalah Prime Implicants.</p>
+            </div>
+            <div class="step-item cursor-pointer" onclick="setStep(2)">
+              <div class="font-bold text-sm text-emerald-400">Langkah 3: Tandai EPI</div>
+              <p class="text-xs text-slate-400 mt-1">Cari minterm yang hanya dicakup oleh <em>satu</em> PI. PI tersebut adalah Essential Prime Implicant dan wajib masuk solusi.</p>
+            </div>
+            <div class="step-item cursor-pointer" onclick="setStep(3)">
+              <div class="font-bold text-sm text-orange-400">Langkah 4: Tutup Sisa Minterm</div>
+              <p class="text-xs text-slate-400 mt-1">Pilih PI tambahan (non-esensial) untuk mencakup minterm yang belum tercakup EPI. Prioritaskan PI dengan coverage terbesar.</p>
+            </div>
+            <div class="step-item cursor-pointer" onclick="setStep(4)">
+              <div class="font-bold text-sm text-pink-400">Langkah 5: Tulis Ekspresi SOP</div>
+              <p class="text-xs text-slate-400 mt-1">OR-kan semua product term yang dipilih. Untuk setiap grup, variabel yang berubah di dalam grup dihilangkan dari product term.</p>
+            </div>
+          </div>
+
+          <!-- Code/visual panel -->
+          <div id="algo-detail" class="code-block">
+            <pre><code id="algo-code"><span class="cm">// Langkah 1: Isi K-Map</span>
+<span class="cm">// F(A,B,C,D) = Σm(0,2,3,8,9,10,11,12,13,14,15)</span>
+
+<span class="kw">KMAP</span>[AB\CD][00][01][11][10]
+  <span class="var">AB=00</span>:  <span class="num">1</span>   <span class="num">0</span>   <span class="num">1</span>   <span class="num">1</span>
+  <span class="var">AB=01</span>:  <span class="num">0</span>   <span class="num">0</span>   <span class="num">0</span>   <span class="num">0</span>
+  <span class="var">AB=11</span>:  <span class="num">1</span>   <span class="num">1</span>   <span class="num">1</span>   <span class="num">1</span>
+  <span class="var">AB=10</span>:  <span class="num">1</span>   <span class="num">1</span>   <span class="num">1</span>   <span class="num">1</span>
+
+<span class="cm">// Sel m0=1, m2=1, m3=1, dst...</span>
+<span class="cm">// Sel m1=0, m4-7=0</span></code></pre>
+          </div>
+        </div>
+      </div>
+
+      <!-- Reading PI from Rectangle -->
+      <div class="glow-card p-6">
+        <h3 class="text-lg font-bold mb-4">Cara Membaca Product Term dari Grup</h3>
+        <p class="text-slate-400 text-sm mb-4">Setelah menentukan grup, baca variabel yang <strong>konstan</strong> dalam grup tersebut (variabel yang berubah dihilangkan):</p>
+        <div class="code-block">
+          <pre><code><span class="cm">// Contoh: Grup {m5, m7, m13, m15} pada K-Map 4-var (W,X,Y,Z)</span>
+<span class="cm">// m5  = WXYZ = 0101</span>
+<span class="cm">// m7  = WXYZ = 0111</span>
+<span class="cm">// m13 = WXYZ = 1101</span>
+<span class="cm">// m15 = WXYZ = 1111</span>
+
+<span class="cm">// W berubah (0→0→1→1) → dihilangkan</span>
+<span class="cm">// X konstan = 1         → pertahankan X</span>
+<span class="cm">// Y berubah (0→1→0→1)  → dihilangkan</span>
+<span class="cm">// Z konstan = 1         → pertahankan Z</span>
+
+<span class="fn">product_term</span> = <span class="var">X</span> · <span class="var">Z</span>   <span class="cm">// = XZ</span>
+
+<span class="cm">// Aturan: variabel = 1 → tulis normal (X)</span>
+<span class="cm">//         variabel = 0 → tulis komplemen (X')</span>
+<span class="cm">//         variabel berubah → hilangkan</span></code></pre>
+        </div>
+      </div>
+    </section>
+
+    <hr class="sep"/>
+
+    <!-- ============================================================ -->
+    <!-- SECTION 6: LATIHAN INTERAKTIF -->
+    <!-- ============================================================ -->
+    <section id="latihan" class="section-anchor mb-14">
+      <div class="flex items-center gap-3 mb-2">
+        <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background:rgba(236,72,153,0.12);">
+          <i data-lucide="clipboard-check" class="w-4 h-4 text-pink-400"></i>
+        </div>
+        <h2 class="text-2xl font-bold">Latihan Interaktif</h2>
+      </div>
+      <p class="text-slate-400 text-sm mb-6">Uji pemahaman Anda! Klik jawaban, lalu klik "Tampilkan Penjelasan" untuk memahami metodologinya.</p>
+
+      <!-- Progress -->
+      <div class="flex items-center gap-3 mb-8">
+        <span class="text-xs text-slate-400">Progres:</span>
+        <div class="prog-bar flex-1"><div class="prog-fill" id="quiz-progress" style="width:0%"></div></div>
+        <span class="text-xs mono text-slate-400" id="quiz-score">0 / 5</span>
+      </div>
+
+      <!-- Q1 -->
+      <div class="glow-card p-6 mb-5" id="q1-card">
+        <div class="flex items-start gap-3 mb-4">
+          <span class="badge badge-blue shrink-0">Q1</span>
+          <div>
+            <h4 class="font-bold text-sm mb-1">Soal 1: Literal Cost</h4>
+            <p class="text-slate-300 text-sm">Berapakah Literal Cost (L) dari ekspresi berikut?<br/><span class="mono text-sky-400 text-base">F = BD + AB'C + AC'D'</span></p>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-2 mb-4" id="q1-opts">
+          <div class="quiz-option" onclick="checkAnswer(1, 'a', false, this)">a. 6</div>
+          <div class="quiz-option" onclick="checkAnswer(1, 'b', true, this)">b. 8</div>
+          <div class="quiz-option" onclick="checkAnswer(1, 'c', false, this)">c. 7</div>
+          <div class="quiz-option" onclick="checkAnswer(1, 'd', false, this)">d. 9</div>
+        </div>
+        <div id="q1-feedback" class="hidden text-sm mb-3"></div>
+        <button onclick="toggleReveal('q1-reveal')" class="text-xs flex items-center gap-1 text-slate-500 hover:text-sky-400 transition-colors">
+          <i data-lucide="eye" class="w-3 h-3"></i> Tampilkan Penjelasan
+        </button>
+        <div class="reveal-panel mt-3" id="q1-reveal">
+          <div class="bg-slate-900/80 rounded-xl p-4 text-sm border" style="border-color:var(--border);">
+            <div class="font-bold text-sky-400 mb-2">📝 Metodologi:</div>
+            <p class="text-slate-300 mb-2">Literal cost (L) = jumlah total kemunculan variabel (normal maupun komplemen) dalam ekspresi.</p>
+            <div class="code-block py-3 px-4">
+              <pre><code>F = <span class="var">B</span><span class="var">D</span> + <span class="var">A</span><span class="var">B</span>'<span class="var">C</span> + <span class="var">A</span><span class="var">C</span>'<span class="var">D</span>'
+    ↑↑    ↑↑↑    ↑↑↑
+  2 lit  3 lit  3 lit  → Total = <span class="num">8</span></code></pre>
+            </div>
+            <p class="text-slate-300 mt-2">Setiap variabel yang muncul (termasuk yang bercomplemen) dihitung satu kali per kemunculan.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Q2 -->
+      <div class="glow-card p-6 mb-5" id="q2-card">
+        <div class="flex items-start gap-3 mb-4">
+          <span class="badge badge-purple shrink-0">Q2</span>
+          <div>
+            <h4 class="font-bold text-sm mb-1">Soal 2: Identifikasi Prime Implicant</h4>
+            <p class="text-slate-300 text-sm">Diberikan K-Map 3 variabel F(x,y,z) = Σm(1,2,3,5,7). Ekspresi SOP minimal yang benar adalah…</p>
+          </div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-2 mb-4" id="q2-opts">
+          <div class="quiz-option" onclick="checkAnswer(2, 'a', false, this)">a. z + x'y</div>
+          <div class="quiz-option" onclick="checkAnswer(2, 'b', true, this)">b. z + x̄y</div>
+          <div class="quiz-option" onclick="checkAnswer(2, 'c', false, this)">c. y + z + x̄</div>
+          <div class="quiz-option" onclick="checkAnswer(2, 'd', false, this)">d. xy + x'z + yz</div>
+        </div>
+        <div id="q2-feedback" class="hidden text-sm mb-3"></div>
+        <button onclick="toggleReveal('q2-reveal')" class="text-xs flex items-center gap-1 text-slate-500 hover:text-sky-400 transition-colors">
+          <i data-lucide="eye" class="w-3 h-3"></i> Tampilkan Penjelasan
+        </button>
+        <div class="reveal-panel mt-3" id="q2-reveal">
+          <div class="bg-slate-900/80 rounded-xl p-4 text-sm border" style="border-color:var(--border);">
+            <div class="font-bold text-sky-400 mb-2">📝 Metodologi:</div>
+            <p class="text-slate-300 mb-3">Isi K-Map untuk Σm(1,2,3,5,7):</p>
+            <table class="kmap-table mb-3 text-xs">
+              <tr>
+                <td class="kmap-header cell-label"></td>
+                <td class="kmap-header">00</td>
+                <td class="kmap-header">01</td>
+                <td class="kmap-header" style="color:var(--accent2);">11</td>
+                <td class="kmap-header">10</td>
+              </tr>
+              <tr>
+                <td class="kmap-header">x=0</td>
+                <td class="cell-zero">0</td>
+                <td class="cell-one">1</td>
+                <td class="cell-one">1</td>
+                <td class="cell-one">1</td>
+              </tr>
+              <tr>
+                <td class="kmap-header">x=1</td>
+                <td class="cell-zero">0</td>
+                <td class="cell-one">1</td>
+                <td class="cell-one">1</td>
+                <td class="cell-zero">0</td>
+              </tr>
+            </table>
+            <p class="text-slate-300 mb-2"><strong>Grup 1:</strong> {m1,m3,m5,m7} — sel yz=01 dan yz=11 untuk kedua baris → z konstan=1, y dan x berubah → <span class="mono text-sky-400">z</span></p>
+            <p class="text-slate-300 mb-2"><strong>Grup 2:</strong> {m2,m3} — x=0, yz=10 dan yz=11 → x'=konstan, y=konstan=1, z berubah → <span class="mono text-sky-400">x̄y</span></p>
+            <p class="text-slate-300"><strong>Hasil:</strong> F = z + x̄y</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Q3 -->
+      <div class="glow-card p-6 mb-5" id="q3-card">
+        <div class="flex items-start gap-3 mb-4">
+          <span class="badge badge-green shrink-0">Q3</span>
+          <div>
+            <h4 class="font-bold text-sm mb-1">Soal 3: Essential Prime Implicant</h4>
+            <p class="text-slate-300 text-sm">Dalam K-Map 4-variabel, sebuah minterm disebut menjadi dasar suatu Essential Prime Implicant (EPI) jika…</p>
+          </div>
+        </div>
+        <div class="grid grid-cols-1 gap-2 mb-4" id="q3-opts">
+          <div class="quiz-option" onclick="checkAnswer(3, 'a', false, this)">a. Minterm tersebut merupakan bagian dari grup terbesar dalam K-Map.</div>
+          <div class="quiz-option" onclick="checkAnswer(3, 'b', false, this)">b. Minterm tersebut tidak dapat digabungkan dengan minterm lain.</div>
+          <div class="quiz-option" onclick="checkAnswer(3, 'c', true, this)">c. Minterm tersebut hanya dicakup oleh <em>satu</em> Prime Implicant saja.</div>
+          <div class="quiz-option" onclick="checkAnswer(3, 'd', false, this)">d. Minterm tersebut merupakan anggota dari setiap Prime Implicant yang ada.</div>
+        </div>
+        <div id="q3-feedback" class="hidden text-sm mb-3"></div>
+        <button onclick="toggleReveal('q3-reveal')" class="text-xs flex items-center gap-1 text-slate-500 hover:text-sky-400 transition-colors">
+          <i data-lucide="eye" class="w-3 h-3"></i> Tampilkan Penjelasan
+        </button>
+        <div class="reveal-panel mt-3" id="q3-reveal">
+          <div class="bg-slate-900/80 rounded-xl p-4 text-sm border" style="border-color:var(--border);">
+            <div class="font-bold text-sky-400 mb-2">📝 Metodologi:</div>
+            <p class="text-slate-300 mb-2">Definisi EPI: Sebuah Prime Implicant disebut <em>essential</em> jika ada minimal satu minterm yang <strong>hanya bisa dicakup</strong> oleh PI tersebut dan tidak oleh PI lain manapun.</p>
+            <p class="text-slate-300 mb-2">Cara mencari EPI dalam K-Map:</p>
+            <ol class="text-slate-300 space-y-1 ml-4 list-decimal">
+              <li>Temukan semua PI (grup maksimal).</li>
+              <li>Untuk setiap minterm "1", hitung berapa PI yang mencakupnya.</li>
+              <li>Jika hanya <strong>1 PI</strong> yang mencakup minterm tersebut → PI itu adalah EPI.</li>
+              <li>EPI <em>wajib</em> dimasukkan dalam solusi final.</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+
+      <!-- Q4 -->
+      <div class="glow-card p-6 mb-5" id="q4-card">
+        <div class="flex items-start gap-3 mb-4">
+          <span class="badge badge-orange shrink-0">Q4</span>
+          <div>
+            <h4 class="font-bold text-sm mb-1">Soal 4: Don't Care dalam K-Map</h4>
+            <p class="text-slate-300 text-sm">F(A,B,C,D) = Σm(1,2,7,12,15) + d(5,9,10,11,13). Manakah SOP minimal yang benar?</p>
+          </div>
+        </div>
+        <div class="grid grid-cols-1 gap-2 mb-4" id="q4-opts">
+          <div class="quiz-option" onclick="checkAnswer(4, 'a', false, this)">a. F = BD + C'D + B'CD'</div>
+          <div class="quiz-option" onclick="checkAnswer(4, 'b', true, this)">b. F = BD + C'D + ABC' + B'CD'</div>
+          <div class="quiz-option" onclick="checkAnswer(4, 'c', false, this)">c. F = A'B'D + ACD + ABC</div>
+          <div class="quiz-option" onclick="checkAnswer(4, 'd', false, this)">d. F = ABD + C'D' + BCD</div>
+        </div>
+        <div id="q4-feedback" class="hidden text-sm mb-3"></div>
+        <button onclick="toggleReveal('q4-reveal')" class="text-xs flex items-center gap-1 text-slate-500 hover:text-sky-400 transition-colors">
+          <i data-lucide="eye" class="w-3 h-3"></i> Tampilkan Penjelasan
+        </button>
+        <div class="reveal-panel mt-3" id="q4-reveal">
+          <div class="bg-slate-900/80 rounded-xl p-4 text-sm border" style="border-color:var(--border);">
+            <div class="font-bold text-sky-400 mb-2">📝 Metodologi:</div>
+            <p class="text-slate-300 mb-3">Isi K-Map dengan minterm (1), don't care (X), dan 0:</p>
+            <table class="kmap-table text-xs mb-3">
+              <tr>
+                <td class="kmap-header cell-label">AB\CD</td>
+                <td class="kmap-header">00</td>
+                <td class="kmap-header">01</td>
+                <td class="kmap-header">11</td>
+                <td class="kmap-header">10</td>
+              </tr>
+              <tr>
+                <td class="kmap-header">00</td>
+                <td class="cell-zero">0</td>
+                <td class="cell-one">1</td>
+                <td class="cell-zero">0</td>
+                <td class="cell-one">1</td>
+              </tr>
+              <tr>
+                <td class="kmap-header">01</td>
+                <td class="cell-zero">0</td>
+                <td class="cell-x">X</td>
+                <td class="cell-one">1</td>
+                <td class="cell-zero">0</td>
+              </tr>
+              <tr>
+                <td class="kmap-header">11</td>
+                <td class="cell-one">1</td>
+                <td class="cell-x">X</td>
+                <td class="cell-one">1</td>
+                <td class="cell-zero">0</td>
+              </tr>
+              <tr>
+                <td class="kmap-header">10</td>
+                <td class="cell-zero">0</td>
+                <td class="cell-x">X</td>
+                <td class="cell-x">X</td>
+                <td class="cell-x">X</td>
+              </tr>
+            </table>
+            <p class="text-slate-300 text-xs mb-1"><strong>Grup BD:</strong> {m5(X),m7,m13(X),m15} → BD</p>
+            <p class="text-slate-300 text-xs mb-1"><strong>Grup C'D:</strong> {m1,m9(X)} → C'D (A berubah, B=0, C=0, D=1)</p>
+            <p class="text-slate-300 text-xs mb-1"><strong>Grup ABC':</strong> {m12,m13(X)} → ABC'</p>
+            <p class="text-slate-300 text-xs mb-2"><strong>Grup B'CD':</strong> {m2,m10(X)} → B'CD'</p>
+            <p class="text-slate-300 text-xs">F = BD + C'D + ABC' + B'CD'</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Q5 -->
+      <div class="glow-card p-6 mb-5" id="q5-card">
+        <div class="flex items-start gap-3 mb-4">
+          <span class="badge" style="background:rgba(236,72,153,0.15);color:#f472b6;" class="shrink-0">Q5</span>
+          <div>
+            <h4 class="font-bold text-sm mb-1">Soal 5: Gate Input Cost</h4>
+            <p class="text-slate-300 text-sm">Hitung Gate Input Cost dengan NOTs (GN) untuk:<br/><span class="mono text-sky-400">F = A + BC + B̄C̄</span></p>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-2 mb-4" id="q5-opts">
+          <div class="quiz-option" onclick="checkAnswer(5, 'a', false, this)">a. GN = 7</div>
+          <div class="quiz-option" onclick="checkAnswer(5, 'b', false, this)">b. GN = 8</div>
+          <div class="quiz-option" onclick="checkAnswer(5, 'c', true, this)">c. GN = 9</div>
+          <div class="quiz-option" onclick="checkAnswer(5, 'd', false, this)">d. GN = 10</div>
+        </div>
+        <div id="q5-feedback" class="hidden text-sm mb-3"></div>
+        <button onclick="toggleReveal('q5-reveal')" class="text-xs flex items-center gap-1 text-slate-500 hover:text-sky-400 transition-colors">
+          <i data-lucide="eye" class="w-3 h-3"></i> Tampilkan Penjelasan
+        </button>
+        <div class="reveal-panel mt-3" id="q5-reveal">
+          <div class="bg-slate-900/80 rounded-xl p-4 text-sm border" style="border-color:var(--border);">
+            <div class="font-bold text-sky-400 mb-2">📝 Metodologi:</div>
+            <div class="code-block py-3 px-4 mb-3">
+              <pre><code>F = <span class="var">A</span> + <span class="var">B</span><span class="var">C</span> + <span class="var">B</span>'<span class="var">C</span>'
+
+<span class="cm">// L (Literal Cost):</span>
+<span class="cm">// A=1, BC=2, B'C'=2  →  L = 5</span>
+
+<span class="cm">// G (Gate Input Cost, tanpa inverter):</span>
+<span class="cm">// L + jumlah term multi-literal</span>
+<span class="cm">// = 5 + 2 (BC dan B'C' masing² 1 AND gate)</span>
+<span class="cm">// = 7</span>
+
+<span class="cm">// GN (Gate Input Cost with NOTs):</span>
+<span class="cm">// G + distinct complemented literals</span>
+<span class="cm">// B' dan C' adalah komplemen → 2 inverter</span>
+<span class="cm">// GN = 7 + 2 = <span class="num">9</span></span></code></pre>
+            </div>
+            <p class="text-slate-300 text-xs">Jadi: L=5, G=7, GN=9. Ingat: GN menambahkan biaya inverter untuk setiap distinct complemented literal.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Final score card -->
+      <div class="glow-card p-6 text-center" id="final-score-card" style="display:none;">
+        <i data-lucide="award" class="w-12 h-12 mx-auto mb-3 text-yellow-400"></i>
+        <h3 class="text-xl font-bold mb-2">Skor Akhir Anda</h3>
+        <div class="text-4xl font-extrabold grad-text mb-2" id="final-score-display" style="font-family:Syne,sans-serif;">0/5</div>
+        <p class="text-slate-400 text-sm" id="final-score-msg"></p>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="text-center py-8 border-t" style="border-color:var(--border);">
+      <div class="text-xs text-slate-500">
+        CSIM601251 Circuit Optimization · Karnaugh Maps<br/>
+        Fasilkom UI · DDAK 2022/2023 · Slide: Erdefi Rakun · Latihan: Heri Kurniawan
+      </div>
+    </footer>
+  </div>
+</main>
+
+<script>
+// Init Lucide icons
+lucide.createIcons();
+
+// ─── K-Map Tab Switching ───────────────────────────────────────────
+function showKmapTab(tab) {
+  ['t3','t4','t5'].forEach(t => {
+    document.getElementById('tab-content-'+t).classList.add('hidden');
+    const btn = document.getElementById('tab-'+t);
+    btn.className = 'badge cursor-pointer';
+    btn.style.background = 'rgba(148,163,184,0.1)';
+    btn.style.color = 'var(--text-muted)';
+  });
+  document.getElementById('tab-content-'+tab).classList.remove('hidden');
+  const activeBtn = document.getElementById('tab-'+tab);
+  activeBtn.className = 'badge badge-blue cursor-pointer';
+  activeBtn.style.background = '';
+  activeBtn.style.color = '';
+}
+
+// ─── Group Highlight Demo ─────────────────────────────────────────
+function highlightGroup(grp) {
+  const cells = document.querySelectorAll('#demo-kmap td[data-groups]');
+  cells.forEach(cell => {
+    cell.classList.remove('grp-1','grp-2','grp-3');
+    // restore original class
+    const orig = cell.textContent.trim();
+    if(orig === '1') { cell.className = 'cell-one'; }
+    else { cell.className = 'cell-zero'; }
+  });
+  const info = document.getElementById('grp-info');
+  if(grp === 'grp-none') {
+    info.textContent = '← Pilih grup di atas untuk melihat penjelasan';
+    info.className = 'mt-4 text-sm text-slate-400';
+    return;
+  }
+  cells.forEach(cell => {
+    const groups = (cell.getAttribute('data-groups') || '').split(' ');
+    if(groups.includes(grp)) cell.classList.add(grp);
+  });
+  const msgs = {
+    'grp-1': '✅ Grup W\'Z\' (B\'D\'): mencakup m0,m2,m8,m10 — A berubah, B=0, C berubah, D=0 → <strong class="text-sky-400">B\'D\'</strong> (Ini EPI karena m0 dan m8 hanya dicakup grup ini)',
+    'grp-2': '✅ Grup XZ (BD): mencakup m5,m7,m13,m15 — A berubah, B=1, C berubah, D=1 → <strong class="text-indigo-400">BD</strong> (EPI karena m13 hanya dicakup sini)',
+    'grp-3': '✅ Grup W\'X (AB\'): mencakup m4,m5,m6,m7 — A=0, B=1, C dan D berubah → <strong class="text-emerald-400">A\'B</strong> (non-esensial, tapi diperlukan untuk menutup m6)'
+  };
+  info.innerHTML = msgs[grp];
+  info.className = 'mt-4 text-sm text-slate-300';
+}
+
+// ─── Algorithm Steps ─────────────────────────────────────────────
+const algoData = [
+  {
+    color: 'text-sky-400',
+    code: `<span class="cm">// Langkah 1: Isi K-Map</span>
+<span class="cm">// F(A,B,C,D) = Σm(0,2,3,8,9,10,11,12,13,14,15)</span>
+
+<span class="kw">KMAP</span>[AB\\CD][00][01][11][10]
+  <span class="var">AB=00</span>:  <span class="num">1</span>   <span class="num">0</span>   <span class="num">1</span>   <span class="num">1</span>
+  <span class="var">AB=01</span>:  <span class="num">0</span>   <span class="num">0</span>   <span class="num">0</span>   <span class="num">0</span>
+  <span class="var">AB=11</span>:  <span class="num">1</span>   <span class="num">1</span>   <span class="num">1</span>   <span class="num">1</span>
+  <span class="var">AB=10</span>:  <span class="num">1</span>   <span class="num">1</span>   <span class="num">1</span>   <span class="num">1</span>
+
+<span class="cm">// m0,m2,m3 → baris AB=00 kolom 00,10,11</span>
+<span class="cm">// m8–m15   → baris AB=10 dan AB=11 semua 1</span>`
+  },
+  {
+    color: 'text-indigo-400',
+    code: `<span class="cm">// Langkah 2: Identifikasi semua PI</span>
+
+<span class="cm">// PI 1: {m8,m9,m10,m11,m12,m13,m14,m15}</span>
+<span class="cm">//        8 sel (baris AB=10 & AB=11)</span>
+<span class="cm">//        → A konstan=1 → <span class="var">A</span></span>
+
+<span class="cm">// PI 2: {m0,m2,m8,m10}</span>
+<span class="cm">//        B=0, D=0 → <span class="var">B'D'</span></span>
+
+<span class="cm">// PI 3: {m2,m3}</span>
+<span class="cm">//        A=0, B=0, C=1 → <span class="var">A'B'C</span></span>
+
+<span class="fn">total_PI</span> = <span class="num">3</span>`
+  },
+  {
+    color: 'text-emerald-400',
+    code: `<span class="cm">// Langkah 3: Tandai EPI</span>
+
+<span class="cm">// m0: hanya dicakup PI2 (B'D') → EPI!</span>
+<span class="cm">// m3: hanya dicakup PI3 (A'B'C) → EPI!</span>
+<span class="cm">// m8–m15: dicakup PI1 (A)</span>
+<span class="cm">//          m8,m10 juga di PI2</span>
+<span class="cm">//          → PI1 adalah EPI (m9,m11,m13,m15</span>
+<span class="cm">//             hanya di PI1)</span>
+
+<span class="fn">EPI</span> = [<span class="var">A</span>, <span class="var">B'D'</span>, <span class="var">A'B'C</span>]`
+  },
+  {
+    color: 'text-orange-400',
+    code: `<span class="cm">// Langkah 4: Apakah semua minterm sudah tercakup?</span>
+
+<span class="cm">// EPI A     → covers: {m8,m9,m10,m11,m12,m13,m14,m15}</span>
+<span class="cm">// EPI B'D'  → covers: {m0,m2,m8,m10}</span>
+<span class="cm">// EPI A'B'C → covers: {m2,m3}</span>
+
+<span class="cm">// Semua minterm Σm(0,2,3,8,9,10,11,12,13,14,15)</span>
+<span class="cm">// sudah tercakup oleh ketiga EPI!</span>
+
+<span class="fn">status</span> = <span class="str">"Semua minterm tercakup ✓"</span>`
+  },
+  {
+    color: 'text-pink-400',
+    code: `<span class="cm">// Langkah 5: Tulis ekspresi SOP final</span>
+
+<span class="cm">// Kumpulkan semua PI yang dipilih:</span>
+<span class="cm">// 1. A        (dari EPI)</span>
+<span class="cm">// 2. B'D'     (dari EPI)</span>
+<span class="cm">// 3. A'B'C    (dari EPI)</span>
+
+<span class="fn">F</span>(<span class="var">A,B,C,D</span>) = <span class="var">A</span> + <span class="var">B'D'</span> + <span class="var">A'B'C</span>
+
+<span class="cm">// L=6, G=8, GN=10</span>
+<span class="cm">// Ini adalah ekspresi SOP MINIMAL! ✅</span>`
+  }
+];
+
+function setStep(idx) {
+  const items = document.querySelectorAll('#algo-steps .step-item');
+  items.forEach((el,i) => {
+    el.classList.toggle('active', i === idx);
+  });
+  document.getElementById('algo-code').innerHTML = algoData[idx].code;
+}
+
+// ─── Quiz Logic ────────────────────────────────────────────────────
+let answered = {};
+let score = 0;
+
+function checkAnswer(qNum, opt, isCorrect, el) {
+  if(answered[qNum]) return;
+  answered[qNum] = true;
+  score += isCorrect ? 1 : 0;
+
+  // Disable all options in this question
+  const allOpts = el.closest('[id^="q'+qNum+'-opts"]') 
+    ? el.closest('[id^="q'+qNum+'-opts"]').querySelectorAll('.quiz-option')
+    : document.querySelectorAll('#q'+qNum+'-opts .quiz-option');
+  allOpts.forEach(o => o.classList.add('disabled'));
+
+  if(isCorrect) {
+    el.classList.add('correct');
+    showFeedback(qNum, true);
+  } else {
+    el.classList.add('wrong');
+    // find correct and highlight
+    allOpts.forEach(o => {
+      if(o.getAttribute('onclick') && o.getAttribute('onclick').includes(', true, ')) {
+        o.classList.add('correct');
+      }
+    });
+    showFeedback(qNum, false);
+  }
+
+  updateProgress();
+}
+
+function showFeedback(qNum, correct) {
+  const el = document.getElementById('q'+qNum+'-feedback');
+  if(!el) return;
+  el.classList.remove('hidden');
+  if(correct) {
+    el.innerHTML = '<span class="text-emerald-400 font-bold flex items-center gap-1"><svg xmlns="http://www.w3.org/2000/svg" class="inline w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg> Benar! Jawaban tepat.</span>';
+  } else {
+    el.innerHTML = '<span class="text-red-400 font-bold flex items-center gap-1"><svg xmlns="http://www.w3.org/2000/svg" class="inline w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg> Kurang tepat. Cek penjelasan di bawah.</span>';
+  }
+}
+
+function updateProgress() {
+  const total = 5;
+  const answered_count = Object.keys(answered).length;
+  const pct = (answered_count / total * 100).toFixed(0);
+  document.getElementById('quiz-progress').style.width = pct + '%';
+  document.getElementById('quiz-score').textContent = score + ' / ' + total;
+
+  if(answered_count === total) {
+    setTimeout(() => {
+      const card = document.getElementById('final-score-card');
+      card.style.display = '';
+      document.getElementById('final-score-display').textContent = score + '/5';
+      const msgs = [
+        'Tetap semangat belajar! Baca kembali materi dan coba lagi.',
+        'Cukup baik! Review bagian yang salah dan dalami lagi.',
+        'Bagus! Anda memahami sebagian besar konsep.',
+        'Sangat baik! Hanya sedikit yang perlu diperdalam.',
+        'Sempurna! Anda menguasai Karnaugh Maps dengan baik! 🎉'
+      ];
+      document.getElementById('final-score-msg').textContent = msgs[score] || '';
+      card.scrollIntoView({behavior:'smooth', block:'center'});
+      lucide.createIcons();
+    }, 300);
+  }
+}
+
+function toggleReveal(id) {
+  const el = document.getElementById(id);
+  el.classList.toggle('open');
+}
+
+// ─── Active Nav highlight on scroll ──────────────────────────────
+const sections = ['intro','konsep','kmap-var','prime','dont-care','algo','latihan'];
+const navLinks = document.querySelectorAll('#sidebar a');
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(s => {
+    const el = document.getElementById(s);
+    if(el && window.scrollY >= el.offsetTop - 120) current = s;
+  });
+  navLinks.forEach(a => {
+    a.classList.remove('bg-white/5','text-white');
+    if(a.getAttribute('href') === '#'+current) {
+      a.classList.add('bg-white/5','text-white');
+    }
+  });
+});
+
+// Re-init icons after DOM ready
+document.addEventListener('DOMContentLoaded', () => lucide.createIcons());
+</script>
+</body>
+</html>

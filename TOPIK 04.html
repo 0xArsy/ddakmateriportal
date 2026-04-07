@@ -1,0 +1,1256 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Topik 04 – Logic Gates & Combinational Circuits</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-primary: #0a0e1a;
+    --bg-card: #0f1629;
+    --bg-card2: #141d35;
+    --accent: #00e5ff;
+    --accent2: #7c3aed;
+    --accent3: #f59e0b;
+    --text-main: #e2e8f0;
+    --text-muted: #8892a4;
+    --border: #1e2d4a;
+    --correct: #10b981;
+    --wrong: #ef4444;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg-primary);
+    color: var(--text-main);
+    min-height: 100vh;
+    background-image: radial-gradient(ellipse 80% 60% at 50% -10%, rgba(0,229,255,0.07) 0%, transparent 70%),
+                      radial-gradient(ellipse 60% 40% at 80% 80%, rgba(124,58,237,0.06) 0%, transparent 60%);
+  }
+  .mono { font-family: 'Space Mono', monospace; }
+  .section-anchor { scroll-margin-top: 80px; }
+
+  /* NAV */
+  .nav-pill {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    transition: all .2s;
+  }
+  .nav-pill:hover, .nav-pill.active {
+    background: rgba(0,229,255,0.12);
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  /* CARDS */
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    transition: border-color .2s;
+  }
+  .card:hover { border-color: #2a3f65; }
+  .card-glow { box-shadow: 0 0 0 1px rgba(0,229,255,0.15), 0 8px 32px rgba(0,0,0,0.4); }
+
+  /* CALLOUTS */
+  .callout-term {
+    border-left: 3px solid var(--accent);
+    background: rgba(0,229,255,0.05);
+    border-radius: 0 12px 12px 0;
+  }
+  .callout-pitfall {
+    border-left: 3px solid #ef4444;
+    background: rgba(239,68,68,0.06);
+    border-radius: 0 12px 12px 0;
+  }
+  .callout-note {
+    border-left: 3px solid var(--accent3);
+    background: rgba(245,158,11,0.06);
+    border-radius: 0 12px 12px 0;
+  }
+  .callout-tip {
+    border-left: 3px solid var(--correct);
+    background: rgba(16,185,129,0.06);
+    border-radius: 0 12px 12px 0;
+  }
+
+  /* CODE */
+  pre {
+    background: #070c18;
+    border: 1px solid #1a2540;
+    border-radius: 12px;
+    padding: 1.2rem 1.4rem;
+    overflow-x: auto;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.8rem;
+    line-height: 1.7;
+  }
+  .kw { color: #7dd3fc; }
+  .fn { color: #86efac; }
+  .cm { color: #475569; font-style: italic; }
+  .val { color: #fbbf24; }
+  .op { color: #f9a8d4; }
+  .var { color: #c084fc; }
+
+  /* TRUTH TABLE */
+  table.tt { border-collapse: separate; border-spacing: 0; }
+  table.tt th {
+    background: rgba(0,229,255,0.1);
+    color: var(--accent);
+    font-family: 'Space Mono', monospace;
+    font-size: 0.78rem;
+    padding: 8px 14px;
+    border-bottom: 1px solid var(--border);
+  }
+  table.tt td {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.78rem;
+    padding: 7px 14px;
+    border-bottom: 1px solid rgba(30,45,74,0.5);
+    text-align: center;
+  }
+  table.tt tr:hover td { background: rgba(255,255,255,0.025); }
+  .td-one { color: var(--accent); font-weight: 700; }
+  .td-zero { color: var(--text-muted); }
+
+  /* GATE SVG */
+  .gate-svg { filter: drop-shadow(0 0 6px rgba(0,229,255,0.25)); }
+
+  /* QUIZ */
+  .opt-btn {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 16px;
+    text-align: left;
+    cursor: pointer;
+    transition: all .15s;
+    width: 100%;
+    color: var(--text-main);
+    font-size: 0.9rem;
+  }
+  .opt-btn:hover { border-color: var(--accent); background: rgba(0,229,255,0.07); }
+  .opt-btn.correct { border-color: var(--correct)!important; background: rgba(16,185,129,0.12)!important; color: #6ee7b7; }
+  .opt-btn.wrong { border-color: var(--wrong)!important; background: rgba(239,68,68,0.1)!important; color: #fca5a5; }
+  .opt-btn:disabled { cursor: not-allowed; opacity: 0.85; }
+
+  .reveal-btn {
+    background: rgba(124,58,237,0.15);
+    border: 1px solid rgba(124,58,237,0.4);
+    color: #c4b5fd;
+    border-radius: 8px;
+    padding: 6px 14px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all .15s;
+  }
+  .reveal-btn:hover { background: rgba(124,58,237,0.3); }
+  .explanation { display: none; }
+  .explanation.open { display: block; }
+
+  /* STEP WALKTHROUGH */
+  .step-item {
+    border-left: 2px solid var(--border);
+    padding-left: 1rem;
+    margin-left: 0.5rem;
+    transition: border-color .2s;
+  }
+  .step-item.active { border-color: var(--accent); }
+  .step-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: var(--border);
+    margin-left: -1.55rem;
+    margin-right: 0.7rem;
+    flex-shrink: 0;
+    margin-top: 4px;
+    transition: background .2s;
+  }
+  .step-item.active .step-dot { background: var(--accent); box-shadow: 0 0 8px var(--accent); }
+
+  /* TABS */
+  .tab-btn {
+    padding: 7px 18px;
+    border-radius: 8px;
+    font-size: 0.82rem;
+    cursor: pointer;
+    border: 1px solid transparent;
+    color: var(--text-muted);
+    transition: all .15s;
+  }
+  .tab-btn.active {
+    background: rgba(0,229,255,0.1);
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  /* BADGE */
+  .badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 0.7rem; font-weight: 600; letter-spacing: 0.05em;
+    padding: 3px 10px; border-radius: 999px;
+  }
+  .badge-cyan { background: rgba(0,229,255,0.12); color: var(--accent); border: 1px solid rgba(0,229,255,0.25); }
+  .badge-purple { background: rgba(124,58,237,0.12); color: #c4b5fd; border: 1px solid rgba(124,58,237,0.3); }
+  .badge-amber { background: rgba(245,158,11,0.12); color: #fcd34d; border: 1px solid rgba(245,158,11,0.3); }
+  .badge-green { background: rgba(16,185,129,0.12); color: #6ee7b7; border: 1px solid rgba(16,185,129,0.3); }
+  .badge-red { background: rgba(239,68,68,0.12); color: #fca5a5; border: 1px solid rgba(239,68,68,0.3); }
+
+  /* SECTION DIVIDER */
+  .section-num {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--accent);
+    letter-spacing: 0.15em;
+  }
+
+  /* SCORE */
+  #score-display { transition: all .3s; }
+
+  /* PROGRESS */
+  .progress-bar-inner {
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: 9999px;
+    transition: width .4s ease;
+  }
+
+  /* ANIM */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(18px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .fade-up { animation: fadeUp .5s ease both; }
+
+  @keyframes pulse-border {
+    0%, 100% { border-color: rgba(0,229,255,0.15); }
+    50% { border-color: rgba(0,229,255,0.5); }
+  }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 5px; height: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #1e2d4a; border-radius: 9999px; }
+
+  .sticky-nav { position: sticky; top: 0; z-index: 50; backdrop-filter: blur(12px); background: rgba(10,14,26,0.88); border-bottom: 1px solid var(--border); }
+
+  /* FORMULA */
+  .formula {
+    font-family: 'Space Mono', monospace;
+    background: rgba(0,229,255,0.06);
+    border: 1px solid rgba(0,229,255,0.2);
+    padding: 0.7rem 1.2rem;
+    border-radius: 10px;
+    font-size: 0.85rem;
+    color: #bae6fd;
+    display: inline-block;
+  }
+</style>
+</head>
+<body>
+
+<!-- STICKY NAV -->
+<nav class="sticky-nav px-4 py-3">
+  <div class="max-w-6xl mx-auto flex items-center justify-between gap-4 flex-wrap">
+    <div class="flex items-center gap-3">
+      <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background:rgba(0,229,255,0.15);border:1px solid rgba(0,229,255,0.3)">
+        <i data-lucide="cpu" class="w-4 h-4" style="color:var(--accent)"></i>
+      </div>
+      <span class="mono text-sm font-bold" style="color:var(--accent)">TOPIK 04</span>
+      <span class="text-xs hidden sm:inline" style="color:var(--text-muted)">Logic Gates & Combinational Circuits</span>
+    </div>
+    <div class="flex items-center gap-2 flex-wrap">
+      <a href="#conceptual" class="nav-pill px-3 py-1 text-xs rounded-full mono">KONSEP</a>
+      <a href="#gates" class="nav-pill px-3 py-1 text-xs rounded-full mono">GATES</a>
+      <a href="#algorithm" class="nav-pill px-3 py-1 text-xs rounded-full mono">DESAIN</a>
+      <a href="#practice" class="nav-pill px-3 py-1 text-xs rounded-full mono">LATIHAN</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<header class="px-4 pt-16 pb-12 text-center">
+  <div class="max-w-3xl mx-auto fade-up">
+    <span class="badge badge-cyan mb-4"><i data-lucide="zap" class="w-3 h-3"></i> CSIM601251 — Fasilkom UI</span>
+    <h1 class="text-4xl md:text-5xl font-bold mt-3 mb-4 leading-tight">
+      Logic Gates &amp;<br>
+      <span style="color:var(--accent)">Combinational Circuits</span>
+    </h1>
+    <p class="text-base md:text-lg" style="color:var(--text-muted); max-width:600px; margin:0 auto">
+      Pembelajaran interaktif mencakup NAND/NOR gates, XOR/XNOR, Universal Gates, SOP/POS circuits, dan Combinational Logic Design — dari teori hingga implementasi.
+    </p>
+    <div class="flex flex-wrap justify-center gap-3 mt-8">
+      <span class="badge badge-purple"><i data-lucide="layers" class="w-3 h-3"></i> Gate Types</span>
+      <span class="badge badge-amber"><i data-lucide="git-branch" class="w-3 h-3"></i> XOR/XNOR</span>
+      <span class="badge badge-green"><i data-lucide="shield" class="w-3 h-3"></i> Universal Gates</span>
+      <span class="badge badge-red"><i data-lucide="calculator" class="w-3 h-3"></i> Half/Full Adder</span>
+    </div>
+  </div>
+</header>
+
+<!-- ═══════════════════════════════════════════════
+     SECTION 1 — CONCEPTUAL DEEP DIVE
+═══════════════════════════════════════════════ -->
+<section id="conceptual" class="section-anchor px-4 pb-16 max-w-6xl mx-auto">
+  <div class="mb-8">
+    <span class="section-num">// 01</span>
+    <h2 class="text-2xl font-bold mt-1">Conceptual Deep Dive</h2>
+    <p class="text-sm mt-1" style="color:var(--text-muted)">Mental model & terminologi penting dalam logic gates</p>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+
+    <!-- CARD: Why other gates? -->
+    <div class="card p-6">
+      <div class="flex items-center gap-2 mb-4">
+        <i data-lucide="help-circle" class="w-5 h-5" style="color:var(--accent)"></i>
+        <h3 class="font-semibold text-base">Mengapa Ada Gate Lain Selain AND/OR/NOT?</h3>
+      </div>
+      <p class="text-sm mb-4" style="color:var(--text-muted)">Set {AND, OR, NOT} sudah cukup untuk membangun <em>semua</em> fungsi Boolean (disebut <strong style="color:var(--text-main)">complete set of logic</strong>). Namun, gate tambahan digunakan karena:</p>
+      <ul class="space-y-2 text-sm">
+        <li class="flex gap-2"><span class="text-cyan-400 flex-shrink-0">▸</span><span><strong>Ekonomis & efisien</strong> — NAND/NOR alami di teknologi CMOS dari sisi luas chip dan kecepatan.</span></li>
+        <li class="flex gap-2"><span class="text-cyan-400 flex-shrink-0">▸</span><span><strong>Self-sufficient</strong> — NAND dan NOR masing-masing dapat merepresentasikan semua fungsi logika (<em>universal gates</em>).</span></li>
+        <li class="flex gap-2"><span class="text-cyan-400 flex-shrink-0">▸</span><span><strong>Fungsional spesifik</strong> — XOR sangat berguna untuk parity generation, adder, counter.</span></li>
+      </ul>
+      <div class="callout-note p-3 mt-4 text-xs rounded-r-lg">
+        <strong style="color:var(--accent3)">⚡ Klasifikasi Gate:</strong><br>
+        <strong>Primitive gate</strong> = menggunakan satu tipe operasi primitif (AND/OR) + opsional inversi. Contoh: NAND, NOR.<br>
+        <strong>Complex gate</strong> = membutuhkan lebih dari satu tipe operasi. Contoh: XOR, XNOR.
+      </div>
+    </div>
+
+    <!-- CARD: Key Terms -->
+    <div class="card p-6">
+      <div class="flex items-center gap-2 mb-4">
+        <i data-lucide="book-open" class="w-5 h-5" style="color:var(--accent3)"></i>
+        <h3 class="font-semibold text-base">Key Terms</h3>
+      </div>
+      <div class="space-y-3">
+        <div class="callout-term p-3 text-xs">
+          <strong style="color:var(--accent)">Universal Gate</strong>
+          <p class="mt-1" style="color:var(--text-muted)">Tipe gate yang dapat mengimplementasikan <em>semua</em> fungsi Boolean sendirian. NAND dan NOR adalah universal gates.</p>
+        </div>
+        <div class="callout-term p-3 text-xs">
+          <strong style="color:var(--accent)">SOP (Sum of Products)</strong>
+          <p class="mt-1" style="color:var(--text-muted)">Ekspresi Boolean sebagai jumlah (OR) dari beberapa product (AND). Contoh: <span class="mono">F = AB + C'D + E</span></p>
+        </div>
+        <div class="callout-term p-3 text-xs">
+          <strong style="color:var(--accent)">POS (Product of Sums)</strong>
+          <p class="mt-1" style="color:var(--text-muted)">Ekspresi Boolean sebagai product (AND) dari beberapa sum (OR). Contoh: <span class="mono">G = (A+B)·(C'+D)·E</span></p>
+        </div>
+        <div class="callout-term p-3 text-xs">
+          <strong style="color:var(--accent)">Don't Care</strong>
+          <p class="mt-1" style="color:var(--text-muted)">Kombinasi input yang tidak akan pernah terjadi, diberi simbol X pada K-map. Dapat digunakan untuk optimasi.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- CARD: Common Pitfalls -->
+    <div class="card p-6">
+      <div class="flex items-center gap-2 mb-4">
+        <i data-lucide="alert-triangle" class="w-5 h-5" style="color:#ef4444"></i>
+        <h3 class="font-semibold text-base">Common Pitfalls</h3>
+      </div>
+      <div class="space-y-3">
+        <div class="callout-pitfall p-3 text-xs">
+          <strong style="color:#fca5a5">⚠ NAND/NOR bukan asosiatif!</strong>
+          <p class="mt-1" style="color:var(--text-muted)">NAND dan NOR tidak memiliki simbol operasi standar karena operasinya <em>tidak asosiatif</em>. Jadi <span class="mono">(A NAND B) NAND C ≠ A NAND (B NAND C)</span>. Gunakan ekspansi De Morgan untuk manipulasinya.</p>
+        </div>
+        <div class="callout-pitfall p-3 text-xs">
+          <strong style="color:#fca5a5">⚠ XOR/XNOR hanya untuk 2 input!</strong>
+          <p class="mt-1" style="color:var(--text-muted)">Symbol XOR/XNOR berbentuk hanya ada untuk 2 input. Untuk lebih dari 2 variabel, disebut <em>odd function</em> (XOR) atau <em>even function</em> (XNOR), bukan XOR.</p>
+        </div>
+        <div class="callout-pitfall p-3 text-xs">
+          <strong style="color:#fca5a5">⚠ Inverter dengan 1 input</strong>
+          <p class="mt-1" style="color:var(--text-muted)">NAND gate dengan satu input menjadi inverter (karena <span class="mono">(x·x)' = x'</span>). Begitu juga NOR dengan satu input.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- CARD: DeMorgan & Duality -->
+    <div class="card p-6">
+      <div class="flex items-center gap-2 mb-4">
+        <i data-lucide="refresh-cw" class="w-5 h-5" style="color:#c084fc"></i>
+        <h3 class="font-semibold text-base">De Morgan & Representasi Ganda</h3>
+      </div>
+      <p class="text-sm mb-4" style="color:var(--text-muted)">Setiap gate NAND/NOR memiliki <strong style="color:var(--text-main)">dua representasi ekivalen</strong> berkat hukum De Morgan:</p>
+      <div class="space-y-3">
+        <div class="bg-black bg-opacity-30 rounded-xl p-4">
+          <div class="text-xs font-bold mb-2" style="color:var(--accent)">NAND (3-input)</div>
+          <div class="text-xs space-y-1 mono" style="color:#bae6fd">
+            <div>AND-Invert: <span style="color:#fbbf24">F = (X·Y·Z)'</span></div>
+            <div>Invert-OR:  <span style="color:#86efac">F = X' + Y' + Z'</span></div>
+          </div>
+        </div>
+        <div class="bg-black bg-opacity-30 rounded-xl p-4">
+          <div class="text-xs font-bold mb-2" style="color:#c084fc">NOR (3-input)</div>
+          <div class="text-xs space-y-1 mono" style="color:#bae6fd">
+            <div>OR-Invert:  <span style="color:#fbbf24">F = (X+Y+Z)'</span></div>
+            <div>Invert-AND: <span style="color:#86efac">F = X'·Y'·Z'</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="callout-tip p-3 mt-3 text-xs">
+        <strong style="color:#6ee7b7">✓ Mental Model:</strong> Memiliki kedua representasi mempermudah visualisasi fungsi circuit. Pilih representasi yang paling intuitif untuk konteks yang ada.
+      </div>
+    </div>
+
+  </div>
+
+  <!-- XOR/XNOR Deep Dive -->
+  <div class="card p-6 mt-5">
+    <div class="flex items-center gap-2 mb-5">
+      <i data-lucide="git-merge" class="w-5 h-5" style="color:var(--accent3)"></i>
+      <h3 class="font-semibold text-lg">XOR & XNOR — Deep Dive</h3>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+      <div>
+        <div class="text-xs font-bold mb-2" style="color:var(--accent3)">DEFINISI</div>
+        <div class="space-y-2 text-sm">
+          <div class="formula text-xs">X ⊕ Y = X·Y' + X'·Y</div>
+          <p class="text-xs mt-2" style="color:var(--text-muted)">XOR = "X OR Y, tapi TIDAK keduanya sekaligus"</p>
+          <div class="formula text-xs mt-3">X ⊕ Y (bar) = X·Y + X'·Y'</div>
+          <p class="text-xs mt-2" style="color:var(--text-muted)">XNOR = fungsi ekivalensi (bernilai 1 jika X = Y)</p>
+        </div>
+      </div>
+      <div>
+        <div class="text-xs font-bold mb-2" style="color:var(--accent)">IDENTITAS XOR</div>
+        <div class="space-y-1 text-xs mono" style="color:#bae6fd">
+          <div>X ⊕ 0 = X</div>
+          <div>X ⊕ 1 = X' (inverter!)</div>
+          <div>X ⊕ X = 0</div>
+          <div>X ⊕ X' = 1</div>
+          <div>X ⊕ Y = Y ⊕ X (komutatif)</div>
+          <div>(X⊕Y)⊕Z = X⊕(Y⊕Z) (asosiatif)</div>
+        </div>
+        <div class="callout-note p-2 mt-3 text-xs">
+          <strong style="color:var(--accent3)">Penggunaan XOR:</strong> Adder, subtractor, multiplier, counter, parity generator/checker
+        </div>
+      </div>
+      <div>
+        <div class="text-xs font-bold mb-2" style="color:#c084fc">TRUTH TABLE XOR vs XNOR</div>
+        <table class="tt w-full rounded-xl overflow-hidden">
+          <thead><tr><th>X</th><th>Y</th><th style="color:#fbbf24">X⊕Y</th><th style="color:#86efac">X⊕Ȳ</th></tr></thead>
+          <tbody>
+            <tr><td class="td-zero">0</td><td class="td-zero">0</td><td class="td-zero">0</td><td class="td-one">1</td></tr>
+            <tr><td class="td-zero">0</td><td class="td-one">1</td><td class="td-one">1</td><td class="td-zero">0</td></tr>
+            <tr><td class="td-one">1</td><td class="td-zero">0</td><td class="td-one">1</td><td class="td-zero">0</td></tr>
+            <tr><td class="td-one">1</td><td class="td-one">1</td><td class="td-zero">0</td><td class="td-one">1</td></tr>
+          </tbody>
+        </table>
+        <p class="text-xs mt-2" style="color:var(--text-muted)">Odd function (XOR) = 1 jika jumlah input bernilai 1 adalah ganjil. Even function (XNOR) = 1 jika jumlah input bernilai 1 adalah genap.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Combinational Design Procedure -->
+  <div class="card p-6 mt-5">
+    <div class="flex items-center gap-2 mb-4">
+      <i data-lucide="clipboard-list" class="w-5 h-5" style="color:var(--correct)"></i>
+      <h3 class="font-semibold text-lg">Prosedur Desain Combinational Circuit</h3>
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-5 gap-3 text-center text-xs">
+      <div class="card p-4" style="border-color:rgba(0,229,255,0.3)">
+        <div class="text-2xl font-bold mono mb-2" style="color:var(--accent)">1</div>
+        <div class="font-semibold mb-1">Specification</div>
+        <div style="color:var(--text-muted)">Tulis spesifikasi circuit</div>
+      </div>
+      <div class="flex items-center justify-center text-gray-600">→</div>
+      <div class="card p-4" style="border-color:rgba(124,58,237,0.3)">
+        <div class="text-2xl font-bold mono mb-2" style="color:#c084fc">2</div>
+        <div class="font-semibold mb-1">Formulation</div>
+        <div style="color:var(--text-muted)">Truth table / persamaan Boolean</div>
+      </div>
+      <div class="flex items-center justify-center text-gray-600">→</div>
+      <div class="card p-4" style="border-color:rgba(245,158,11,0.3)">
+        <div class="text-2xl font-bold mono mb-2" style="color:var(--accent3)">3</div>
+        <div class="font-semibold mb-1">Optimization</div>
+        <div style="color:var(--text-muted)">K-map, 2-level/multi-level</div>
+      </div>
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-center text-xs mt-3">
+      <div></div>
+      <div class="card p-4" style="border-color:rgba(16,185,129,0.3)">
+        <div class="text-2xl font-bold mono mb-2" style="color:var(--correct)">4</div>
+        <div class="font-semibold mb-1">Tech Mapping</div>
+        <div style="color:var(--text-muted)">Map ke teknologi (NAND/NOR/etc)</div>
+      </div>
+      <div class="card p-4" style="border-color:rgba(239,68,68,0.3)">
+        <div class="text-2xl font-bold mono mb-2" style="color:#fca5a5">5</div>
+        <div class="font-semibold mb-1">Verification</div>
+        <div style="color:var(--text-muted)">Manual analysis / simulasi</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     SECTION 2 — GATES REFERENCE
+═══════════════════════════════════════════════ -->
+<section id="gates" class="section-anchor px-4 pb-16 max-w-6xl mx-auto">
+  <div class="mb-8">
+    <span class="section-num">// 02</span>
+    <h2 class="text-2xl font-bold mt-1">Gate Reference & Truth Tables</h2>
+    <p class="text-sm mt-1" style="color:var(--text-muted)">Referensi lengkap semua gate dengan truth table interaktif</p>
+  </div>
+
+  <!-- Tabs -->
+  <div class="flex flex-wrap gap-2 mb-5">
+    <button class="tab-btn active" onclick="switchTab('basic')">Gate Dasar</button>
+    <button class="tab-btn" onclick="switchTab('nand')">NAND Universal</button>
+    <button class="tab-btn" onclick="switchTab('nor')">NOR Universal</button>
+    <button class="tab-btn" onclick="switchTab('sop-pos')">SOP & NAND / POS & NOR</button>
+  </div>
+
+  <!-- Tab: basic -->
+  <div id="tab-basic" class="tab-content active">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <!-- AND -->
+      <div class="card p-5">
+        <div class="flex items-center justify-between mb-3">
+          <span class="font-bold text-sm">AND Gate</span>
+          <span class="badge badge-cyan mono text-xs">A·B</span>
+        </div>
+        <svg class="gate-svg w-full h-16 mb-3" viewBox="0 0 120 50">
+          <line x1="10" y1="15" x2="45" y2="15" stroke="#00e5ff" stroke-width="1.5"/>
+          <line x1="10" y1="35" x2="45" y2="35" stroke="#00e5ff" stroke-width="1.5"/>
+          <path d="M45,10 L45,40 Q80,40 80,25 Q80,10 45,10 Z" fill="none" stroke="#00e5ff" stroke-width="1.5"/>
+          <line x1="80" y1="25" x2="110" y2="25" stroke="#00e5ff" stroke-width="1.5"/>
+          <text x="5" y="17" fill="#94a3b8" font-size="8" font-family="monospace">A</text>
+          <text x="5" y="37" fill="#94a3b8" font-size="8" font-family="monospace">B</text>
+          <text x="112" y="28" fill="#fbbf24" font-size="8" font-family="monospace">A·B</text>
+        </svg>
+        <table class="tt w-full">
+          <thead><tr><th>A</th><th>B</th><th style="color:#fbbf24">A·B</th></tr></thead>
+          <tbody>
+            <tr><td class="td-zero">0</td><td class="td-zero">0</td><td class="td-zero">0</td></tr>
+            <tr><td class="td-zero">0</td><td class="td-one">1</td><td class="td-zero">0</td></tr>
+            <tr><td class="td-one">1</td><td class="td-zero">0</td><td class="td-zero">0</td></tr>
+            <tr><td class="td-one">1</td><td class="td-one">1</td><td class="td-one">1</td></tr>
+          </tbody>
+        </table>
+        <p class="text-xs mt-3" style="color:var(--text-muted)">Output = 1 <strong>hanya</strong> jika semua input = 1</p>
+      </div>
+      <!-- OR -->
+      <div class="card p-5">
+        <div class="flex items-center justify-between mb-3">
+          <span class="font-bold text-sm">OR Gate</span>
+          <span class="badge badge-cyan mono text-xs">A+B</span>
+        </div>
+        <svg class="gate-svg w-full h-16 mb-3" viewBox="0 0 120 50">
+          <line x1="10" y1="15" x2="42" y2="15" stroke="#00e5ff" stroke-width="1.5"/>
+          <line x1="10" y1="35" x2="42" y2="35" stroke="#00e5ff" stroke-width="1.5"/>
+          <path d="M40,10 Q50,10 80,25 Q50,40 40,40 Q52,25 40,10 Z" fill="none" stroke="#00e5ff" stroke-width="1.5"/>
+          <line x1="80" y1="25" x2="110" y2="25" stroke="#00e5ff" stroke-width="1.5"/>
+          <text x="5" y="17" fill="#94a3b8" font-size="8" font-family="monospace">A</text>
+          <text x="5" y="37" fill="#94a3b8" font-size="8" font-family="monospace">B</text>
+          <text x="112" y="28" fill="#fbbf24" font-size="8" font-family="monospace">A+B</text>
+        </svg>
+        <table class="tt w-full">
+          <thead><tr><th>A</th><th>B</th><th style="color:#fbbf24">A+B</th></tr></thead>
+          <tbody>
+            <tr><td class="td-zero">0</td><td class="td-zero">0</td><td class="td-zero">0</td></tr>
+            <tr><td class="td-zero">0</td><td class="td-one">1</td><td class="td-one">1</td></tr>
+            <tr><td class="td-one">1</td><td class="td-zero">0</td><td class="td-one">1</td></tr>
+            <tr><td class="td-one">1</td><td class="td-one">1</td><td class="td-one">1</td></tr>
+          </tbody>
+        </table>
+        <p class="text-xs mt-3" style="color:var(--text-muted)">Output = 1 jika <strong>minimal satu</strong> input = 1</p>
+      </div>
+      <!-- NOT -->
+      <div class="card p-5">
+        <div class="flex items-center justify-between mb-3">
+          <span class="font-bold text-sm">NOT Gate (Inverter)</span>
+          <span class="badge badge-cyan mono text-xs">A'</span>
+        </div>
+        <svg class="gate-svg w-full h-16 mb-3" viewBox="0 0 120 50">
+          <line x1="10" y1="25" x2="40" y2="25" stroke="#00e5ff" stroke-width="1.5"/>
+          <path d="M40,12 L70,25 L40,38 Z" fill="none" stroke="#00e5ff" stroke-width="1.5"/>
+          <circle cx="74" cy="25" r="4" fill="none" stroke="#00e5ff" stroke-width="1.5"/>
+          <line x1="78" y1="25" x2="110" y2="25" stroke="#00e5ff" stroke-width="1.5"/>
+          <text x="5" y="28" fill="#94a3b8" font-size="8" font-family="monospace">A</text>
+          <text x="112" y="28" fill="#fbbf24" font-size="8" font-family="monospace">A'</text>
+        </svg>
+        <table class="tt w-full">
+          <thead><tr><th>A</th><th style="color:#fbbf24">A'</th></tr></thead>
+          <tbody>
+            <tr><td class="td-zero">0</td><td class="td-one">1</td></tr>
+            <tr><td class="td-one">1</td><td class="td-zero">0</td></tr>
+          </tbody>
+        </table>
+        <p class="text-xs mt-3" style="color:var(--text-muted)">Output adalah kebalikan dari input</p>
+      </div>
+      <!-- NAND -->
+      <div class="card p-5">
+        <div class="flex items-center justify-between mb-3">
+          <span class="font-bold text-sm">NAND Gate</span>
+          <span class="badge badge-purple mono text-xs">(A·B)'</span>
+        </div>
+        <svg class="gate-svg w-full h-16 mb-3" viewBox="0 0 130 50">
+          <line x1="10" y1="15" x2="45" y2="15" stroke="#c084fc" stroke-width="1.5"/>
+          <line x1="10" y1="35" x2="45" y2="35" stroke="#c084fc" stroke-width="1.5"/>
+          <path d="M45,10 L45,40 Q80,40 80,25 Q80,10 45,10 Z" fill="none" stroke="#c084fc" stroke-width="1.5"/>
+          <circle cx="84" cy="25" r="4" fill="none" stroke="#c084fc" stroke-width="1.5"/>
+          <line x1="88" y1="25" x2="115" y2="25" stroke="#c084fc" stroke-width="1.5"/>
+          <text x="5" y="17" fill="#94a3b8" font-size="8" font-family="monospace">A</text>
+          <text x="5" y="37" fill="#94a3b8" font-size="8" font-family="monospace">B</text>
+          <text x="117" y="28" fill="#fbbf24" font-size="7" font-family="monospace">(AB)'</text>
+        </svg>
+        <table class="tt w-full">
+          <thead><tr><th>A</th><th>B</th><th style="color:#fbbf24">(A·B)'</th></tr></thead>
+          <tbody>
+            <tr><td class="td-zero">0</td><td class="td-zero">0</td><td class="td-one">1</td></tr>
+            <tr><td class="td-zero">0</td><td class="td-one">1</td><td class="td-one">1</td></tr>
+            <tr><td class="td-one">1</td><td class="td-zero">0</td><td class="td-one">1</td></tr>
+            <tr><td class="td-one">1</td><td class="td-one">1</td><td class="td-zero">0</td></tr>
+          </tbody>
+        </table>
+        <p class="text-xs mt-3" style="color:var(--text-muted)">Output = 0 <strong>hanya</strong> jika semua input = 1</p>
+      </div>
+      <!-- NOR -->
+      <div class="card p-5">
+        <div class="flex items-center justify-between mb-3">
+          <span class="font-bold text-sm">NOR Gate</span>
+          <span class="badge badge-purple mono text-xs">(A+B)'</span>
+        </div>
+        <svg class="gate-svg w-full h-16 mb-3" viewBox="0 0 130 50">
+          <line x1="10" y1="15" x2="42" y2="15" stroke="#c084fc" stroke-width="1.5"/>
+          <line x1="10" y1="35" x2="42" y2="35" stroke="#c084fc" stroke-width="1.5"/>
+          <path d="M40,10 Q50,10 80,25 Q50,40 40,40 Q52,25 40,10 Z" fill="none" stroke="#c084fc" stroke-width="1.5"/>
+          <circle cx="84" cy="25" r="4" fill="none" stroke="#c084fc" stroke-width="1.5"/>
+          <line x1="88" y1="25" x2="115" y2="25" stroke="#c084fc" stroke-width="1.5"/>
+          <text x="5" y="17" fill="#94a3b8" font-size="8" font-family="monospace">A</text>
+          <text x="5" y="37" fill="#94a3b8" font-size="8" font-family="monospace">B</text>
+          <text x="117" y="28" fill="#fbbf24" font-size="7" font-family="monospace">(A+B)'</text>
+        </svg>
+        <table class="tt w-full">
+          <thead><tr><th>A</th><th>B</th><th style="color:#fbbf24">(A+B)'</th></tr></thead>
+          <tbody>
+            <tr><td class="td-zero">0</td><td class="td-zero">0</td><td class="td-one">1</td></tr>
+            <tr><td class="td-zero">0</td><td class="td-one">1</td><td class="td-zero">0</td></tr>
+            <tr><td class="td-one">1</td><td class="td-zero">0</td><td class="td-zero">0</td></tr>
+            <tr><td class="td-one">1</td><td class="td-one">1</td><td class="td-zero">0</td></tr>
+          </tbody>
+        </table>
+        <p class="text-xs mt-3" style="color:var(--text-muted)">Output = 1 <strong>hanya</strong> jika semua input = 0</p>
+      </div>
+      <!-- XOR -->
+      <div class="card p-5">
+        <div class="flex items-center justify-between mb-3">
+          <span class="font-bold text-sm">XOR Gate</span>
+          <span class="badge badge-amber mono text-xs">A⊕B</span>
+        </div>
+        <svg class="gate-svg w-full h-16 mb-3" viewBox="0 0 130 50">
+          <line x1="10" y1="15" x2="43" y2="15" stroke="#f59e0b" stroke-width="1.5"/>
+          <line x1="10" y1="35" x2="43" y2="35" stroke="#f59e0b" stroke-width="1.5"/>
+          <path d="M40,10 Q50,10 80,25 Q50,40 40,40 Q52,25 40,10 Z" fill="none" stroke="#f59e0b" stroke-width="1.5"/>
+          <path d="M36,10 Q48,25 36,40" fill="none" stroke="#f59e0b" stroke-width="1.5"/>
+          <line x1="80" y1="25" x2="115" y2="25" stroke="#f59e0b" stroke-width="1.5"/>
+          <text x="5" y="17" fill="#94a3b8" font-size="8" font-family="monospace">A</text>
+          <text x="5" y="37" fill="#94a3b8" font-size="8" font-family="monospace">B</text>
+          <text x="117" y="28" fill="#fbbf24" font-size="7" font-family="monospace">A⊕B</text>
+        </svg>
+        <table class="tt w-full">
+          <thead><tr><th>A</th><th>B</th><th style="color:#fbbf24">A⊕B</th></tr></thead>
+          <tbody>
+            <tr><td class="td-zero">0</td><td class="td-zero">0</td><td class="td-zero">0</td></tr>
+            <tr><td class="td-zero">0</td><td class="td-one">1</td><td class="td-one">1</td></tr>
+            <tr><td class="td-one">1</td><td class="td-zero">0</td><td class="td-one">1</td></tr>
+            <tr><td class="td-one">1</td><td class="td-one">1</td><td class="td-zero">0</td></tr>
+          </tbody>
+        </table>
+        <p class="text-xs mt-3" style="color:var(--text-muted)">Output = 1 jika input <strong>berbeda</strong> (ganjil banyak 1-nya)</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tab: NAND Universal -->
+  <div id="tab-nand" class="tab-content">
+    <div class="card p-6">
+      <div class="flex items-center gap-2 mb-4">
+        <span class="badge badge-purple">NAND = Universal Gate</span>
+      </div>
+      <p class="text-sm mb-5" style="color:var(--text-muted)">Bukti bahwa {NAND} adalah complete set: implementasikan NOT, AND, OR hanya dengan NAND.</p>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="bg-black bg-opacity-40 rounded-xl p-4">
+          <div class="text-xs font-bold mb-2" style="color:#c084fc">NOT dengan NAND</div>
+          <div class="formula text-xs mb-2">(x·x)' = x'</div>
+          <p class="text-xs" style="color:var(--text-muted)">Sambungkan input yang sama ke dua input NAND → hasilnya adalah inverter.</p>
+          <div class="callout-note p-2 mt-2 text-xs">Prinsip: Idempotency</div>
+        </div>
+        <div class="bg-black bg-opacity-40 rounded-xl p-4">
+          <div class="text-xs font-bold mb-2" style="color:#c084fc">AND dengan NAND</div>
+          <div class="formula text-xs mb-2">((x·y)'·(x·y)')' = x·y</div>
+          <p class="text-xs" style="color:var(--text-muted)">Output NAND(x,y) diinverskan lagi dengan NAND 1 input → AND.</p>
+          <div class="callout-note p-2 mt-2 text-xs">Prinsip: Idempotency + Involution</div>
+        </div>
+        <div class="bg-black bg-opacity-40 rounded-xl p-4">
+          <div class="text-xs font-bold mb-2" style="color:#c084fc">OR dengan NAND</div>
+          <div class="formula text-xs mb-2">((x·x)'·(y·y)')' = x+y</div>
+          <p class="text-xs" style="color:var(--text-muted)">Invert masing-masing input, lalu NAND hasilnya → De Morgan memberikan OR.</p>
+          <div class="callout-note p-2 mt-2 text-xs">Prinsip: Idempotency + DeMorgan + Involution</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tab: NOR Universal -->
+  <div id="tab-nor" class="tab-content">
+    <div class="card p-6">
+      <div class="flex items-center gap-2 mb-4">
+        <span class="badge badge-purple">NOR = Universal Gate</span>
+      </div>
+      <p class="text-sm mb-5" style="color:var(--text-muted)">Bukti bahwa {NOR} adalah complete set: implementasikan NOT, AND, OR hanya dengan NOR.</p>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="bg-black bg-opacity-40 rounded-xl p-4">
+          <div class="text-xs font-bold mb-2" style="color:var(--correct)">NOT dengan NOR</div>
+          <div class="formula text-xs mb-2">(x+x)' = x'</div>
+          <p class="text-xs" style="color:var(--text-muted)">Sambungkan input yang sama ke dua input NOR → hasilnya inverter.</p>
+          <div class="callout-note p-2 mt-2 text-xs">Prinsip: Idempotency</div>
+        </div>
+        <div class="bg-black bg-opacity-40 rounded-xl p-4">
+          <div class="text-xs font-bold mb-2" style="color:var(--correct)">OR dengan NOR</div>
+          <div class="formula text-xs mb-2">((x+y)'+(x+y)')' = x+y</div>
+          <p class="text-xs" style="color:var(--text-muted)">Output NOR(x,y) diinverskan lagi dengan NOR 1 input → OR.</p>
+          <div class="callout-note p-2 mt-2 text-xs">Prinsip: Idempotency + Involution</div>
+        </div>
+        <div class="bg-black bg-opacity-40 rounded-xl p-4">
+          <div class="text-xs font-bold mb-2" style="color:var(--correct)">AND dengan NOR</div>
+          <div class="formula text-xs mb-2">((x+x)'+(y+y)')' = x·y</div>
+          <p class="text-xs" style="color:var(--text-muted)">Invert masing-masing input, lalu NOR hasilnya → De Morgan memberikan AND.</p>
+          <div class="callout-note p-2 mt-2 text-xs">Prinsip: Idempotency + DeMorgan + Involution</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tab: SOP & POS -->
+  <div id="tab-sop-pos" class="tab-content">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+      <div class="card p-6">
+        <div class="flex items-center gap-2 mb-4">
+          <span class="badge badge-cyan">SOP → NAND Circuit</span>
+        </div>
+        <p class="text-sm mb-3" style="color:var(--text-muted)">Ekspresi SOP dapat diimplementasikan langsung sebagai 2-level NAND circuit.</p>
+        <div class="bg-black bg-opacity-40 rounded-xl p-4 mb-3">
+          <div class="text-xs font-bold mb-2" style="color:var(--accent)">Contoh: F = A·B + C'·D + E</div>
+          <div class="text-xs space-y-1" style="color:#bae6fd">
+            <p>AND-OR → NAND-NAND</p>
+            <p>Caranya: ganti semua AND gate level-1 dan OR gate level-2 dengan NAND gate. Input tunggal (seperti E) harus diinversi terlebih dahulu jika ada.</p>
+          </div>
+        </div>
+        <div class="callout-tip p-3 text-xs">
+          <strong style="color:#6ee7b7">✓ Insight:</strong> 2-level AND-OR = 2-level NAND-NAND secara fungsional. Bubbles (inversi) berpasangan dan saling menghilangkan.
+        </div>
+      </div>
+      <div class="card p-6">
+        <div class="flex items-center gap-2 mb-4">
+          <span class="badge badge-purple">POS → NOR Circuit</span>
+        </div>
+        <p class="text-sm mb-3" style="color:var(--text-muted)">Ekspresi POS dapat diimplementasikan langsung sebagai 2-level NOR circuit.</p>
+        <div class="bg-black bg-opacity-40 rounded-xl p-4 mb-3">
+          <div class="text-xs font-bold mb-2" style="color:#c084fc">Contoh: G = (A+B)·(C'+D)·E</div>
+          <div class="text-xs space-y-1" style="color:#bae6fd">
+            <p>OR-AND → NOR-NOR</p>
+            <p>Caranya: ganti semua OR gate level-1 dan AND gate level-2 dengan NOR gate. Input tunggal (seperti E) harus diinversi terlebih dahulu.</p>
+          </div>
+        </div>
+        <div class="callout-tip p-3 text-xs">
+          <strong style="color:#6ee7b7">✓ Insight:</strong> 2-level OR-AND = 2-level NOR-NOR secara fungsional. Prinsipnya identik dengan SOP-NAND tetapi untuk POS.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     SECTION 3 — ALGORITHM & LOGIC VISUALIZATION
+═══════════════════════════════════════════════ -->
+<section id="algorithm" class="section-anchor px-4 pb-16 max-w-6xl mx-auto">
+  <div class="mb-8">
+    <span class="section-num">// 03</span>
+    <h2 class="text-2xl font-bold mt-1">Algorithm & Logic Walkthrough</h2>
+    <p class="text-sm mt-1" style="color:var(--text-muted)">Desain Half Adder & Full Adder step-by-step</p>
+  </div>
+
+  <!-- Half Adder Walkthrough -->
+  <div class="card p-6 mb-5">
+    <div class="flex items-center gap-2 mb-5">
+      <i data-lucide="plus-square" class="w-5 h-5" style="color:var(--accent)"></i>
+      <h3 class="font-semibold text-lg">Half Adder — Walkthrough Desain</h3>
+      <span class="badge badge-green ml-auto">Gate-Level SSI</span>
+    </div>
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <!-- Steps -->
+      <div>
+        <div class="text-xs font-bold mb-3" style="color:var(--text-muted)">LANGKAH DESAIN</div>
+        <div id="ha-steps" class="space-y-3">
+          <div class="step-item active" id="ha-step-0">
+            <div class="flex items-start">
+              <div class="step-dot mt-1"></div>
+              <div>
+                <div class="text-sm font-semibold">Step 1: Spesifikasi</div>
+                <div class="text-xs mt-1" style="color:var(--text-muted)">Bangun Half Adder — menjumlahkan 2 bit (X dan Y), menghasilkan Sum (S) dan Carry (C).</div>
+              </div>
+            </div>
+          </div>
+          <div class="step-item" id="ha-step-1">
+            <div class="flex items-start">
+              <div class="step-dot mt-1"></div>
+              <div>
+                <div class="text-sm font-semibold">Step 2: Truth Table</div>
+                <div class="text-xs mt-1" style="color:var(--text-muted)">Buat truth table dengan semua kombinasi X, Y → tentukan nilai S dan C.</div>
+              </div>
+            </div>
+          </div>
+          <div class="step-item" id="ha-step-2">
+            <div class="flex items-start">
+              <div class="step-dot mt-1"></div>
+              <div>
+                <div class="text-sm font-semibold">Step 3: Persamaan Boolean</div>
+                <div class="text-xs mt-1" style="color:var(--text-muted)">Dari truth table: C = X·Y dan S = X'Y + XY' = X⊕Y</div>
+              </div>
+            </div>
+          </div>
+          <div class="step-item" id="ha-step-3">
+            <div class="flex items-start">
+              <div class="step-dot mt-1"></div>
+              <div>
+                <div class="text-sm font-semibold">Step 4: Logic Diagram</div>
+                <div class="text-xs mt-1" style="color:var(--text-muted)">Gunakan XOR gate untuk Sum dan AND gate untuk Carry.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="flex gap-2 mt-4">
+          <button onclick="stepWalkthrough('ha', -1)" class="reveal-btn text-xs">← Prev</button>
+          <button onclick="stepWalkthrough('ha', 1)" class="reveal-btn text-xs">Next →</button>
+          <span id="ha-step-counter" class="text-xs ml-2 self-center" style="color:var(--text-muted)">Step 1/4</span>
+        </div>
+      </div>
+      <!-- Content panel -->
+      <div>
+        <div id="ha-content-0" class="ha-content">
+          <table class="tt w-full">
+            <thead><tr><th>X</th><th>Y</th><th style="color:#86efac">C (Carry)</th><th style="color:#fbbf24">S (Sum)</th></tr></thead>
+            <tbody>
+              <tr><td class="td-zero">0</td><td class="td-zero">0</td><td class="td-zero">0</td><td class="td-zero">0</td></tr>
+              <tr><td class="td-zero">0</td><td class="td-one">1</td><td class="td-zero">0</td><td class="td-one">1</td></tr>
+              <tr><td class="td-one">1</td><td class="td-zero">0</td><td class="td-zero">0</td><td class="td-one">1</td></tr>
+              <tr><td class="td-one">1</td><td class="td-one">1</td><td class="td-one">1</td><td class="td-zero">0</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div id="ha-content-1" class="ha-content" style="display:none">
+          <pre><span class="cm">-- Truth Table Half Adder --</span>
+<span class="kw">Inputs :</span> X, Y
+<span class="kw">Outputs:</span> C (carry), S (sum)
+
+X=0, Y=0 → C=0, S=0  <span class="cm">-- 0+0=00</span>
+X=0, Y=1 → C=0, S=1  <span class="cm">-- 0+1=01</span>
+X=1, Y=0 → C=0, S=1  <span class="cm">-- 1+0=01</span>
+X=1, Y=1 → C=1, S=0  <span class="cm">-- 1+1=10</span></pre>
+        </div>
+        <div id="ha-content-2" class="ha-content" style="display:none">
+          <pre><span class="cm">-- Simplifikasi Boolean --</span>
+<span class="kw">Carry:</span>
+  C = <span class="val">X·Y</span>
+  <span class="cm">(1 hanya jika keduanya 1)</span>
+
+<span class="kw">Sum:</span>
+  S = X'Y + XY'
+  S = <span class="val">X ⊕ Y</span>  <span class="cm">(XOR)</span>
+  <span class="cm">(1 jika X dan Y berbeda)</span></pre>
+        </div>
+        <div id="ha-content-3" class="ha-content" style="display:none">
+          <pre><span class="cm">-- Implementasi Circuit --</span>
+<span class="kw">Gate</span> XOR  → menghasilkan <span class="val">S</span>
+<span class="kw">Gate</span> AND  → menghasilkan <span class="val">C</span>
+
+<span class="cm">-- Half Adder dari 2 Half Adder --</span>
+<span class="cm">Full Adder = HA1 + HA2 + OR gate</span>
+  S = X⊕(Y⊕Z)
+  C = X·Y + (X⊕Y)·Z</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Full Adder -->
+  <div class="card p-6 mb-5">
+    <div class="flex items-center gap-2 mb-4">
+      <i data-lucide="plus-circle" class="w-5 h-5" style="color:var(--accent3)"></i>
+      <h3 class="font-semibold text-lg">Full Adder</h3>
+      <span class="badge badge-amber ml-auto">3 Input</span>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div>
+        <p class="text-sm mb-3" style="color:var(--text-muted)">Full Adder menjumlahkan 3 bit: X, Y, dan Z (carry-in). Menghasilkan Sum (S) dan Carry-out (C).</p>
+        <table class="tt w-full mb-3">
+          <thead><tr><th>X</th><th>Y</th><th>Z</th><th style="color:#86efac">C</th><th style="color:#fbbf24">S</th></tr></thead>
+          <tbody>
+            <tr><td class="td-zero">0</td><td class="td-zero">0</td><td class="td-zero">0</td><td class="td-zero">0</td><td class="td-zero">0</td></tr>
+            <tr><td class="td-zero">0</td><td class="td-zero">0</td><td class="td-one">1</td><td class="td-zero">0</td><td class="td-one">1</td></tr>
+            <tr><td class="td-zero">0</td><td class="td-one">1</td><td class="td-zero">0</td><td class="td-zero">0</td><td class="td-one">1</td></tr>
+            <tr><td class="td-zero">0</td><td class="td-one">1</td><td class="td-one">1</td><td class="td-one">1</td><td class="td-zero">0</td></tr>
+            <tr><td class="td-one">1</td><td class="td-zero">0</td><td class="td-zero">0</td><td class="td-zero">0</td><td class="td-one">1</td></tr>
+            <tr><td class="td-one">1</td><td class="td-zero">0</td><td class="td-one">1</td><td class="td-one">1</td><td class="td-zero">0</td></tr>
+            <tr><td class="td-one">1</td><td class="td-one">1</td><td class="td-zero">0</td><td class="td-one">1</td><td class="td-zero">0</td></tr>
+            <tr><td class="td-one">1</td><td class="td-one">1</td><td class="td-one">1</td><td class="td-one">1</td><td class="td-one">1</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div>
+        <pre><span class="cm">-- Persamaan Full Adder --</span>
+
+<span class="kw">Sum:</span>
+  S = X ⊕ Y ⊕ Z
+  <span class="cm">(odd function dari 3 input)</span>
+
+<span class="kw">Carry:</span>
+  C = X·Y + X·Z + Y·Z
+  C = X·Y + (X⊕Y)·Z
+
+<span class="cm">-- Implementasi: 2 Half Adder --</span>
+<span class="fn">HA1</span>: input X, Y
+  sum1  = X ⊕ Y
+  carry1 = X·Y
+
+<span class="fn">HA2</span>: input sum1, Z
+  S     = sum1 ⊕ Z
+  carry2 = sum1·Z
+
+<span class="fn">Cout</span> = carry1 <span class="op">OR</span> carry2</pre>
+        <div class="callout-tip p-3 mt-3 text-xs">
+          <strong style="color:#6ee7b7">✓ 4-bit Parallel Adder:</strong> Sambungkan 4 Full Adder secara serial (cascade) via carry. Disebut juga Ripple-Carry Adder. 16-bit adder = 4 buah 4-bit adder.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BCD to Excess-3 -->
+  <div class="card p-6">
+    <div class="flex items-center gap-2 mb-4">
+      <i data-lucide="code" class="w-5 h-5" style="color:#c084fc"></i>
+      <h3 class="font-semibold text-lg">Contoh Desain: BCD → Excess-3 Converter</h3>
+    </div>
+    <p class="text-sm mb-4" style="color:var(--text-muted)">Mengubah kode BCD (0000–1001) ke kode Excess-3 (tambah 0011 ke setiap digit BCD).</p>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+      <div>
+        <pre><span class="cm">-- Optimasi 2-level (K-map) --</span>
+W = A + B·C + B·D
+X = B'C + B'D + B·C'·D'
+Y = C·D + C'·D'
+Z = D'
+
+<span class="cm">-- Multi-level (extraction) --</span>
+T1 = C + D
+
+W = A + B·T1
+X = B'·T1 + B·T1'
+Y = C·D + T1'
+Z = D'
+
+<span class="cm">-- Gate cost turun: 23 → 19 → 16 --</span></pre>
+      </div>
+      <div class="space-y-3">
+        <div class="callout-note p-3 text-xs">
+          <strong style="color:var(--accent3)">Variabel Input:</strong> A, B, C, D (BCD)<br>
+          <strong style="color:var(--accent3)">Variabel Output:</strong> W, X, Y, Z (Excess-3)<br>
+          <strong style="color:var(--accent3)">Don't Care:</strong> Input 1010–1111 (tidak valid di BCD)
+        </div>
+        <div class="callout-tip p-3 text-xs">
+          <strong style="color:#6ee7b7">Teknik Optimasi Multi-level:</strong><br>
+          Cari faktor bersama antar persamaan (extraction). Misal C+D muncul di W dan X → jadikan variabel intermediate T1 = C+D untuk menghemat gates.
+        </div>
+        <table class="tt w-full text-xs">
+          <thead><tr><th>ABCD</th><th>W</th><th>X</th><th>Y</th><th>Z</th></tr></thead>
+          <tbody>
+            <tr><td>0000</td><td class="td-zero">0</td><td class="td-zero">0</td><td class="td-one">1</td><td class="td-one">1</td></tr>
+            <tr><td>0001</td><td class="td-zero">0</td><td class="td-one">1</td><td class="td-zero">0</td><td class="td-zero">0</td></tr>
+            <tr><td>0101</td><td class="td-one">1</td><td class="td-zero">0</td><td class="td-zero">0</td><td class="td-zero">0</td></tr>
+            <tr><td>1000</td><td class="td-one">1</td><td class="td-zero">0</td><td class="td-one">1</td><td class="td-one">1</td></tr>
+            <tr><td>1001</td><td class="td-one">1</td><td class="td-one">1</td><td class="td-zero">0</td><td class="td-zero">0</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     SECTION 4 — INTERACTIVE PRACTICE SUITE
+═══════════════════════════════════════════════ -->
+<section id="practice" class="section-anchor px-4 pb-20 max-w-6xl mx-auto">
+  <div class="mb-8">
+    <span class="section-num">// 04</span>
+    <h2 class="text-2xl font-bold mt-1">Interactive Practice Suite</h2>
+    <p class="text-sm mt-1 mb-4" style="color:var(--text-muted)">5 soal latihan berbasis materi — uji pemahaman kamu!</p>
+    <!-- Score board -->
+    <div id="score-display" class="card p-4 flex items-center gap-4 max-w-sm">
+      <div class="text-3xl font-bold mono" style="color:var(--accent)" id="score-num">0/5</div>
+      <div>
+        <div class="text-sm font-semibold">Skor Latihan</div>
+        <div class="text-xs" style="color:var(--text-muted)">Jawab semua soal untuk melihat hasil</div>
+      </div>
+    </div>
+    <div class="w-full max-w-sm mt-2 bg-gray-800 rounded-full h-1">
+      <div class="progress-bar-inner" id="score-bar" style="width:0%"></div>
+    </div>
+  </div>
+
+  <div class="space-y-6" id="quiz-container">
+
+    <!-- Q1 -->
+    <div class="card p-6 card-glow" id="q1">
+      <div class="flex items-start gap-3 mb-4">
+        <span class="badge badge-cyan flex-shrink-0">Q1</span>
+        <div>
+          <div class="text-xs font-bold mb-1" style="color:var(--text-muted)">NAND Gate</div>
+          <p class="text-sm font-medium">Manakah pernyataan yang BENAR tentang NAND gate dengan 3 input X, Y, Z?</p>
+        </div>
+      </div>
+      <div class="space-y-2" id="q1-opts">
+        <button class="opt-btn" onclick="checkAnswer(this, 'q1', false)">A. F = X + Y + Z</button>
+        <button class="opt-btn" onclick="checkAnswer(this, 'q1', false)">B. F = (X + Y + Z)' — NOR gate</button>
+        <button class="opt-btn" onclick="checkAnswer(this, 'q1', true)">C. F = (X·Y·Z)' dan ekivalen dengan F = X' + Y' + Z' (via De Morgan)</button>
+        <button class="opt-btn" onclick="checkAnswer(this, 'q1', false)">D. F = X'·Y'·Z' — NOR dengan representasi Invert-AND</button>
+      </div>
+      <div id="q1-feedback" class="mt-3 text-sm hidden"></div>
+      <div class="mt-3 flex gap-2 items-center">
+        <button class="reveal-btn" onclick="toggleExplanation('q1-exp')">💡 Reveal Explanation</button>
+      </div>
+      <div id="q1-exp" class="explanation mt-4 card p-4" style="border-color:rgba(124,58,237,0.3)">
+        <div class="text-xs font-bold mb-2" style="color:#c4b5fd">METODOLOGI PENYELESAIAN</div>
+        <p class="text-xs mb-2" style="color:var(--text-muted)">NAND = NOT AND. Untuk 3 input X, Y, Z:</p>
+        <div class="formula text-xs mb-2">F = (X·Y·Z)' [AND-Invert / symbol NAND]</div>
+        <p class="text-xs mb-2" style="color:var(--text-muted)">Dengan hukum De Morgan: (X·Y·Z)' = X' + Y' + Z'</p>
+        <div class="formula text-xs mb-2">F = X' + Y' + Z' [Invert-OR / symbol alternatif]</div>
+        <p class="text-xs" style="color:var(--text-muted)">Jawaban D mengacu pada representasi NOR (Invert-AND = X'·Y'·Z' adalah representasi NOR). Jawaban B adalah NOR gate. Jawaban A adalah OR. Hanya C yang benar karena menjelaskan NAND dengan kedua bentuknya sesuai De Morgan.</p>
+      </div>
+    </div>
+
+    <!-- Q2 -->
+    <div class="card p-6" id="q2">
+      <div class="flex items-start gap-3 mb-4">
+        <span class="badge badge-amber flex-shrink-0">Q2</span>
+        <div>
+          <div class="text-xs font-bold mb-1" style="color:var(--text-muted)">XOR Identitas</div>
+          <p class="text-sm font-medium">Jika A = 1, berapakah hasil dari A ⊕ 1?</p>
+        </div>
+      </div>
+      <div class="space-y-2" id="q2-opts">
+        <button class="opt-btn" onclick="checkAnswer(this, 'q2', false)">A. 1</button>
+        <button class="opt-btn" onclick="checkAnswer(this, 'q2', true)">B. 0</button>
+        <button class="opt-btn" onclick="checkAnswer(this, 'q2', false)">C. A (tidak berubah)</button>
+        <button class="opt-btn" onclick="checkAnswer(this, 'q2', false)">D. Tergantung nilai A</button>
+      </div>
+      <div id="q2-feedback" class="mt-3 text-sm hidden"></div>
+      <div class="mt-3">
+        <button class="reveal-btn" onclick="toggleExplanation('q2-exp')">💡 Reveal Explanation</button>
+      </div>
+      <div id="q2-exp" class="explanation mt-4 card p-4" style="border-color:rgba(124,58,237,0.3)">
+        <div class="text-xs font-bold mb-2" style="color:#c4b5fd">METODOLOGI PENYELESAIAN</div>
+        <p class="text-xs mb-2" style="color:var(--text-muted)">Identitas XOR: <strong>X ⊕ 1 = X'</strong> (invers dari X)</p>
+        <div class="formula text-xs mb-2">A = 1 → A ⊕ 1 = A' = 1' = 0</div>
+        <p class="text-xs" style="color:var(--text-muted)">Ingat identitas XOR lainnya: X⊕0=X, X⊕X=0, X⊕X'=1. Jadi XOR dengan 1 selalu menginversi input, bukan memberikan nilai tetap.</p>
+      </div>
+    </div>
+
+    <!-- Q3 -->
+    <div class="card p-6" id="q3">
+      <div class="flex items-start gap-3 mb-4">
+        <span class="badge badge-purple flex-shrink-0">Q3</span>
+        <div>
+          <div class="text-xs font-bold mb-1" style="color:var(--text-muted)">Universal Gates</div>
+          <p class="text-sm font-medium">Mana dari pilihan berikut yang merupakan implementasi OR menggunakan hanya NAND gates?</p>
+        </div>
+      </div>
+      <div class="space-y-2" id="q3-opts">
+        <button class="opt-btn" onclick="checkAnswer(this, 'q3', false)">A. NAND(x, y) langsung memberikan x+y</button>
+        <button class="opt-btn" onclick="checkAnswer(this, 'q3', false)">B. NAND(x, x) diikuti NAND(y, y) memberikan x+y</button>
+        <button class="opt-btn" onclick="checkAnswer(this, 'q3', true)">C. NAND( NAND(x,x), NAND(y,y) ) = x+y</button>
+        <button class="opt-btn" onclick="checkAnswer(this, 'q3', false)">D. NAND( NAND(x,y), NAND(x,y) ) = x+y</button>
+      </div>
+      <div id="q3-feedback" class="mt-3 text-sm hidden"></div>
+      <div class="mt-3">
+        <button class="reveal-btn" onclick="toggleExplanation('q3-exp')">💡 Reveal Explanation</button>
+      </div>
+      <div id="q3-exp" class="explanation mt-4 card p-4" style="border-color:rgba(124,58,237,0.3)">
+        <div class="text-xs font-bold mb-2" style="color:#c4b5fd">METODOLOGI PENYELESAIAN</div>
+        <p class="text-xs mb-2" style="color:var(--text-muted)">Langkah:</p>
+        <div class="text-xs space-y-1 mono" style="color:#bae6fd">
+          <div>1. NAND(x, x) = (x·x)' = x'  (idempotency)</div>
+          <div>2. NAND(y, y) = (y·y)' = y'  (idempotency)</div>
+          <div>3. NAND(x', y') = (x'·y')' (De Morgan: = x+y)</div>
+        </div>
+        <div class="formula text-xs mt-2">((x·x)'·(y·y)')' = (x'·y')' = x+y ✓</div>
+        <p class="text-xs mt-2" style="color:var(--text-muted)">Pilihan D: NAND(NAND(x,y), NAND(x,y)) = ((xy)') = x·y, bukan x+y. Itu adalah AND!</p>
+      </div>
+    </div>
+
+    <!-- Q4 -->
+    <div class="card p-6" id="q4">
+      <div class="flex items-start gap-3 mb-4">
+        <span class="badge badge-green flex-shrink-0">Q4</span>
+        <div>
+          <div class="text-xs font-bold mb-1" style="color:var(--text-muted)">Full Adder</div>
+          <p class="text-sm font-medium">Pada Full Adder, jika X=1, Y=1, Z=1 (carry-in), berapakah nilai S (Sum) dan C (Carry-out)?</p>
+        </div>
+      </div>
+      <div class="space-y-2" id="q4-opts">
+        <button class="opt-btn" onclick="checkAnswer(this, 'q4', false)">A. S=0, C=0</button>
+        <button class="opt-btn" onclick="checkAnswer(this, 'q4', true)">B. S=1, C=1</button>
+        <button class="opt-btn" onclick="checkAnswer(this, 'q4', false)">C. S=1, C=0</button>
+        <button class="opt-btn" onclick="checkAnswer(this, 'q4', false)">D. S=0, C=1 — hanya Carry yang 1</button>
+      </div>
+      <div id="q4-feedback" class="mt-3 text-sm hidden"></div>
+      <div class="mt-3">
+        <button class="reveal-btn" onclick="toggleExplanation('q4-exp')">💡 Reveal Explanation</button>
+      </div>
+      <div id="q4-exp" class="explanation mt-4 card p-4" style="border-color:rgba(124,58,237,0.3)">
+        <div class="text-xs font-bold mb-2" style="color:#c4b5fd">METODOLOGI PENYELESAIAN</div>
+        <p class="text-xs mb-2" style="color:var(--text-muted)">Gunakan persamaan Full Adder:</p>
+        <div class="text-xs space-y-1 mono" style="color:#bae6fd">
+          <div>S = X ⊕ Y ⊕ Z = 1 ⊕ 1 ⊕ 1</div>
+          <div>  = (1⊕1) ⊕ 1 = 0 ⊕ 1 = 1</div>
+          <div>C = X·Y + (X⊕Y)·Z</div>
+          <div>  = 1·1 + (1⊕1)·1</div>
+          <div>  = 1 + 0·1 = 1 + 0 = 1</div>
+        </div>
+        <p class="text-xs mt-2" style="color:var(--text-muted)">Verifikasi: 1+1+1 = 3 = 11₂ → S=1 (bit bawah), C=1 (bit atas). ✓</p>
+        <div class="callout-note p-2 mt-2 text-xs">Opsi D salah karena S≠0. Jumlah tiga 1 = 3, bukan 2.</div>
+      </div>
+    </div>
+
+    <!-- Q5 -->
+    <div class="card p-6" id="q5">
+      <div class="flex items-start gap-3 mb-4">
+        <span class="badge badge-red flex-shrink-0">Q5</span>
+        <div>
+          <div class="text-xs font-bold mb-1" style="color:var(--text-muted)">SOP ke NAND / Latihan DDAK</div>
+          <p class="text-sm font-medium">Ekspresi SOP F = C'D + AB'C + BD' diubah ke bentuk hanya NAND dan Invert. Manakah yang benar?</p>
+        </div>
+      </div>
+      <div class="space-y-2" id="q5-opts">
+        <button class="opt-btn" onclick="checkAnswer(this, 'q5', false)">A. F = (C'D + AB'C + BD')'</button>
+        <button class="opt-btn" onclick="checkAnswer(this, 'q5', true)">B. F = ((C'D)'·(AB'C)'·(BD')')'</button>
+        <button class="opt-btn" onclick="checkAnswer(this, 'q5', false)">C. F = (C'D)' + (AB'C)' + (BD')'</button>
+        <button class="opt-btn" onclick="checkAnswer(this, 'q5', false)">D. F = (C'+D)·(A+B'+C)·(B+D')</button>
+      </div>
+      <div id="q5-feedback" class="mt-3 text-sm hidden"></div>
+      <div class="mt-3">
+        <button class="reveal-btn" onclick="toggleExplanation('q5-exp')">💡 Reveal Explanation</button>
+      </div>
+      <div id="q5-exp" class="explanation mt-4 card p-4" style="border-color:rgba(124,58,237,0.3)">
+        <div class="text-xs font-bold mb-2" style="color:#c4b5fd">METODOLOGI PENYELESAIAN</div>
+        <p class="text-xs mb-2" style="color:var(--text-muted)">Konversi SOP ke NAND-only menggunakan identitas: A+B+C = ((A)'·(B)'·(C)')' (De Morgan)</p>
+        <div class="text-xs space-y-1 mono" style="color:#bae6fd">
+          <div>F = C'D + AB'C + BD'</div>
+          <div>  = (C'D + AB'C + BD')</div>
+          <div>  = ((C'D)' · (AB'C)' · (BD')')' ← De Morgan pada OR level</div>
+        </div>
+        <div class="formula text-xs mt-2">F = ((C'D)'·(AB'C)'·(BD')')' ✓</div>
+        <p class="text-xs mt-2" style="color:var(--text-muted)">Setiap product term dinegatif dengan NAND, lalu hasilnya dinegatif lagi dengan NAND (implementasi OR). Ini adalah pola 2-level NAND-NAND yang ekivalen dengan AND-OR (SOP).</p>
+        <div class="callout-note p-2 mt-2 text-xs">Pilihan D adalah konversi ke POS/NOR, bukan NAND.</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="border-t px-4 py-8 text-center" style="border-color:var(--border)">
+  <div class="text-xs" style="color:var(--text-muted)">
+    <span class="mono" style="color:var(--accent)">TOPIK 04</span> — Logic Gates & Combinational Circuits<br>
+    CSIM601251 · Fasilkom UI · By: Tim Dosen DDAK, Erdefi Rakun, Bayu Anggorojati, Heri Kurniawan
+  </div>
+</footer>
+
+<script>
+  // Init Lucide
+  lucide.createIcons();
+
+  // === NAV ACTIVE ===
+  const sections = ['conceptual','gates','algorithm','practice'];
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        document.querySelectorAll('.nav-pill').forEach(p => p.classList.remove('active'));
+        const link = document.querySelector(`a[href="#${e.target.id}"]`);
+        if (link) link.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-40% 0px -55% 0px' });
+  sections.forEach(id => { const el = document.getElementById(id); if(el) observer.observe(el); });
+
+  // === TABS ===
+  function switchTab(name) {
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('tab-' + name).classList.add('active');
+    event.target.classList.add('active');
+  }
+
+  // === WALKTHROUGH ===
+  let haStep = 0;
+  function stepWalkthrough(prefix, dir) {
+    const steps = document.querySelectorAll(`[id^="${prefix}-step-"]`);
+    const contents = document.querySelectorAll(`[id^="${prefix}-content-"]`);
+    haStep = Math.max(0, Math.min(steps.length - 1, haStep + dir));
+    steps.forEach((s, i) => { s.classList.toggle('active', i === haStep); });
+    contents.forEach((c, i) => { c.style.display = i === haStep ? 'block' : 'none'; });
+    const counter = document.getElementById(prefix + '-step-counter');
+    if (counter) counter.textContent = `Step ${haStep + 1}/${steps.length}`;
+  }
+
+  // === QUIZ ===
+  const scores = {};
+  function checkAnswer(btn, qid, isCorrect) {
+    if (scores[qid] !== undefined) return;
+    const allBtns = document.querySelectorAll(`#${qid}-opts .opt-btn`);
+    allBtns.forEach(b => b.disabled = true);
+    const fb = document.getElementById(qid + '-feedback');
+    if (isCorrect) {
+      btn.classList.add('correct');
+      fb.innerHTML = '<span style="color:#6ee7b7">✓ Benar! Jawaban kamu tepat.</span>';
+      scores[qid] = 1;
+    } else {
+      btn.classList.add('wrong');
+      fb.innerHTML = '<span style="color:#fca5a5">✗ Kurang tepat. Coba lihat penjelasannya!</span>';
+      // Mark correct answer
+      allBtns.forEach(b => { if (b.onclick.toString().includes('true')) b.classList.add('correct'); });
+      scores[qid] = 0;
+    }
+    fb.classList.remove('hidden');
+    updateScore();
+  }
+
+  function updateScore() {
+    const total = 5;
+    const got = Object.values(scores).reduce((a, b) => a + b, 0);
+    const answered = Object.keys(scores).length;
+    document.getElementById('score-num').textContent = `${got}/${total}`;
+    document.getElementById('score-bar').style.width = (answered / total * 100) + '%';
+    if (answered === total) {
+      const pct = got / total * 100;
+      const msg = pct === 100 ? '🎉 Sempurna!' : pct >= 60 ? '👍 Bagus!' : '📚 Perlu review lagi';
+      document.getElementById('score-num').textContent = `${got}/${total} ${msg}`;
+    }
+  }
+
+  function toggleExplanation(id) {
+    const el = document.getElementById(id);
+    el.classList.toggle('open');
+    const btn = event.target;
+    btn.textContent = el.classList.contains('open') ? '🔼 Hide Explanation' : '💡 Reveal Explanation';
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DDAK UTS PORTAL</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;800&display=swap"
+    rel="stylesheet">
+  <style>
+    /* Premium aesthetics */
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #050505;
+      color: #ededed;
+      overflow: hidden;
+      margin: 0;
+    }
+
+    .font-display {
+      font-family: 'Outfit', sans-serif;
+    }
+
+    .glass-panel {
+      background: rgba(12, 12, 16, 0.85);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border-right: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 10px 0 30px rgba(0, 0, 0, 0.5);
+    }
+
+    .nav-item {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .nav-item::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 100%;
+      width: 0;
+      background: linear-gradient(90deg, rgba(59, 130, 246, 0.15), transparent);
+      transition: width 0.3s ease;
+      z-index: -1;
+    }
+
+    .nav-item:hover {
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .nav-item:hover::before,
+    .nav-item.active::before {
+      width: 100%;
+    }
+
+    .nav-item.active {
+      color: #60a5fa;
+      background: rgba(59, 130, 246, 0.08);
+      border-right: 3px solid #3b82f6;
+    }
+
+    .nav-item.active .badge {
+      background: #3b82f6;
+      color: white;
+    }
+
+    .gradient-text {
+      background: linear-gradient(135deg, #60a5fa 0%, #a855f7 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    #content-frame {
+      width: 100%;
+      height: 100%;
+      border: none;
+      border-radius: 16px;
+      box-shadow: 0 0 40px rgba(0, 0, 0, 0.6);
+      background: #0d1117;
+      /* Mencegah flash putih sebelum konten html load */
+    }
+
+    .bg-grid {
+      background-size: 40px 40px;
+      background-image:
+        linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+    }
+
+    .glow {
+      position: absolute;
+      width: 300px;
+      height: 300px;
+      background: #3b82f6;
+      filter: blur(150px);
+      opacity: 0.15;
+      border-radius: 50%;
+      z-index: 0;
+      top: -100px;
+      left: -100px;
+      pointer-events: none;
+    }
+
+    /* Custom Scrollbar for sidebar */
+    .sidebar-scroll::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .sidebar-scroll::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .sidebar-scroll::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+    }
+  </style>
+</head>
+
+<body class="flex h-screen w-full bg-grid">
+
+  <!-- Mobile Sidebar Overlay -->
+  <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/60 z-40 hidden md:hidden backdrop-blur-sm transition-opacity opacity-0"></div>
+
+  <!-- Sidebar -->
+  <aside id="sidebar" class="glass-panel w-72 h-full flex flex-col flex-shrink-0 fixed md:relative z-50 transform -translate-x-full md:translate-x-0 transition-transform duration-300 left-0 top-0">
+    <div class="glow"></div>
+
+    <div class="p-6 pb-2 relative z-10 flex-shrink-0">
+      <h1 class="font-display text-2xl font-extrabold tracking-tight mb-0 px-4">DDAK <span class="gradient-text">UTS
+          Portal</span></h1>
+      <p class="text-[10px] text-gray-500 font-bold uppercase tracking-widest px-4 mb-4">Created by: Z Arsy Alam Sin
+      </p>
+
+      <!-- Global Search Bar -->
+      <div class="px-4 mb-4 relative group">
+        <div class="relative">
+          <i data-lucide="search" class="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-blue-400 transition-colors"></i>
+          <input type="text" id="global-search" placeholder="Cari materi (SQL, ER, dll)..." 
+            class="w-full bg-white/5 border border-white/10 rounded-lg py-2 pl-9 pr-3 text-[11px] text-gray-300 placeholder:text-gray-600 focus:outline-none focus:ring-1 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all">
+        </div>
+        <!-- Search Results Dropdown -->
+        <div id="search-results" class="hidden absolute left-4 right-4 top-full mt-2 bg-[#111827] border border-white/10 rounded-xl shadow-2xl z-50 max-h-64 overflow-y-auto sidebar-scroll p-2">
+          <!-- Results injected here -->
+        </div>
+      </div>
+
+      <p
+        class="text-[11px] text-gray-400 mb-6 uppercase tracking-widest font-semibold flex items-center gap-2 px-4 italic">
+        <i data-lucide="sparkles" class="w-3 h-3 text-blue-400"></i> Interactive Learning Portal
+      </p>
+
+      <button onclick="loadHome()"
+        class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-gray-300 hover:text-white"
+        id="nav-home">
+        <i data-lucide="layout-dashboard" class="w-4 h-4 text-blue-400"></i> Beranda
+      </button>
+
+      <div class="pt-6 pb-2">
+        <p class="text-[10px] text-gray-500 font-bold uppercase tracking-widest px-4">Modul Pembelajaran</p>
+      </div>
+    </div>
+
+    <!-- Scrolling Nav Section -->
+    <div class="flex-1 overflow-y-auto sidebar-scroll px-6 pb-6 space-y-1 z-10">
+      <nav class="space-y-1">
+        <button onclick="loadChapter('TOPIK 01.html', this)"
+          class="nav-item w-full flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium text-gray-300 hover:text-white chapter-link">
+          <span
+            class="badge w-6 h-6 flex items-center justify-center rounded-md bg-white/5 text-xs font-bold text-blue-400 transition-colors">1</span>
+          <span class="text-left w-full truncate">Topik 01: Introduction</span>
+        </button>
+        <button onclick="loadChapter('TOPIK 02.html', this)"
+          class="nav-item w-full flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium text-gray-300 hover:text-white chapter-link">
+          <span
+            class="badge w-6 h-6 flex items-center justify-center rounded-md bg-white/5 text-xs font-bold text-blue-400 transition-colors">2</span>
+          <span class="text-left w-full truncate">Topik 02: Boolean Algebra</span>
+        </button>
+        <button onclick="loadChapter('TOPIK 03.html', this)"
+          class="nav-item w-full flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium text-gray-300 hover:text-white chapter-link">
+          <span
+            class="badge w-6 h-6 flex items-center justify-center rounded-md bg-white/5 text-xs font-bold text-blue-400 transition-colors">3</span>
+          <span class="text-left w-full truncate">Topik 03: Karnaugh Map</span>
+        </button>
+        <button onclick="loadChapter('TOPIK 04.html', this)"
+          class="nav-item w-full flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium text-gray-300 hover:text-white chapter-link">
+          <span
+            class="badge w-6 h-6 flex items-center justify-center rounded-md bg-white/5 text-xs font-bold text-blue-400 transition-colors">4</span>
+          <span class="text-left w-full truncate">Topik 04: Logic Gates and Combinational Logic</span>
+        </button>
+      </nav>
+    </div>
+
+    <!-- Footer in sidebar -->
+    <div class="p-6 border-t border-white/5 relative z-10 mt-auto flex-shrink-0">
+      <div class="flex items-center gap-3 text-xs text-gray-500">
+        <i data-lucide="shield-check" class="w-4 h-4 text-emerald-500"></i>
+        <span>DDAK · 2026</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Content Area -->
+  <main class="flex-1 relative flex items-center justify-center overflow-hidden bg-[#0A0A0E]">
+    
+    <!-- Mobile Menu Button -->
+    <button onclick="toggleSidebar()" class="md:hidden absolute top-6 left-6 z-40 p-2.5 rounded-lg bg-[#111827]/80 backdrop-blur border border-white/10 text-white shadow-lg hover:bg-white/10 transition-colors">
+      <i data-lucide="menu" class="w-5 h-5"></i>
+    </button>
+
+    <!-- Home Overlay (Landing Page) -->
+    <div id="home-overlay"
+      class="absolute inset-0 z-20 flex flex-col items-center justify-center text-center p-10 bg-transparent transition-opacity duration-500 bg-grid">
+      <!-- Decorational Blur -->
+      <div
+        class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-blue-500/10 blur-[150px] rounded-full pointer-events-none">
+      </div>
+      <div
+        class="absolute top-1/2 left-1/2 translate-x-1/4 -translate-y-1/4 w-[400px] h-[400px] bg-purple-500/10 blur-[120px] rounded-full pointer-events-none">
+      </div>
+
+      <!-- Content -->
+      <div class="relative z-30 max-w-3xl w-full flex flex-col items-center">
+        <div
+          class="inline-flex items-center justify-center p-4 mb-8 rounded-2xl bg-white/5 border border-white/10 ring-1 ring-white/5 shadow-[0_0_50px_rgba(59,130,246,0.15)]">
+          <i data-lucide="sparkles" class="w-10 h-10 text-blue-400"></i>
+        </div>
+
+        <h2 class="font-display text-5xl md:text-7xl font-extrabold mb-6 tracking-tight leading-tight">
+          Kuasai<br />
+          <span class="gradient-text">DDAK</span>
+        </h2>
+
+        <p class="text-gray-400 text-lg md:text-xl mb-12 max-w-xl mx-auto leading-relaxed">
+          Platform interaktif meliputi seluruh Bab untuk mempelajari materi UTS Desain Digital dan Arsitektur Komputer. Visualisasi, Latihan, dan
+          Konsep.
+        </p>
+
+        <div class="flex flex-wrap gap-4 justify-center">
+          <button onclick="document.querySelector('.chapter-link').click()"
+            class="px-8 py-4 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold shadow-[0_0_30px_rgba(37,99,235,0.3)] transition-all hover:scale-105 active:scale-95 flex items-center gap-3">
+            Mulai Belajar <i data-lucide="arrow-right" class="w-5 h-5"></i>
+          </button>
+          <a href="https://github.com/0xArsy/ddakmateriportal.git" target="_blank"
+            class="px-8 py-4 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white font-semibold transition-all hover:scale-105 active:scale-95 flex items-center gap-3">
+            <i data-lucide="github" class="w-5 h-5"></i> GitHub
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Iframe Container for the Chapters -->
+    <div id="iframe-container"
+      class="w-full h-full p-6 opacity-0 pointer-events-none transition-opacity duration-500 z-10 flex flex-col">
+      <div class="w-full h-full rounded-2xl overflow-hidden shadow-2xl ring-1 ring-white/10 bg-[#0d1117] flex-1">
+        <iframe id="content-frame" src="about:blank" title="Materi Bab"></iframe>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    if (typeof lucide !== 'undefined') { lucide.createIcons(); }
+
+    function toggleSidebar(forceClose = false) {
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('sidebar-overlay');
+      const isMobile = window.innerWidth < 768;
+      
+      if (!isMobile && !forceClose) return; // Only toggle on mobile
+
+      const isClosed = sidebar.classList.contains('-translate-x-full');
+      
+      if (forceClose || !isClosed) {
+        sidebar.classList.add('-translate-x-full');
+        if (overlay) {
+          overlay.classList.remove('opacity-100');
+          overlay.classList.add('opacity-0');
+          setTimeout(() => overlay.classList.add('hidden'), 300);
+        }
+      } else {
+        if (overlay) {
+          overlay.classList.remove('hidden');
+          setTimeout(() => {
+            sidebar.classList.remove('-translate-x-full');
+            overlay.classList.remove('opacity-0');
+            overlay.classList.add('opacity-100');
+          }, 10);
+        }
+      }
+    }
+
+    // SEARCH LOGIC
+    const searchInput = document.getElementById('global-search');
+    const searchResults = document.getElementById('search-results');
+    let searchData = [];
+
+    // Load search index
+    fetch('search_index.json')
+      .then(response => response.json())
+      .then(data => {
+        searchData = data;
+        console.log('Search index loaded:', searchData.length, 'chapters');
+      })
+      .catch(err => {
+        console.error('Failed to load search index:', err);
+        // Fallback or alert user
+      });
+
+    searchInput.addEventListener('input', (e) => {
+      const term = e.target.value.toLowerCase().trim();
+      if (term.length < 2) {
+        searchResults.classList.add('hidden');
+        return;
+      }
+
+      if (!searchData || searchData.length === 0) {
+        searchResults.innerHTML = '<p class="text-[10px] text-gray-500 p-2 text-center italic">Memuat index...</p>';
+        searchResults.classList.remove('hidden');
+        return;
+      }
+
+      const filtered = searchData.filter(item => 
+        item.title.toLowerCase().includes(term) || 
+        item.keywords.some(tag => tag.toLowerCase().includes(term))
+      );
+
+      if (filtered.length > 0) {
+        searchResults.innerHTML = filtered.map(item => {
+          // Find if the term is in keywords for small preview
+          const matchingKeywords = item.keywords
+            .filter(k => k.includes(term))
+            .slice(0, 3)
+            .join(', ');
+
+          return `
+            <div onclick="executeSearchLink('${item.file}')" class="p-2 hover:bg-white/5 rounded-lg cursor-pointer transition-colors border border-transparent hover:border-white/10 mb-1 group">
+              <div class="flex justify-between items-start mb-0.5">
+                <p class="text-[11px] font-bold text-gray-200 group-hover:text-blue-400 truncate">${item.title}</p>
+                <span class="text-[8px] bg-white/5 px-1 rounded text-gray-500">Materi</span>
+              </div>
+              <p class="text-[9px] text-gray-400 line-clamp-1 italic">"${matchingKeywords || item.preview.substring(0, 40)}"</p>
+            </div>
+          `;
+        }).join('');
+        searchResults.classList.remove('hidden');
+      } else {
+        searchResults.innerHTML = '<p class="text-[10px] text-gray-500 p-2 text-center">Tidak ada hasil ditemukan</p>';
+        searchResults.classList.remove('hidden');
+      }
+    });
+
+    // Close search on click outside
+    document.addEventListener('click', (e) => {
+      if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
+        searchResults.classList.add('hidden');
+      }
+    });
+
+    function executeSearchLink(file) {
+      const links = document.querySelectorAll('.chapter-link');
+      let targetLink = null;
+      links.forEach(link => {
+        if (link.getAttribute('onclick') && link.getAttribute('onclick').includes(file)) {
+          targetLink = link;
+        }
+      });
+      
+      if (targetLink) {
+        targetLink.click();
+      } else {
+        loadChapter(file);
+      }
+      searchResults.classList.add('hidden');
+      searchInput.value = '';
+    }
+
+    function loadHome() {
+      toggleSidebar(true);
+      // Manage Active States
+      document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+      document.getElementById('nav-home').classList.add('active');
+
+      // Animations
+      const overlay = document.getElementById('home-overlay');
+      const iframeCont = document.getElementById('iframe-container');
+
+      overlay.style.opacity = '1';
+      overlay.style.pointerEvents = 'auto';
+      overlay.style.transform = 'scale(1)';
+
+      iframeCont.style.opacity = '0';
+      iframeCont.style.pointerEvents = 'none';
+      iframeCont.style.transform = 'scale(0.98)';
+
+      // Delay cleaning the iframe slightly for smooth transition
+      setTimeout(() => {
+        document.getElementById('content-frame').src = 'about:blank';
+      }, 300);
+    }
+
+    function loadChapter(filename, element) {
+      toggleSidebar(true);
+      // Manage Active States
+      document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+      if (element) element.classList.add('active');
+
+      // Prepare framing
+      const iframe = document.getElementById('content-frame');
+
+      // Set source
+      iframe.src = filename;
+
+      // Animations
+      const overlay = document.getElementById('home-overlay');
+      const iframeCont = document.getElementById('iframe-container');
+
+      overlay.style.opacity = '0';
+      overlay.style.pointerEvents = 'none';
+      overlay.style.transform = 'scale(1.02)';
+
+      // Add slight delay to give iframe time to start loading its background color
+      setTimeout(() => {
+        iframeCont.style.opacity = '1';
+        iframeCont.style.pointerEvents = 'auto';
+        iframeCont.style.transform = 'scale(1)';
+      }, 50);
+    }
+
+    // Default initial state
+    document.getElementById('nav-home').classList.add('active');
+  </script>
+</body>
+
+</html>
