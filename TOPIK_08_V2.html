@@ -562,162 +562,126 @@
     </div>
 
     <!-- Opcode Visualization -->
-    <div class="card p-6 space-y-5">
+    <div class="card p-6 space-y-6">
       <div class="flex items-center gap-3">
-        <i data-lucide="binary" class="w-5 h-5 text-yellow-400"></i>
+        <i data-lucide="binary" class="w-6 h-6 text-yellow-400"></i>
         <h3 class="text-xl font-bold">Visualisasi Opcode</h3>
         <span class="text-xs text-slate-500">— Cara membaca 16-bit opcode instruksi AVR</span>
       </div>
 
-      <div class="grid md:grid-cols-2 gap-6">
+      <div class="grid lg:grid-cols-2 gap-8">
         <!-- ADD R1, R5 example -->
-        <div class="space-y-4">
-          <h4 class="text-sm font-semibold text-cyan-400">Contoh: ADD R1, R5</h4>
-          <div class="space-y-2">
-            <p class="text-xs text-slate-400">Format 16-bit opcode untuk instruksi ADD:</p>
-            <div class="flex flex-wrap gap-1 items-center">
-              <div class="opcode-bit fixed">0</div>
-              <div class="opcode-bit fixed">0</div>
-              <div class="opcode-bit fixed">0</div>
-              <div class="opcode-bit fixed">0</div>
-              <span class="text-slate-600 text-xs mx-1">|</span>
-              <div class="opcode-bit fixed">1</div>
-              <div class="opcode-bit fixed">1</div>
-              <div class="opcode-bit src">r</div>
-              <div class="opcode-bit dest">d</div>
-              <span class="text-slate-600 text-xs mx-1">|</span>
-              <div class="opcode-bit dest">d</div>
-              <div class="opcode-bit dest">d</div>
-              <div class="opcode-bit dest">d</div>
-              <div class="opcode-bit dest">d</div>
-              <span class="text-slate-600 text-xs mx-1">|</span>
-              <div class="opcode-bit src">r</div>
-              <div class="opcode-bit src">r</div>
-              <div class="opcode-bit src">r</div>
-              <div class="opcode-bit src">r</div>
-            </div>
-            <div class="flex flex-wrap gap-x-4 gap-y-2 text-[10px] sm:text-xs mt-3">
-              <div class="flex items-center gap-1.5"><div class="w-3 h-3 rounded bg-cyan-500/20 border border-cyan-500/40"></div><span class="text-slate-400">Fixed bits</span></div>
-              <div class="flex items-center gap-1.5"><div class="w-3 h-3 rounded bg-green-500/20 border border-green-500/40"></div><span class="text-slate-400">Rd (destination)</span></div>
-              <div class="flex items-center gap-1.5"><div class="w-3 h-3 rounded bg-yellow-500/20 border border-yellow-500/40"></div><span class="text-slate-400">Rr (source)</span></div>
-              <div class="flex items-center gap-1.5"><div class="w-3 h-3 rounded bg-purple-500/20 border border-purple-500/40"></div><span class="text-slate-400">Immediate (K)</span></div>
+        <div class="space-y-6 p-5 rounded-2xl bg-white/[0.02] border border-white/5">
+          <div class="flex items-center justify-between">
+            <h4 class="text-sm font-bold text-cyan-400">Contoh 1: ADD R1, R5</h4>
+            <span class="px-2 py-0.5 rounded bg-cyan-500/10 text-[10px] text-cyan-400 font-mono">Format: 0000 11rd dddd rrrr</span>
+          </div>
+          
+          <div class="space-y-3">
+            <p class="text-[10px] uppercase tracking-wider text-slate-500 font-bold">1. Opcode Format (Generic)</p>
+            <div class="opcode-row">
+              <div class="opcode-group"><div class="opcode-bit fixed">0</div><div class="opcode-bit fixed">0</div><div class="opcode-bit fixed">0</div><div class="opcode-bit fixed">0</div></div>
+              <div class="opcode-separator">|</div>
+              <div class="opcode-group"><div class="opcode-bit fixed">1</div><div class="opcode-bit fixed">1</div><div class="opcode-bit src">r</div><div class="opcode-bit dest">d</div></div>
+              <div class="opcode-separator">|</div>
+              <div class="opcode-group"><div class="opcode-bit dest">d</div><div class="opcode-bit dest">d</div><div class="opcode-bit dest">d</div><div class="opcode-bit dest">d</div></div>
+              <div class="opcode-separator">|</div>
+              <div class="opcode-group"><div class="opcode-bit src">r</div><div class="opcode-bit src">r</div><div class="opcode-bit src">r</div><div class="opcode-bit src">r</div></div>
             </div>
           </div>
-          <div class="space-y-4">
-            <p class="text-xs text-slate-400 font-medium">Rd=1 (00001), Rr=5 (00101)</p>
+
+          <div class="space-y-3">
+            <p class="text-[10px] uppercase tracking-wider text-slate-500 font-bold">2. Binary Encoding (R1, R5)</p>
             <div class="opcode-row">
-              <div class="opcode-group">
-                <div class="opcode-bit fixed">0</div>
-                <div class="opcode-bit fixed">0</div>
-                <div class="opcode-bit fixed">0</div>
-                <div class="opcode-bit fixed">0</div>
-              </div>
+              <div class="opcode-group"><div class="opcode-bit fixed">0</div><div class="opcode-bit fixed">0</div><div class="opcode-bit fixed">0</div><div class="opcode-bit fixed">0</div></div>
               <div class="opcode-separator">|</div>
-              <div class="opcode-group">
-                <div class="opcode-bit fixed">1</div>
-                <div class="opcode-bit fixed">1</div>
-                <div class="opcode-bit src">0</div>
-                <div class="opcode-bit dest">0</div>
-              </div>
+              <div class="opcode-group"><div class="opcode-bit fixed">1</div><div class="opcode-bit fixed">1</div><div class="opcode-bit src">0</div><div class="opcode-bit dest">0</div></div>
               <div class="opcode-separator">|</div>
-              <div class="opcode-group">
-                <div class="opcode-bit dest">0</div>
-                <div class="opcode-bit dest">0</div>
-                <div class="opcode-bit dest">0</div>
-                <div class="opcode-bit dest">1</div>
-              </div>
+              <div class="opcode-group"><div class="opcode-bit dest">0</div><div class="opcode-bit dest">0</div><div class="opcode-bit dest">0</div><div class="opcode-bit dest">1</div></div>
               <div class="opcode-separator">|</div>
-              <div class="opcode-group">
-                <div class="opcode-bit src">0</div>
-                <div class="opcode-bit src">1</div>
-                <div class="opcode-bit src">0</div>
-                <div class="opcode-bit src">1</div>
-              </div>
+              <div class="opcode-group"><div class="opcode-bit src">0</div><div class="opcode-bit src">1</div><div class="opcode-bit src">0</div><div class="opcode-bit src">1</div></div>
             </div>
-            <div class="callout-tip text-xs">
-              <p class="text-green-400 font-bold">Hasil Binary: 0000 1101 0001 0101</p>
-              <p class="text-slate-300 mt-1">Hex: <strong>0D15</strong>. Karena AVR Little-endian, byte ditukar → disimpan: <strong>150D</strong>.</p>
+          </div>
+
+          <div class="p-4 rounded-xl bg-cyan-500/5 border border-cyan-500/10 space-y-2">
+            <div class="flex justify-between text-xs">
+              <span class="text-slate-400">Hasil Binary:</span>
+              <span class="text-cyan-400 font-mono font-bold">0000 1100 0001 0101</span>
+            </div>
+            <div class="flex justify-between text-xs">
+              <span class="text-slate-400">Hex Value:</span>
+              <span class="text-white font-mono font-bold">0C15 ➝ stored as 150C (Little-endian)</span>
             </div>
           </div>
         </div>
 
         <!-- ANDI R20, 85 example -->
-        <div class="space-y-4">
-          <h4 class="text-sm font-semibold text-yellow-400">Contoh: ANDI R20, 85</h4>
-          <div class="space-y-2">
-            <p class="text-xs text-slate-400 font-medium">Format 16-bit opcode ANDI:</p>
+        <div class="space-y-6 p-5 rounded-2xl bg-white/[0.02] border border-white/5">
+          <div class="flex items-center justify-between">
+            <h4 class="text-sm font-bold text-yellow-500">Contoh 2: ANDI R20, 85</h4>
+            <span class="px-2 py-0.5 rounded bg-yellow-500/10 text-[10px] text-yellow-500 font-mono">Format: 0111 KKKK dddd KKKK</span>
+          </div>
+
+          <div class="space-y-3">
+            <p class="text-[10px] uppercase tracking-wider text-slate-500 font-bold">1. Opcode Format (Generic)</p>
             <div class="opcode-row">
-              <div class="opcode-group">
-                <div class="opcode-bit fixed">0</div>
-                <div class="opcode-bit fixed">1</div>
-                <div class="opcode-bit fixed">1</div>
-                <div class="opcode-bit fixed">1</div>
-              </div>
+              <div class="opcode-group"><div class="opcode-bit fixed">0</div><div class="opcode-bit fixed">1</div><div class="opcode-bit fixed">1</div><div class="opcode-bit fixed">1</div></div>
               <div class="opcode-separator">|</div>
-              <div class="opcode-group">
-                <div class="opcode-bit imm-b">K</div>
-                <div class="opcode-bit imm-b">K</div>
-                <div class="opcode-bit imm-b">K</div>
-                <div class="opcode-bit imm-b">K</div>
-              </div>
+              <div class="opcode-group"><div class="opcode-bit imm-b">K</div><div class="opcode-bit imm-b">K</div><div class="opcode-bit imm-b">K</div><div class="opcode-bit imm-b">K</div></div>
               <div class="opcode-separator">|</div>
-              <div class="opcode-group">
-                <div class="opcode-bit dest">d</div>
-                <div class="opcode-bit dest">d</div>
-                <div class="opcode-bit dest">d</div>
-                <div class="opcode-bit dest">d</div>
-              </div>
+              <div class="opcode-group"><div class="opcode-bit dest">d</div><div class="opcode-bit dest">d</div><div class="opcode-bit dest">d</div><div class="opcode-bit dest">d</div></div>
               <div class="opcode-separator">|</div>
-              <div class="opcode-group">
-                <div class="opcode-bit imm-b">K</div>
-                <div class="opcode-bit imm-b">K</div>
-                <div class="opcode-bit imm-b">K</div>
-                <div class="opcode-bit imm-b">K</div>
-              </div>
+              <div class="opcode-group"><div class="opcode-bit imm-b">K</div><div class="opcode-bit imm-b">K</div><div class="opcode-bit imm-b">K</div><div class="opcode-bit imm-b">K</div></div>
             </div>
           </div>
-          <div class="callout-warn text-xs">
-            <p class="text-yellow-400 font-bold mb-1">Perhatian! d hanya 4 bit (R16–R31)</p>
-            <p class="text-slate-300">ANDI Rd,K: Operand d rentang 16–31. Karena itu d dikurangi 16 sebelum dikodekan ke opcode.<br/>R20 → d = 20−16 = <strong>4</strong> = 0100</p>
-          </div>
-          <div class="space-y-2 text-xs">
-            <p class="text-slate-400 font-medium">Contoh Real: d=4 (0100), K=01010101</p>
+
+          <div class="space-y-3">
+            <p class="text-[10px] uppercase tracking-wider text-slate-500 font-bold">2. Binary Encoding (R20, 85)</p>
             <div class="opcode-row">
-              <div class="opcode-group">
-                <div class="opcode-bit fixed">0</div>
-                <div class="opcode-bit fixed">1</div>
-                <div class="opcode-bit fixed">1</div>
-                <div class="opcode-bit fixed">1</div>
-              </div>
+              <div class="opcode-group"><div class="opcode-bit fixed">0</div><div class="opcode-bit fixed">1</div><div class="opcode-bit fixed">1</div><div class="opcode-bit fixed">1</div></div>
               <div class="opcode-separator">|</div>
-              <div class="opcode-group">
-                <div class="opcode-bit imm-b">0</div>
-                <div class="opcode-bit imm-b">1</div>
-                <div class="opcode-bit imm-b">0</div>
-                <div class="opcode-bit imm-b">1</div>
-              </div>
+              <div class="opcode-group"><div class="opcode-bit imm-b">0</div><div class="opcode-bit imm-b">1</div><div class="opcode-bit imm-b">0</div><div class="opcode-bit imm-b">1</div></div>
               <div class="opcode-separator">|</div>
-              <div class="opcode-group">
-                <div class="opcode-bit dest">0</div>
-                <div class="opcode-bit dest">1</div>
-                <div class="opcode-bit dest">0</div>
-                <div class="opcode-bit dest">0</div>
-              </div>
+              <div class="opcode-group"><div class="opcode-bit dest">0</div><div class="opcode-bit dest">1</div><div class="opcode-bit dest">0</div><div class="opcode-bit dest">0</div></div>
               <div class="opcode-separator">|</div>
-              <div class="opcode-group">
-                <div class="opcode-bit imm-b">0</div>
-                <div class="opcode-bit imm-b">1</div>
-                <div class="opcode-bit imm-b">0</div>
-                <div class="opcode-bit imm-b">1</div>
-              </div>
+              <div class="opcode-group"><div class="opcode-bit imm-b">0</div><div class="opcode-bit imm-b">1</div><div class="opcode-bit imm-b">0</div><div class="opcode-bit imm-b">1</div></div>
             </div>
-            <div class="callout-tip mt-2">
-              <p class="text-green-400 font-bold">Hasil Binary: 0111 0101 0100 0101</p>
-              <p class="text-slate-300 mt-1">Hex: <strong>7545</strong> → Little-endian: <strong>4575</strong></p>
+          </div>
+
+          <div class="p-4 rounded-xl bg-yellow-500/5 border border-yellow-500/10 space-y-2">
+            <p class="text-[10px] text-yellow-500 font-bold mb-1 italic">Perhatian: d = 20-16 = 4 (0100)</p>
+            <div class="flex justify-between text-xs">
+              <span class="text-slate-400">Hasil Binary:</span>
+              <span class="text-yellow-400 font-mono font-bold">0111 0101 0100 0101</span>
+            </div>
+            <div class="flex justify-between text-xs">
+              <span class="text-slate-400">Hex Value:</span>
+              <span class="text-white font-mono font-bold">7545 ➝ stored as 4575 (Little-endian)</span>
             </div>
           </div>
         </div>
       </div>
+
+      <!-- Legend -->
+      <div class="flex flex-wrap items-center justify-center gap-x-6 gap-y-3 pt-4 border-t border-white/5 text-center">
+        <div class="flex items-center gap-2">
+          <div class="w-3.5 h-3.5 rounded shadow-inner bg-cyan-400/20 border border-cyan-400/40"></div>
+          <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Fixed Opcode</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <div class="w-3.5 h-3.5 rounded shadow-inner bg-green-500/20 border border-green-500/40"></div>
+          <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Rd (Destination)</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <div class="w-3.5 h-3.5 rounded shadow-inner bg-yellow-400/20 border border-yellow-400/40"></div>
+          <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Rr (Source)</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <div class="w-3.5 h-3.5 rounded shadow-inner bg-purple-500/20 border border-purple-500/40"></div>
+          <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Immediate (K)</span>
+        </div>
+      </div>
+    </div>
 
       <!-- Instruction table -->
       <div class="mt-4">
