@@ -228,9 +228,8 @@
 <nav>
   <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
     <div class="flex items-center gap-3">
-      <div class="w-8 h-8 rounded-lg bg-cyan-500/20 border border-cyan-500/40 flex items-center justify-center">
-        <!-- SVG CPU Logo instead of data-lucide -->
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-cyan-400"><rect width="16" height="16" x="4" y="4" rx="2"/><rect width="6" height="6" x="9" y="9" rx="1"/><path d="M15 2v2"/><path d="M15 20v2"/><path d="M2 15h2"/><path d="M2 9h2"/><path d="M20 15h2"/><path d="M20 9h2"/><path d="M9 2v2"/><path d="M9 20v2"/></svg>
+      <div style="width:32px;height:32px;background:rgba(34,211,238,0.2);border:1px solid rgba(34,211,238,0.4);border-radius:8px;display:flex;align-items:center;justify-content:center;color:#22d3ee;font-weight:900;font-size:14px;">
+        AVR
       </div>
       <div>
         <div class="text-sm font-bold text-white leading-tight">TOPIK 08</div>
@@ -579,27 +578,40 @@
           
           <div class="space-y-3">
             <p class="text-[10px] uppercase tracking-wider text-slate-500 font-bold">1. Opcode Format (Generic)</p>
-            <div class="opcode-row">
-              <div class="opcode-group"><div class="viz-bit-text fixed">0</div><div class="viz-bit-text fixed">0</div><div class="viz-bit-text fixed">0</div><div class="viz-bit-text fixed">0</div></div>
-              <div class="opcode-separator">|</div>
-              <div class="opcode-group"><div class="viz-bit-text fixed">1</div><div class="viz-bit-text fixed">1</div><div class="viz-bit-text src">r</div><div class="viz-bit-text dest">d</div></div>
-              <div class="opcode-separator">|</div>
-              <div class="opcode-group"><div class="viz-bit-text dest">d</div><div class="viz-bit-text dest">d</div><div class="viz-bit-text dest">d</div><div class="viz-bit-text dest">d</div></div>
-              <div class="opcode-separator">|</div>
-              <div class="opcode-group"><div class="viz-bit-text src">r</div><div class="viz-bit-text src">r</div><div class="viz-bit-text src">r</div><div class="viz-bit-text src">r</div></div>
+            <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center;font-family:'JetBrains Mono',monospace;font-size:1.2rem;font-weight:bold;padding:10px 0;">
+            <div style="display:flex;gap:4px;">
+              <span style="color:#67e8f9">0</span><span style="color:#67e8f9">0</span><span style="color:#67e8f9">0</span><span style="color:#67e8f9">0</span>
+            </div>
+            <span style="color:#334155">|</span>
+            <div style="display:flex;gap:4px;">
+              <span style="color:#67e8f9">1</span><span style="color:#67e8f9">1</span><span style="color:#fbbf24">r</span><span style="color:#4ade80">d</span>
+            </div>
+            <span style="color:#334155">|</span>
+            <div style="display:flex;gap:4px;">
+              <span style="color:#4ade80">d</span><span style="color:#4ade80">d</span><span style="color:#4ade80">d</span><span style="color:#4ade80">d</span>
+            </div>
+            <span style="color:#334155">|</span>
+            <div style="display:flex;gap:4px;">
+              <span style="color:#fbbf24">r</span><span style="color:#fbbf24">r</span><span style="color:#fbbf24">r</span><span style="color:#fbbf24">r</span>
             </div>
           </div>
 
-          <div class="space-y-3">
-            <p class="text-[10px] uppercase tracking-wider text-slate-500 font-bold">2. Binary Encoding (R1, R5)</p>
-            <div class="opcode-row">
-              <div class="opcode-group"><div class="viz-bit-text fixed">0</div><div class="viz-bit-text fixed">0</div><div class="viz-bit-text fixed">0</div><div class="viz-bit-text fixed">0</div></div>
-              <div class="opcode-separator">|</div>
-              <div class="opcode-group"><div class="viz-bit-text fixed">1</div><div class="viz-bit-text fixed">1</div><div class="viz-bit-text src">0</div><div class="viz-bit-text dest">0</div></div>
-              <div class="opcode-separator">|</div>
-              <div class="opcode-group"><div class="viz-bit-text dest">0</div><div class="viz-bit-text dest">0</div><div class="viz-bit-text dest">0</div><div class="viz-bit-text dest">1</div></div>
-              <div class="opcode-separator">|</div>
-              <div class="opcode-group"><div class="viz-bit-text src">0</div><div class="viz-bit-text src">1</div><div class="viz-bit-text src">0</div><div class="viz-bit-text src">1</div></div>
+          <p class="text-[10px] uppercase tracking-wider text-slate-500 font-bold">2. Binary Encoding (R1, R5)</p>
+          <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center;font-family:'JetBrains Mono',monospace;font-size:1.2rem;font-weight:bold;padding:10px 0;">
+            <div style="display:flex;gap:4px;">
+              <span style="color:#67e8f9">0</span><span style="color:#67e8f9">0</span><span style="color:#67e8f9">0</span><span style="color:#67e8f9">0</span>
+            </div>
+            <span style="color:#334155">|</span>
+            <div style="display:flex;gap:4px;">
+              <span style="color:#67e8f9">1</span><span style="color:#67e8f9">1</span><span style="color:#fbbf24">0</span><span style="color:#4ade80">0</span>
+            </div>
+            <span style="color:#334155">|</span>
+            <div style="display:flex;gap:4px;">
+              <span style="color:#4ade80">0</span><span style="color:#4ade80">0</span><span style="color:#4ade80">0</span><span style="color:#4ade80">1</span>
+            </div>
+            <span style="color:#334155">|</span>
+            <div style="display:flex;gap:4px;">
+              <span style="color:#fbbf24">0</span><span style="color:#fbbf24">1</span><span style="color:#fbbf24">0</span><span style="color:#fbbf24">1</span>
             </div>
           </div>
 
@@ -624,27 +636,42 @@
 
           <div class="space-y-3">
             <p class="text-[10px] uppercase tracking-wider text-slate-500 font-bold">1. Opcode Format (Generic)</p>
-            <div class="opcode-row">
-              <div class="opcode-group"><div class="viz-bit-text fixed">0</div><div class="viz-bit-text fixed">1</div><div class="viz-bit-text fixed">1</div><div class="viz-bit-text fixed">1</div></div>
-              <div class="opcode-separator">|</div>
-              <div class="opcode-group"><div class="viz-bit-text imm-b">K</div><div class="viz-bit-text imm-b">K</div><div class="viz-bit-text imm-b">K</div><div class="viz-bit-text imm-b">K</div></div>
-              <div class="opcode-separator">|</div>
-              <div class="opcode-group"><div class="viz-bit-text dest">d</div><div class="viz-bit-text dest">d</div><div class="viz-bit-text dest">d</div><div class="viz-bit-text dest">d</div></div>
-              <div class="opcode-separator">|</div>
-              <div class="opcode-group"><div class="viz-bit-text imm-b">K</div><div class="viz-bit-text imm-b">K</div><div class="viz-bit-text imm-b">K</div><div class="viz-bit-text imm-b">K</div></div>
+            <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center;font-family:'JetBrains Mono',monospace;font-size:1.2rem;font-weight:bold;padding:10px 0;">
+            <div style="display:flex;gap:4px;">
+              <span style="color:#67e8f9">0</span><span style="color:#67e8f9">1</span><span style="color:#67e8f9">1</span><span style="color:#67e8f9">1</span>
+            </div>
+            <span style="color:#334155">|</span>
+            <div style="display:flex;gap:4px;">
+              <span style="color:#c084fc">K</span><span style="color:#c084fc">K</span><span style="color:#c084fc">K</span><span style="color:#c084fc">K</span>
+            </div>
+            <span style="color:#334155">|</span>
+            <div style="display:flex;gap:4px;">
+              <span style="color:#4ade80">d</span><span style="color:#4ade80">d</span><span style="color:#4ade80">d</span><span style="color:#4ade80">d</span>
+            </div>
+            <span style="color:#334155">|</span>
+            <div style="display:flex;gap:4px;">
+              <span style="color:#c084fc">K</span><span style="color:#c084fc">K</span><span style="color:#c084fc">K</span><span style="color:#c084fc">K</span>
             </div>
           </div>
 
           <div class="space-y-3">
             <p class="text-[10px] uppercase tracking-wider text-slate-500 font-bold">2. Binary Encoding (R20, 85)</p>
-            <div class="opcode-row">
-              <div class="opcode-group"><div class="viz-bit-text fixed">0</div><div class="viz-bit-text fixed">1</div><div class="viz-bit-text fixed">1</div><div class="viz-bit-text fixed">1</div></div>
-              <div class="opcode-separator">|</div>
-              <div class="opcode-group"><div class="viz-bit-text imm-b">0</div><div class="viz-bit-text imm-b">1</div><div class="viz-bit-text imm-b">0</div><div class="viz-bit-text imm-b">1</div></div>
-              <div class="opcode-separator">|</div>
-              <div class="opcode-group"><div class="viz-bit-text dest">0</div><div class="viz-bit-text dest">1</div><div class="viz-bit-text dest">0</div><div class="viz-bit-text dest">0</div></div>
-              <div class="opcode-separator">|</div>
-              <div class="opcode-group"><div class="viz-bit-text imm-b">0</div><div class="viz-bit-text imm-b">1</div><div class="viz-bit-text imm-b">0</div><div class="viz-bit-text imm-b">1</div></div>
+            <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center;font-family:'JetBrains Mono',monospace;font-size:1.2rem;font-weight:bold;padding:10px 0;">
+              <div style="display:flex;gap:4px;">
+                <span style="color:#67e8f9">0</span><span style="color:#67e8f9">1</span><span style="color:#67e8f9">1</span><span style="color:#67e8f9">1</span>
+              </div>
+              <span style="color:#334155">|</span>
+              <div style="display:flex;gap:4px;">
+                <span style="color:#c084fc">0</span><span style="color:#c084fc">1</span><span style="color:#c084fc">0</span><span style="color:#c084fc">1</span>
+              </div>
+              <span style="color:#334155">|</span>
+              <div style="display:flex;gap:4px;">
+                <span style="color:#4ade80">0</span><span style="color:#4ade80">1</span><span style="color:#4ade80">0</span><span style="color:#4ade80">0</span>
+              </div>
+              <span style="color:#334155">|</span>
+              <div style="display:flex;gap:4px;">
+                <span style="color:#c084fc">0</span><span style="color:#c084fc">1</span><span style="color:#c084fc">0</span><span style="color:#c084fc">1</span>
+              </div>
             </div>
           </div>
 
