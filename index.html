@@ -121,6 +121,44 @@
       background: rgba(255, 255, 255, 0.1);
       border-radius: 4px;
     }
+
+    /* Modal Styles */
+    #info-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      z-index: 9999;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    #info-modal.active {
+      display: flex;
+      opacity: 1;
+    }
+
+    .modal-content {
+      background: rgba(20, 20, 25, 0.95);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 24px;
+      max-width: 500px;
+      width: 100%;
+      padding: 32px;
+      position: relative;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+      transform: scale(0.95);
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    #info-modal.active .modal-content {
+      transform: scale(1);
+    }
   </style>
 </head>
 
@@ -349,10 +387,48 @@
         <iframe id="content-frame" src="about:blank" title="Materi Bab"></iframe>
       </div>
     </div>
+
+    <!-- Info/Help Button (Top Right) -->
+    <button onclick="toggleInfoModal(true)"
+      class="fixed top-6 right-6 z-40 p-2.5 rounded-lg bg-[#111827]/80 backdrop-blur border border-white/10 text-white shadow-lg hover:bg-white/10 transition-all hover:scale-110 active:scale-95 group">
+      <i data-lucide="info" class="w-5 h-5 text-blue-400 group-hover:text-white transition-colors"></i>
+    </button>
+
+    <!-- Info Modal -->
+    <div id="info-modal" onclick="toggleInfoModal(false)">
+      <div class="modal-content" onclick="event.stopPropagation()">
+        <button onclick="toggleInfoModal(false)" class="absolute top-4 right-4 text-gray-500 hover:text-white transition-colors">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+        <div class="mb-6 inline-flex items-center justify-center p-3 rounded-xl bg-blue-500/10 border border-blue-500/20">
+          <i data-lucide="help-circle" class="w-6 h-6 text-blue-400"></i>
+        </div>
+        <h3 class="text-xl font-bold text-white mb-4">Informasi Portal</h3>
+        <p class="text-gray-400 text-sm leading-relaxed mb-6">
+          weebsitee nyaa dibuat untuk belajar DDAK 25/26, fully integrated pakai Sonnet 4.6, bahannya ada pdf materi, telor, daging, merica, tepung, cabe, soalnya kucing tetangga laper tibatiba nyanyi lagu galau jam 3 pagi sambil mikirin kamu, ngebikin enhance promptnya aja sambil ngemil eskrim karambol jongkok di dallas ngeliat bintang bintang sambil dengerin lagu rizky febian, tiba tiba ayam jingkrak freestyle di bulan purnama, kalau mau support, support aja king MU, karena sesungguhnya, ilmu, nilai, dan DDAK itu… cuma milik Allah…
+        </p>
+        <div class="p-4 rounded-xl bg-white/5 border border-white/10">
+          <p class="text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-1 italic">Status Update:</p>
+          <p class="text-xs text-blue-400/90 font-medium">Topik 05 - Topik 08 & Cheatsheet lagi progress (perkiraan selesai jam 01:00 08/04/2026)</p>
+        </div>
+        <p class="mt-6 text-gray-500 text-xs text-center font-medium">goodluck</p>
+      </div>
+    </div>
   </main>
 
   <script>
     if (typeof lucide !== 'undefined') { lucide.createIcons(); }
+
+    function toggleInfoModal(show) {
+      const modal = document.getElementById('info-modal');
+      if (show) {
+        modal.style.display = 'flex';
+        setTimeout(() => modal.classList.add('active'), 10);
+      } else {
+        modal.classList.remove('active');
+        setTimeout(() => modal.style.display = 'none', 300);
+      }
+    }
 
     function toggleSidebar(forceClose = false) {
       const sidebar = document.getElementById('sidebar');
