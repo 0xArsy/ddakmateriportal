@@ -127,10 +127,12 @@
 <body class="flex h-screen w-full bg-grid">
 
   <!-- Mobile Sidebar Overlay -->
-  <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/60 z-40 hidden md:hidden backdrop-blur-sm transition-opacity opacity-0"></div>
+  <div id="sidebar-overlay" onclick="toggleSidebar()"
+    class="fixed inset-0 bg-black/60 z-40 hidden md:hidden backdrop-blur-sm transition-opacity opacity-0"></div>
 
   <!-- Sidebar -->
-  <aside id="sidebar" class="glass-panel w-72 h-full flex flex-col flex-shrink-0 fixed md:relative z-50 transform -translate-x-full md:translate-x-0 transition-transform duration-300 left-0 top-0">
+  <aside id="sidebar"
+    class="glass-panel w-72 h-full flex flex-col flex-shrink-0 fixed md:relative z-50 transform -translate-x-full md:translate-x-0 transition-transform duration-300 left-0 top-0">
     <div class="glow"></div>
 
     <div class="p-6 pb-2 relative z-10 flex-shrink-0">
@@ -142,12 +144,14 @@
       <!-- Global Search Bar -->
       <div class="px-4 mb-4 relative group">
         <div class="relative">
-          <i data-lucide="search" class="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-blue-400 transition-colors"></i>
-          <input type="text" id="global-search" placeholder="Cari materi (SQL, ER, dll)..." 
+          <i data-lucide="search"
+            class="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-blue-400 transition-colors"></i>
+          <input type="text" id="global-search" placeholder="Cari materi (Gates, Boolean, dll)..."
             class="w-full bg-white/5 border border-white/10 rounded-lg py-2 pl-9 pr-3 text-[11px] text-gray-300 placeholder:text-gray-600 focus:outline-none focus:ring-1 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all">
         </div>
         <!-- Search Results Dropdown -->
-        <div id="search-results" class="hidden absolute left-4 right-4 top-full mt-2 bg-[#111827] border border-white/10 rounded-xl shadow-2xl z-50 max-h-64 overflow-y-auto sidebar-scroll p-2">
+        <div id="search-results"
+          class="hidden absolute left-4 right-4 top-full mt-2 bg-[#111827] border border-white/10 rounded-xl shadow-2xl z-50 max-h-64 overflow-y-auto sidebar-scroll p-2">
           <!-- Results injected here -->
         </div>
       </div>
@@ -209,9 +213,10 @@
 
   <!-- Main Content Area -->
   <main class="flex-1 relative flex items-center justify-center overflow-hidden bg-[#0A0A0E]">
-    
+
     <!-- Mobile Menu Button -->
-    <button onclick="toggleSidebar()" class="md:hidden absolute top-6 left-6 z-40 p-2.5 rounded-lg bg-[#111827]/80 backdrop-blur border border-white/10 text-white shadow-lg hover:bg-white/10 transition-colors">
+    <button onclick="toggleSidebar()"
+      class="md:hidden absolute top-6 left-6 z-40 p-2.5 rounded-lg bg-[#111827]/80 backdrop-blur border border-white/10 text-white shadow-lg hover:bg-white/10 transition-colors">
       <i data-lucide="menu" class="w-5 h-5"></i>
     </button>
 
@@ -239,7 +244,8 @@
         </h2>
 
         <p class="text-gray-400 text-lg md:text-xl mb-12 max-w-xl mx-auto leading-relaxed">
-          Platform interaktif meliputi seluruh Bab untuk mempelajari materi UTS Desain Digital dan Arsitektur Komputer. Visualisasi, Latihan, dan
+          Platform interaktif meliputi seluruh Bab untuk mempelajari materi UTS Desain Digital dan Arsitektur Komputer.
+          Visualisasi, Latihan, dan
           Konsep.
         </p>
 
@@ -272,11 +278,11 @@
       const sidebar = document.getElementById('sidebar');
       const overlay = document.getElementById('sidebar-overlay');
       const isMobile = window.innerWidth < 768;
-      
+
       if (!isMobile && !forceClose) return; // Only toggle on mobile
 
       const isClosed = sidebar.classList.contains('-translate-x-full');
-      
+
       if (forceClose || !isClosed) {
         sidebar.classList.add('-translate-x-full');
         if (overlay) {
@@ -326,8 +332,8 @@
         return;
       }
 
-      const filtered = searchData.filter(item => 
-        item.title.toLowerCase().includes(term) || 
+      const filtered = searchData.filter(item =>
+        item.title.toLowerCase().includes(term) ||
         item.keywords.some(tag => tag.toLowerCase().includes(term))
       );
 
@@ -371,7 +377,7 @@
           targetLink = link;
         }
       });
-      
+
       if (targetLink) {
         targetLink.click();
       } else {
