@@ -1,15 +1,1847 @@
 <!DOCTYPE html>
-<html lang="id" class="dark">
+<html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Module On Working</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TOPIK 05 – Combinational Circuits MSI & Sequential Logic</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Syne:wght@400;600;700;800&family=Mulish:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-primary: #0a0e1a;
+    --bg-secondary: #0f1628;
+    --bg-card: #141d35;
+    --bg-card-hover: #1a2540;
+    --accent-cyan: #00d4ff;
+    --accent-blue: #3b82f6;
+    --accent-purple: #a855f7;
+    --accent-green: #22c55e;
+    --accent-orange: #f97316;
+    --accent-red: #ef4444;
+    --accent-yellow: #eab308;
+    --text-primary: #e2e8f0;
+    --text-secondary: #94a3b8;
+    --border-subtle: #1e2d4a;
+    --border-accent: #2d4a7a;
+  }
+  * { box-sizing: border-box; }
+  body {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: 'Mulish', sans-serif;
+    min-height: 100vh;
+    background-image:
+      radial-gradient(ellipse at 20% 10%, rgba(0,212,255,0.04) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 80%, rgba(168,85,247,0.04) 0%, transparent 50%);
+  }
+  h1, h2, h3, h4 { font-family: 'Syne', sans-serif; }
+  code, pre, .mono { font-family: 'JetBrains Mono', monospace; }
+
+  .glow-cyan { box-shadow: 0 0 20px rgba(0,212,255,0.15); }
+  .glow-purple { box-shadow: 0 0 20px rgba(168,85,247,0.15); }
+  .glow-blue { box-shadow: 0 0 20px rgba(59,130,246,0.15); }
+
+  .nav-link {
+    transition: all 0.2s ease;
+    border-left: 2px solid transparent;
+  }
+  .nav-link:hover, .nav-link.active {
+    border-left-color: var(--accent-cyan);
+    color: var(--accent-cyan);
+    background: rgba(0,212,255,0.06);
+  }
+
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: 12px;
+    transition: all 0.25s ease;
+  }
+  .card:hover { border-color: var(--border-accent); }
+
+  .badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+  .badge-cyan { background: rgba(0,212,255,0.15); color: var(--accent-cyan); border: 1px solid rgba(0,212,255,0.3); }
+  .badge-purple { background: rgba(168,85,247,0.15); color: var(--accent-purple); border: 1px solid rgba(168,85,247,0.3); }
+  .badge-green { background: rgba(34,197,94,0.15); color: var(--accent-green); border: 1px solid rgba(34,197,94,0.3); }
+  .badge-orange { background: rgba(249,115,22,0.15); color: var(--accent-orange); border: 1px solid rgba(249,115,22,0.3); }
+  .badge-red { background: rgba(239,68,68,0.15); color: var(--accent-red); border: 1px solid rgba(239,68,68,0.3); }
+  .badge-blue { background: rgba(59,130,246,0.15); color: var(--accent-blue); border: 1px solid rgba(59,130,246,0.3); }
+
+  .callout-key {
+    background: rgba(0,212,255,0.06);
+    border: 1px solid rgba(0,212,255,0.25);
+    border-left: 3px solid var(--accent-cyan);
+    border-radius: 8px;
+    padding: 16px 20px;
+  }
+  .callout-warning {
+    background: rgba(234,179,8,0.06);
+    border: 1px solid rgba(234,179,8,0.25);
+    border-left: 3px solid var(--accent-yellow);
+    border-radius: 8px;
+    padding: 16px 20px;
+  }
+  .callout-pitfall {
+    background: rgba(239,68,68,0.06);
+    border: 1px solid rgba(239,68,68,0.25);
+    border-left: 3px solid var(--accent-red);
+    border-radius: 8px;
+    padding: 16px 20px;
+  }
+  .callout-tip {
+    background: rgba(34,197,94,0.06);
+    border: 1px solid rgba(34,197,94,0.25);
+    border-left: 3px solid var(--accent-green);
+    border-radius: 8px;
+    padding: 16px 20px;
+  }
+
+  pre {
+    background: #080d1a;
+    border: 1px solid var(--border-subtle);
+    border-radius: 10px;
+    padding: 16px 20px;
+    overflow-x: auto;
+    font-size: 0.85rem;
+    line-height: 1.7;
+  }
+  .kw { color: #c084fc; }
+  .cm { color: #4a5568; font-style: italic; }
+  .val { color: #86efac; }
+  .fn { color: #67e8f9; }
+  .str { color: #fbbf24; }
+  .op { color: #f472b6; }
+
+  .truth-table {
+    border-collapse: collapse;
+    width: 100%;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.82rem;
+  }
+  .truth-table th {
+    background: rgba(0,212,255,0.12);
+    color: var(--accent-cyan);
+    padding: 8px 14px;
+    text-align: center;
+    border: 1px solid var(--border-accent);
+    font-weight: 700;
+  }
+  .truth-table td {
+    padding: 7px 14px;
+    text-align: center;
+    border: 1px solid var(--border-subtle);
+    color: var(--text-secondary);
+  }
+  .truth-table tr:hover td { background: rgba(255,255,255,0.02); }
+  .truth-table .hl { color: var(--accent-green); font-weight: 700; }
+  .truth-table .invalid { color: var(--accent-red); font-weight: 700; }
+
+  .quiz-option {
+    cursor: pointer;
+    border: 1px solid var(--border-subtle);
+    border-radius: 8px;
+    padding: 12px 16px;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--bg-secondary);
+  }
+  .quiz-option:hover { border-color: var(--accent-blue); background: rgba(59,130,246,0.06); }
+  .quiz-option.correct { border-color: var(--accent-green); background: rgba(34,197,94,0.08); }
+  .quiz-option.incorrect { border-color: var(--accent-red); background: rgba(239,68,68,0.08); }
+
+  .reveal-btn {
+    cursor: pointer;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    padding: 8px 16px;
+    border-radius: 6px;
+    border: 1px solid rgba(168,85,247,0.4);
+    background: rgba(168,85,247,0.08);
+    color: var(--accent-purple);
+    transition: all 0.2s ease;
+  }
+  .reveal-btn:hover { background: rgba(168,85,247,0.16); border-color: var(--accent-purple); }
+
+  .explanation {
+    display: none;
+    margin-top: 12px;
+    padding: 16px;
+    background: rgba(168,85,247,0.05);
+    border: 1px solid rgba(168,85,247,0.2);
+    border-radius: 8px;
+  }
+  .explanation.show { display: block; }
+
+  .feedback-correct {
+    color: var(--accent-green);
+    display: none;
+    font-weight: 700;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.85rem;
+  }
+  .feedback-incorrect {
+    color: var(--accent-red);
+    display: none;
+    font-weight: 700;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.85rem;
+  }
+  .feedback-correct.show, .feedback-incorrect.show { display: flex; }
+
+  .step-item {
+    border-left: 2px solid var(--border-subtle);
+    padding-left: 20px;
+    padding-bottom: 16px;
+    position: relative;
+  }
+  .step-item::before {
+    content: attr(data-step);
+    position: absolute;
+    left: -12px;
+    top: 0;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--accent-cyan);
+    color: #000;
+    font-size: 0.7rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .msi-diagram {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    flex-wrap: wrap;
+  }
+  .msi-box {
+    border: 1px solid var(--border-accent);
+    border-radius: 6px;
+    padding: 8px 14px;
+    background: rgba(59,130,246,0.08);
+    color: var(--accent-blue);
+    font-weight: 700;
+    text-align: center;
+  }
+  .arrow-right::after {
+    content: '→';
+    color: var(--text-secondary);
+    font-size: 1rem;
+    margin: 0 4px;
+  }
+
+  .section-divider {
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--border-accent), transparent);
+    margin: 40px 0;
+  }
+
+  .top-bar {
+    background: rgba(10,14,26,0.9);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border-subtle);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .sidebar {
+    position: sticky;
+    top: 70px;
+    height: calc(100vh - 70px);
+    overflow-y: auto;
+  }
+  .sidebar::-webkit-scrollbar { width: 4px; }
+  .sidebar::-webkit-scrollbar-track { background: transparent; }
+  .sidebar::-webkit-scrollbar-thumb { background: var(--border-subtle); border-radius: 2px; }
+
+  .flip-card-container { perspective: 1200px; }
+  .flip-card {
+    width: 100%;
+    min-height: 120px;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.6s ease;
+    cursor: pointer;
+  }
+  .flip-card.flipped { transform: rotateY(180deg); }
+  .flip-front, .flip-back {
+    position: absolute;
+    inset: 0;
+    backface-visibility: hidden;
+    border-radius: 10px;
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+  .flip-front {
+    background: var(--bg-card);
+    border: 1px solid var(--border-accent);
+  }
+  .flip-back {
+    background: rgba(0,212,255,0.08);
+    border: 1px solid rgba(0,212,255,0.3);
+    transform: rotateY(180deg);
+  }
+
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+  .fade-in { animation: fadeIn 0.4s ease forwards; }
+
+  .tab-btn {
+    padding: 8px 20px;
+    border-radius: 6px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+    color: var(--text-secondary);
+  }
+  .tab-btn.active {
+    background: rgba(0,212,255,0.12);
+    border-color: rgba(0,212,255,0.3);
+    color: var(--accent-cyan);
+  }
+  .tab-btn:hover:not(.active) { background: rgba(255,255,255,0.04); color: var(--text-primary); }
+
+  .tab-content { display: none; }
+  .tab-content.active { display: block; animation: fadeIn 0.3s ease; }
+
+  .section-anchor { scroll-margin-top: 80px; }
+
+  .progress-ring {
+    transform: rotate(-90deg);
+  }
+  .progress-ring-circle {
+    stroke-dasharray: 226;
+    stroke-dashoffset: 226;
+    transition: stroke-dashoffset 0.5s ease;
+  }
+
+  .input-field {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-subtle);
+    border-radius: 6px;
+    padding: 8px 14px;
+    color: var(--text-primary);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.9rem;
+    transition: border-color 0.2s ease;
+    width: 100%;
+    max-width: 200px;
+  }
+  .input-field:focus { outline: none; border-color: var(--accent-cyan); }
+  .input-field.correct { border-color: var(--accent-green); background: rgba(34,197,94,0.05); }
+  .input-field.incorrect { border-color: var(--accent-red); background: rgba(239,68,68,0.05); }
+
+  .check-btn {
+    padding: 8px 20px;
+    border-radius: 6px;
+    background: rgba(59,130,246,0.15);
+    border: 1px solid rgba(59,130,246,0.4);
+    color: var(--accent-blue);
+    cursor: pointer;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    font-weight: 700;
+    transition: all 0.2s ease;
+  }
+  .check-btn:hover { background: rgba(59,130,246,0.25); }
+
+  .score-display {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--accent-cyan);
+  }
+</style>
 </head>
-<body class="bg-[#0a0e1a] text-gray-400 h-screen flex items-center justify-center font-sans">
-    <div class="text-center p-8 bg-white/5 border border-white/10 rounded-2xl shadow-2xl">
-        <h1 class="text-3xl font-bold text-white mb-4 tracking-tight">On Working</h1>
-        <p class="text-gray-500">Materi ini sedang dalam proses pembaharuan. Mohon cek kembali nanti.</p>
+<body>
+
+<!-- TOP BAR -->
+<header class="top-bar px-6 py-3">
+  <div class="max-w-7xl mx-auto flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background: rgba(0,212,255,0.15); border: 1px solid rgba(0,212,255,0.3);">
+        <i data-lucide="cpu" class="w-4 h-4" style="color:var(--accent-cyan)"></i>
+      </div>
+      <div>
+        <div class="font-bold text-sm" style="font-family:'Syne',sans-serif; color:var(--text-primary)">DDAK · CSIM601251</div>
+        <div class="text-xs" style="color:var(--text-secondary)">Topik 05 – MSI & Sequential Logic</div>
+      </div>
     </div>
+    <div class="flex items-center gap-4">
+      <span class="badge badge-cyan">Fasilkom UI</span>
+      <div class="flex items-center gap-2 text-xs" style="color:var(--text-secondary)">
+        <i data-lucide="trophy" class="w-3.5 h-3.5" style="color:var(--accent-yellow)"></i>
+        <span>Skor: </span>
+        <span id="global-score" class="font-bold" style="color:var(--accent-yellow); font-family:'JetBrains Mono',monospace">0 / 5</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="max-w-7xl mx-auto flex gap-0">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar w-64 px-4 py-6 hidden lg:block flex-shrink-0">
+    <div class="text-xs font-bold mb-4 uppercase tracking-widest" style="color:var(--text-secondary)">Navigasi</div>
+    <nav class="space-y-1">
+      <a href="#section-intro" class="nav-link block px-3 py-2 rounded text-sm transition-all" style="color:var(--text-secondary)">
+        <span class="flex items-center gap-2"><i data-lucide="layout-dashboard" class="w-3.5 h-3.5"></i> Pengantar</span>
+      </a>
+      <a href="#section-msi" class="nav-link block px-3 py-2 rounded text-sm transition-all" style="color:var(--text-secondary)">
+        <span class="flex items-center gap-2"><i data-lucide="box" class="w-3.5 h-3.5"></i> MSI Circuits</span>
+      </a>
+      <a href="#section-decoder" class="nav-link block px-3 py-2 rounded text-sm transition-all" style="color:var(--text-secondary)">
+        <span class="flex items-center gap-2"><i data-lucide="arrow-right-left" class="w-3.5 h-3.5"></i> Decoder</span>
+      </a>
+      <a href="#section-encoder" class="nav-link block px-3 py-2 rounded text-sm transition-all" style="color:var(--text-secondary)">
+        <span class="flex items-center gap-2"><i data-lucide="toggle-right" class="w-3.5 h-3.5"></i> Encoder</span>
+      </a>
+      <a href="#section-mux" class="nav-link block px-3 py-2 rounded text-sm transition-all" style="color:var(--text-secondary)">
+        <span class="flex items-center gap-2"><i data-lucide="git-merge" class="w-3.5 h-3.5"></i> MUX & DEMUX</span>
+      </a>
+      <a href="#section-sequential" class="nav-link block px-3 py-2 rounded text-sm transition-all" style="color:var(--text-secondary)">
+        <span class="flex items-center gap-2"><i data-lucide="clock" class="w-3.5 h-3.5"></i> Sequential Logic</span>
+      </a>
+      <a href="#section-latch" class="nav-link block px-3 py-2 rounded text-sm transition-all" style="color:var(--text-secondary)">
+        <span class="flex items-center gap-2"><i data-lucide="lock" class="w-3.5 h-3.5"></i> Latch</span>
+      </a>
+      <a href="#section-flipflop" class="nav-link block px-3 py-2 rounded text-sm transition-all" style="color:var(--text-secondary)">
+        <span class="flex items-center gap-2"><i data-lucide="zap" class="w-3.5 h-3.5"></i> Flip-Flop</span>
+      </a>
+      <a href="#section-practice" class="nav-link block px-3 py-2 rounded text-sm transition-all" style="color:var(--text-secondary)">
+        <span class="flex items-center gap-2"><i data-lucide="pencil" class="w-3.5 h-3.5"></i> Latihan Interaktif</span>
+      </a>
+      <a href="#section-flashcard" class="nav-link block px-3 py-2 rounded text-sm transition-all" style="color:var(--text-secondary)">
+        <span class="flex items-center gap-2"><i data-lucide="layers" class="w-3.5 h-3.5"></i> Flash Cards</span>
+      </a>
+    </nav>
+
+    <div class="mt-8 p-3 rounded-lg" style="background:rgba(0,212,255,0.04); border:1px solid rgba(0,212,255,0.12)">
+      <div class="text-xs mb-2" style="color:var(--text-secondary)">Progress Belajar</div>
+      <div class="score-display text-2xl" id="sidebar-score">0/5</div>
+      <div class="text-xs mt-1" style="color:var(--text-secondary)">soal terjawab benar</div>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="flex-1 px-6 py-8 min-w-0">
+
+    <!-- HERO -->
+    <section id="section-intro" class="section-anchor mb-12">
+      <div class="mb-2 flex items-center gap-3 flex-wrap">
+        <span class="badge badge-cyan">Topik 05</span>
+        <span class="badge badge-purple">Combinational MSI</span>
+        <span class="badge badge-orange">Sequential Logic</span>
+      </div>
+      <h1 class="text-4xl font-extrabold mb-3 leading-tight" style="color:var(--text-primary)">
+        Combinational Circuits: MSI<br>
+        <span style="color:var(--accent-cyan)">&amp; Sequential Logic</span>
+      </h1>
+      <p class="text-base leading-relaxed mb-6" style="color:var(--text-secondary); max-width:680px">
+        Pelajari empat komponen MSI utama — <span style="color:var(--accent-cyan)">Decoder, Encoder, Multiplexer, Demultiplexer</span> — serta fondasi Sequential Logic: <span style="color:var(--accent-purple)">Latch</span> dan <span style="color:var(--accent-purple)">Flip-Flop</span> dalam satu halaman interaktif.
+      </p>
+
+      <!-- Overview Cards -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <div class="card p-4 text-center">
+          <div class="w-10 h-10 rounded-lg mx-auto mb-2 flex items-center justify-center" style="background:rgba(0,212,255,0.12)">
+            <i data-lucide="arrow-right-left" class="w-5 h-5" style="color:var(--accent-cyan)"></i>
+          </div>
+          <div class="font-bold text-sm" style="font-family:'Syne',sans-serif">Decoder</div>
+          <div class="text-xs mt-1" style="color:var(--text-secondary)">n input → 2ⁿ output</div>
+        </div>
+        <div class="card p-4 text-center">
+          <div class="w-10 h-10 rounded-lg mx-auto mb-2 flex items-center justify-center" style="background:rgba(168,85,247,0.12)">
+            <i data-lucide="toggle-right" class="w-5 h-5" style="color:var(--accent-purple)"></i>
+          </div>
+          <div class="font-bold text-sm" style="font-family:'Syne',sans-serif">Encoder</div>
+          <div class="text-xs mt-1" style="color:var(--text-secondary)">2ⁿ input → n output</div>
+        </div>
+        <div class="card p-4 text-center">
+          <div class="w-10 h-10 rounded-lg mx-auto mb-2 flex items-center justify-center" style="background:rgba(34,197,94,0.12)">
+            <i data-lucide="git-merge" class="w-5 h-5" style="color:var(--accent-green)"></i>
+          </div>
+          <div class="font-bold text-sm" style="font-family:'Syne',sans-serif">Multiplexer</div>
+          <div class="text-xs mt-1" style="color:var(--text-secondary)">2ⁿ input → 1 output</div>
+        </div>
+        <div class="card p-4 text-center">
+          <div class="w-10 h-10 rounded-lg mx-auto mb-2 flex items-center justify-center" style="background:rgba(249,115,22,0.12)">
+            <i data-lucide="git-fork" class="w-5 h-5" style="color:var(--accent-orange)"></i>
+          </div>
+          <div class="font-bold text-sm" style="font-family:'Syne',sans-serif">Demultiplexer</div>
+          <div class="text-xs mt-1" style="color:var(--text-secondary)">1 input → 2ⁿ output</div>
+        </div>
+      </div>
+    </section>
+
+    <div class="section-divider"></div>
+
+    <!-- ===== MSI INTRO ===== -->
+    <section id="section-msi" class="section-anchor mb-12">
+      <div class="flex items-center gap-3 mb-6">
+        <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background:rgba(0,212,255,0.15)">
+          <i data-lucide="box" class="w-4 h-4" style="color:var(--accent-cyan)"></i>
+        </div>
+        <h2 class="text-2xl font-bold" style="color:var(--text-primary)">MSI (Medium Scale Integrated) Circuits</h2>
+      </div>
+
+      <div class="callout-key mb-6">
+        <div class="flex items-center gap-2 mb-2">
+          <i data-lucide="key" class="w-4 h-4" style="color:var(--accent-cyan)"></i>
+          <span class="font-bold text-sm" style="color:var(--accent-cyan)">KEY TERM: MSI Circuit</span>
+        </div>
+        <p class="text-sm" style="color:var(--text-secondary)">
+          <strong style="color:var(--text-primary)">Medium Scale Integrated Circuit</strong> adalah rangkaian logika kombinasional yang sudah terpadu. Empat komponen MSI yang paling umum digunakan adalah <span style="color:var(--accent-cyan)">Decoder, Encoder, Multiplexer, dan Demultiplexer</span>. Masing-masing berfungsi melakukan konversi antara <em>kode</em> dan <em>entitas</em>, atau antara <em>satu jalur</em> dan <em>banyak jalur</em>.
+        </p>
+      </div>
+
+      <div class="callout-tip mb-6">
+        <div class="flex items-center gap-2 mb-2">
+          <i data-lucide="lightbulb" class="w-4 h-4" style="color:var(--accent-green)"></i>
+          <span class="font-bold text-sm" style="color:var(--accent-green)">MENTAL MODEL: Analogi Sehari-hari</span>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-2">
+          <div class="text-sm" style="color:var(--text-secondary)">
+            <strong style="color:var(--text-primary)">Decoder</strong> = Kamus → kode masuk, arti keluar<br>
+            <strong style="color:var(--text-primary)">Encoder</strong> = Keyboard → huruf masuk, kode biner keluar
+          </div>
+          <div class="text-sm" style="color:var(--text-secondary)">
+            <strong style="color:var(--text-primary)">MUX</strong> = Remote TV → pilih saluran mana yang ditampilkan<br>
+            <strong style="color:var(--text-primary)">DEMUX</strong> = Router → satu kabel, distribusikan ke banyak perangkat
+          </div>
+        </div>
+      </div>
+
+      <!-- Comparison Table -->
+      <div class="card p-5 mb-4">
+        <h3 class="font-bold mb-4" style="font-family:'Syne',sans-serif">Perbandingan 4 Komponen MSI</h3>
+        <div class="overflow-x-auto">
+          <table class="truth-table">
+            <thead>
+              <tr>
+                <th>Komponen</th>
+                <th>Input</th>
+                <th>Line Selector</th>
+                <th>Output</th>
+                <th>Fungsi Utama</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="badge badge-cyan">Decoder</span></td>
+                <td class="hl">n bit</td>
+                <td>—</td>
+                <td class="hl">maks 2ⁿ</td>
+                <td style="color:var(--text-primary)">Kode → Entitas</td>
+              </tr>
+              <tr>
+                <td><span class="badge badge-purple">Encoder</span></td>
+                <td class="hl">maks 2ⁿ</td>
+                <td>—</td>
+                <td class="hl">n bit</td>
+                <td style="color:var(--text-primary)">Entitas → Kode</td>
+              </tr>
+              <tr>
+                <td><span class="badge badge-green">Multiplexer</span></td>
+                <td class="hl">2ⁿ data</td>
+                <td class="hl">n bit</td>
+                <td class="hl">1</td>
+                <td style="color:var(--text-primary)">Banyak → Satu (Data Selector)</td>
+              </tr>
+              <tr>
+                <td><span class="badge badge-orange">Demultiplexer</span></td>
+                <td class="hl">1</td>
+                <td class="hl">n bit</td>
+                <td class="hl">2ⁿ</td>
+                <td style="color:var(--text-primary)">Satu → Banyak</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <div class="section-divider"></div>
+
+    <!-- ===== DECODER ===== -->
+    <section id="section-decoder" class="section-anchor mb-12">
+      <div class="flex items-center gap-3 mb-6">
+        <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background:rgba(0,212,255,0.15)">
+          <i data-lucide="arrow-right-left" class="w-4 h-4" style="color:var(--accent-cyan)"></i>
+        </div>
+        <h2 class="text-2xl font-bold" style="color:var(--text-primary)">Decoder</h2>
+      </div>
+
+      <div class="callout-key mb-6">
+        <div class="flex items-center gap-2 mb-2">
+          <i data-lucide="key" class="w-4 h-4" style="color:var(--accent-cyan)"></i>
+          <span class="font-bold text-sm" style="color:var(--accent-cyan)">KEY TERM: Decoder</span>
+        </div>
+        <p class="text-sm" style="color:var(--text-secondary)">
+          Mengkonversi informasi biner dari <strong style="color:var(--accent-cyan)">n input</strong> menjadi maksimal <strong style="color:var(--accent-cyan)">2ⁿ output</strong>. Setiap output merupakan <strong style="color:var(--text-primary)">minterm</strong> dari variabel-variabel input. Disebut juga <em>n-to-m-line decoder</em> atau <em>n×m decoder</em> dengan m ≤ 2ⁿ.
+        </p>
+      </div>
+
+      <!-- Tab: 2x4, 3x8 -->
+      <div class="flex gap-2 mb-4 flex-wrap">
+        <button class="tab-btn active" onclick="switchTab('decoder-tabs','dec-2x4',this)">2×4 Decoder</button>
+        <button class="tab-btn" onclick="switchTab('decoder-tabs','dec-3x8',this)">3×8 Decoder</button>
+        <button class="tab-btn" onclick="switchTab('decoder-tabs','dec-enable',this)">Decoder + Enable</button>
+        <button class="tab-btn" onclick="switchTab('decoder-tabs','dec-function',this)">Implementasi Fungsi</button>
+      </div>
+
+      <div id="decoder-tabs">
+        <!-- 2x4 -->
+        <div id="dec-2x4" class="tab-content active">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div class="card p-5">
+              <h4 class="font-bold mb-3 text-sm" style="color:var(--accent-cyan)">Truth Table – 2×4 Decoder</h4>
+              <table class="truth-table">
+                <thead><tr><th>X</th><th>Y</th><th>F₀</th><th>F₁</th><th>F₂</th><th>F₃</th></tr></thead>
+                <tbody>
+                  <tr><td>0</td><td>0</td><td class="hl">1</td><td>0</td><td>0</td><td>0</td></tr>
+                  <tr><td>0</td><td>1</td><td>0</td><td class="hl">1</td><td>0</td><td>0</td></tr>
+                  <tr><td>1</td><td>0</td><td>0</td><td>0</td><td class="hl">1</td><td>0</td></tr>
+                  <tr><td>1</td><td>1</td><td>0</td><td>0</td><td>0</td><td class="hl">1</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="card p-5">
+              <h4 class="font-bold mb-3 text-sm" style="color:var(--accent-cyan)">Persamaan Boolean</h4>
+              <pre><code><span class="cm">// Setiap output = minterm 2-variabel</span>
+<span class="fn">F₀</span> = <span class="op">X'·Y'</span>   <span class="cm">// input 00</span>
+<span class="fn">F₁</span> = <span class="op">X'·Y</span>    <span class="cm">// input 01</span>
+<span class="fn">F₂</span> = <span class="op">X·Y'</span>    <span class="cm">// input 10</span>
+<span class="fn">F₃</span> = <span class="op">X·Y</span>     <span class="cm">// input 11</span></code></pre>
+              <div class="callout-tip mt-3">
+                <p class="text-xs" style="color:var(--text-secondary)">💡 Hanya <strong style="color:var(--text-primary)">satu output</strong> yang bernilai HIGH (1) pada setiap waktu, sesuai dengan kode input yang diberikan.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3x8 -->
+        <div id="dec-3x8" class="tab-content">
+          <div class="card p-5 mb-4">
+            <h4 class="font-bold mb-3 text-sm" style="color:var(--accent-cyan)">Truth Table – 3×8 Decoder</h4>
+            <div class="overflow-x-auto">
+              <table class="truth-table">
+                <thead><tr><th>x</th><th>y</th><th>z</th><th>F₀</th><th>F₁</th><th>F₂</th><th>F₃</th><th>F₄</th><th>F₅</th><th>F₆</th><th>F₇</th></tr></thead>
+                <tbody>
+                  <tr><td>0</td><td>0</td><td>0</td><td class="hl">1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+                  <tr><td>0</td><td>0</td><td>1</td><td>0</td><td class="hl">1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+                  <tr><td>0</td><td>1</td><td>0</td><td>0</td><td>0</td><td class="hl">1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+                  <tr><td>0</td><td>1</td><td>1</td><td>0</td><td>0</td><td>0</td><td class="hl">1</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+                  <tr><td>1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="hl">1</td><td>0</td><td>0</td><td>0</td></tr>
+                  <tr><td>1</td><td>0</td><td>1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="hl">1</td><td>0</td><td>0</td></tr>
+                  <tr><td>1</td><td>1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="hl">1</td><td>0</td></tr>
+                  <tr><td>1</td><td>1</td><td>1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="hl">1</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <pre><code><span class="cm">// Persamaan setiap output 3×8 decoder</span>
+<span class="fn">F₀</span> = <span class="op">x'·y'·z'</span>  <span class="fn">F₁</span> = <span class="op">x'·y'·z</span>
+<span class="fn">F₂</span> = <span class="op">x'·y·z'</span>   <span class="fn">F₃</span> = <span class="op">x'·y·z</span>
+<span class="fn">F₄</span> = <span class="op">x·y'·z'</span>   <span class="fn">F₅</span> = <span class="op">x·y'·z</span>
+<span class="fn">F₆</span> = <span class="op">x·y·z'</span>    <span class="fn">F₇</span> = <span class="op">x·y·z</span></code></pre>
+        </div>
+
+        <!-- Decoder + Enable -->
+        <div id="dec-enable" class="tab-content">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div class="card p-5">
+              <h4 class="font-bold mb-3 text-sm" style="color:var(--accent-cyan)">Decoder dengan Enable (1-enable)</h4>
+              <table class="truth-table mb-3">
+                <thead><tr><th>E</th><th>X</th><th>Y</th><th>F₀</th><th>F₁</th><th>F₂</th><th>F₃</th></tr></thead>
+                <tbody>
+                  <tr><td class="hl">1</td><td>0</td><td>0</td><td class="hl">1</td><td>0</td><td>0</td><td>0</td></tr>
+                  <tr><td class="hl">1</td><td>0</td><td>1</td><td>0</td><td class="hl">1</td><td>0</td><td>0</td></tr>
+                  <tr><td class="hl">1</td><td>1</td><td>0</td><td>0</td><td>0</td><td class="hl">1</td><td>0</td></tr>
+                  <tr><td class="hl">1</td><td>1</td><td>1</td><td>0</td><td>0</td><td>0</td><td class="hl">1</td></tr>
+                  <tr><td style="color:var(--accent-red)">0</td><td>X</td><td>X</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+                </tbody>
+              </table>
+              <pre><code><span class="fn">F₀</span> = <span class="op">E·X'·Y'</span>
+<span class="fn">F₁</span> = <span class="op">E·X'·Y</span>
+<span class="fn">F₂</span> = <span class="op">E·X·Y'</span>
+<span class="fn">F₃</span> = <span class="op">E·X·Y</span></code></pre>
+            </div>
+            <div class="card p-5">
+              <h4 class="font-bold mb-3 text-sm" style="color:var(--accent-yellow)">Decoder dengan Enable (0-enable / active-low)</h4>
+              <table class="truth-table mb-3">
+                <thead><tr><th>E'</th><th>X</th><th>Y</th><th>F₀</th><th>F₁</th><th>F₂</th><th>F₃</th></tr></thead>
+                <tbody>
+                  <tr><td style="color:var(--accent-green)">0</td><td>0</td><td>0</td><td class="hl">1</td><td>0</td><td>0</td><td>0</td></tr>
+                  <tr><td style="color:var(--accent-green)">0</td><td>0</td><td>1</td><td>0</td><td class="hl">1</td><td>0</td><td>0</td></tr>
+                  <tr><td style="color:var(--accent-green)">0</td><td>1</td><td>0</td><td>0</td><td>0</td><td class="hl">1</td><td>0</td></tr>
+                  <tr><td style="color:var(--accent-green)">0</td><td>1</td><td>1</td><td>0</td><td>0</td><td>0</td><td class="hl">1</td></tr>
+                  <tr><td style="color:var(--accent-red)">1</td><td>X</td><td>X</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+                </tbody>
+              </table>
+              <div class="callout-pitfall mt-2">
+                <div class="flex items-center gap-2 mb-1">
+                  <i data-lucide="alert-triangle" class="w-3.5 h-3.5" style="color:var(--accent-red)"></i>
+                  <span class="font-bold text-xs" style="color:var(--accent-red)">COMMON PITFALL</span>
+                </div>
+                <p class="text-xs" style="color:var(--text-secondary)">Pada <strong>0-enable (active-low)</strong>, decoder aktif saat E'=0, BUKAN saat E'=1. Kebanyakan MSI decoder di dunia nyata menggunakan sinyal active-low untuk enable.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Larger Decoder -->
+          <div class="card p-5 mt-4">
+            <h4 class="font-bold mb-3 text-sm" style="color:var(--accent-cyan)">Membangun Decoder Lebih Besar dari yang Kecil</h4>
+            <div class="space-y-3">
+              <div class="step-item" data-step="1">
+                <p class="text-sm font-bold" style="color:var(--text-primary)">3×8 dari dua 2×4 (1-enable) + Inverter</p>
+                <p class="text-xs mt-1" style="color:var(--text-secondary)">Input MSB (w) → inverted ke enable decoder pertama; langsung ke enable decoder kedua. x,y → masuk ke S₁,S₀ kedua decoder.</p>
+              </div>
+              <div class="step-item" data-step="2">
+                <p class="text-sm font-bold" style="color:var(--text-primary)">4×16 dari dua 3×8 (1-enable)</p>
+                <p class="text-xs mt-1" style="color:var(--text-secondary)">Input MSB (w) → enable decoder pertama; inverted → enable decoder kedua. x,y,z → S₂,S₁,S₀ kedua decoder.</p>
+              </div>
+            </div>
+            <pre class="mt-3"><code><span class="cm">// Prinsip: 1 Decoder (n×2ⁿ) → 2 Decoder ((n-1)×2^(n-1))</span>
+<span class="cm">// Contoh dari soal latihan:</span>
+<span class="kw">1×2 Decoder</span> → <span class="val">2×</span> <span class="kw">1×2</span> → <span class="val">4×</span> <span class="kw">1×2</span> → <span class="val">8×</span> <span class="kw">1×2</span>
+<span class="kw">2×4 Decoder</span> → <span class="val">4×</span> <span class="kw">2×4</span> <span class="cm">// untuk membuat 4×16</span>
+<span class="kw">1×2 Decoder</span> → <span class="val">2×</span> <span class="kw">1×2</span> → <span class="val">4×</span> <span class="kw">2×4</span> <span class="cm">// cara alternatif</span></code></pre>
+          </div>
+        </div>
+
+        <!-- Implementasi Fungsi via Decoder -->
+        <div id="dec-function" class="tab-content">
+          <div class="callout-key mb-4">
+            <div class="flex items-center gap-2 mb-1">
+              <i data-lucide="key" class="w-4 h-4" style="color:var(--accent-cyan)"></i>
+              <span class="font-bold text-sm" style="color:var(--accent-cyan)">Prinsip Implementasi Fungsi via Decoder</span>
+            </div>
+            <p class="text-sm" style="color:var(--text-secondary)">
+              Karena setiap output decoder = minterm, kita bisa mengimplementasikan <strong style="color:var(--text-primary)">sembarang fungsi kombinasional n-input</strong> menggunakan decoder n:2ⁿ + OR gate. Tinggal hubungkan output yang merupakan minterm fungsi ke OR gate.
+            </p>
+          </div>
+
+          <div class="card p-5 mb-4">
+            <h4 class="font-bold mb-3 text-sm" style="color:var(--accent-cyan)">Contoh: Full Adder dengan 3×8 Decoder</h4>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <p class="text-xs mb-2" style="color:var(--text-secondary)">Fungsi:</p>
+                <pre><code><span class="fn">S</span>(x,y,z) = <span class="op">Σm(1,2,4,7)</span>
+<span class="fn">C</span>(x,y,z) = <span class="op">Σm(3,5,6,7)</span></code></pre>
+                <p class="text-xs mt-3" style="color:var(--text-secondary)">Implementasi:</p>
+                <ul class="text-sm mt-2 space-y-1" style="color:var(--text-secondary)">
+                  <li>→ Output decoder 1,2,4,7 → OR gate → <strong style="color:var(--accent-green)">S</strong></li>
+                  <li>→ Output decoder 3,5,6,7 → OR gate → <strong style="color:var(--accent-cyan)">C</strong></li>
+                </ul>
+              </div>
+              <div class="overflow-x-auto">
+                <table class="truth-table">
+                  <thead><tr><th>x</th><th>y</th><th>z</th><th>C</th><th>S</th></tr></thead>
+                  <tbody>
+                    <tr><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+                    <tr><td>0</td><td>0</td><td>1</td><td>0</td><td class="hl">1</td></tr>
+                    <tr><td>0</td><td>1</td><td>0</td><td>0</td><td class="hl">1</td></tr>
+                    <tr><td>0</td><td>1</td><td>1</td><td class="hl">1</td><td>0</td></tr>
+                    <tr><td>1</td><td>0</td><td>0</td><td>0</td><td class="hl">1</td></tr>
+                    <tr><td>1</td><td>0</td><td>1</td><td class="hl">1</td><td>0</td></tr>
+                    <tr><td>1</td><td>1</td><td>0</td><td class="hl">1</td><td>0</td></tr>
+                    <tr><td>1</td><td>1</td><td>1</td><td class="hl">1</td><td class="hl">1</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="section-divider"></div>
+
+    <!-- ===== ENCODER ===== -->
+    <section id="section-encoder" class="section-anchor mb-12">
+      <div class="flex items-center gap-3 mb-6">
+        <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background:rgba(168,85,247,0.15)">
+          <i data-lucide="toggle-right" class="w-4 h-4" style="color:var(--accent-purple)"></i>
+        </div>
+        <h2 class="text-2xl font-bold" style="color:var(--text-primary)">Encoder</h2>
+      </div>
+
+      <div class="callout-key mb-5">
+        <div class="flex items-center gap-2 mb-2">
+          <i data-lucide="key" class="w-4 h-4" style="color:var(--accent-cyan)"></i>
+          <span class="font-bold text-sm" style="color:var(--accent-cyan)">KEY TERM: Encoder</span>
+        </div>
+        <p class="text-sm" style="color:var(--text-secondary)">
+          Kebalikan dari decoder. Diberikan sekumpulan input line (hanya satu yang aktif HIGH), encoder menghasilkan <strong style="color:var(--text-primary)">kode biner</strong> yang bersesuaian. Berisi <strong style="color:var(--accent-purple)">2ⁿ atau kurang</strong> input line dan <strong style="color:var(--accent-purple)">n</strong> output line. Diimplementasikan dengan <strong style="color:var(--text-primary)">OR gate</strong>.
+        </p>
+      </div>
+
+      <div class="callout-pitfall mb-5">
+        <div class="flex items-center gap-2 mb-1">
+          <i data-lucide="alert-triangle" class="w-4 h-4" style="color:var(--accent-red)"></i>
+          <span class="font-bold text-sm" style="color:var(--accent-red)">COMMON PITFALL: Encoder Biasa vs Priority Encoder</span>
+        </div>
+        <p class="text-sm" style="color:var(--text-secondary)">
+          Encoder biasa hanya valid jika <strong style="color:var(--text-primary)">tepat satu input = 1</strong>. Jika ada lebih dari satu input aktif bersamaan, outputnya tidak valid. Untuk kondisi ini, digunakan <strong style="color:var(--accent-yellow)">Priority Encoder</strong> yang memberikan prioritas pada input dengan nomor tertinggi.
+        </p>
+      </div>
+
+      <div class="card p-5 mb-4">
+        <h4 class="font-bold mb-3 text-sm" style="color:var(--accent-purple)">Contoh: 8-to-3 (Octal-to-Binary) Encoder</h4>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="overflow-x-auto">
+            <table class="truth-table">
+              <thead>
+                <tr><th>D₀</th><th>D₁</th><th>D₂</th><th>D₃</th><th>D₄</th><th>D₅</th><th>D₆</th><th>D₇</th><th>x</th><th>y</th><th>z</th></tr>
+              </thead>
+              <tbody>
+                <tr><td class="hl">1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+                <tr><td>0</td><td class="hl">1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="hl">1</td></tr>
+                <tr><td>0</td><td>0</td><td class="hl">1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="hl">1</td><td>0</td></tr>
+                <tr><td>0</td><td>0</td><td>0</td><td class="hl">1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="hl">1</td><td class="hl">1</td></tr>
+                <tr><td>0</td><td>0</td><td>0</td><td>0</td><td class="hl">1</td><td>0</td><td>0</td><td>0</td><td class="hl">1</td><td>0</td><td>0</td></tr>
+                <tr><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="hl">1</td><td>0</td><td>0</td><td class="hl">1</td><td>0</td><td class="hl">1</td></tr>
+                <tr><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="hl">1</td><td>0</td><td class="hl">1</td><td class="hl">1</td><td>0</td></tr>
+                <tr><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="hl">1</td><td class="hl">1</td><td class="hl">1</td><td class="hl">1</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div>
+            <pre><code><span class="cm">// Persamaan output 8-to-3 encoder:</span>
+<span class="fn">x</span> = <span class="op">D₄ + D₅ + D₆ + D₇</span>
+<span class="fn">y</span> = <span class="op">D₂ + D₃ + D₆ + D₇</span>
+<span class="fn">z</span> = <span class="op">D₁ + D₃ + D₅ + D₇</span>
+
+<span class="cm">// Pola: bit output ke-k = 1 jika
+// nomor input memiliki bit k = 1</span>
+<span class="cm">// → langsung hubungkan input yang
+//   punya bit itu ke OR gate!</span></code></pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="section-divider"></div>
+
+    <!-- ===== MUX & DEMUX ===== -->
+    <section id="section-mux" class="section-anchor mb-12">
+      <div class="flex items-center gap-3 mb-6">
+        <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background:rgba(34,197,94,0.15)">
+          <i data-lucide="git-merge" class="w-4 h-4" style="color:var(--accent-green)"></i>
+        </div>
+        <h2 class="text-2xl font-bold" style="color:var(--text-primary)">Multiplexer (MUX) & Demultiplexer (DEMUX)</h2>
+      </div>
+
+      <div class="flex gap-2 mb-4 flex-wrap">
+        <button class="tab-btn active" onclick="switchTab('mux-tabs','mux-intro',this)">MUX Dasar</button>
+        <button class="tab-btn" onclick="switchTab('mux-tabs','mux-larger',this)">MUX Lebih Besar</button>
+        <button class="tab-btn" onclick="switchTab('mux-tabs','mux-function',this)">Implementasi Fungsi</button>
+        <button class="tab-btn" onclick="switchTab('mux-tabs','demux-intro',this)">DEMUX</button>
+      </div>
+
+      <div id="mux-tabs">
+        <!-- MUX Dasar -->
+        <div id="mux-intro" class="tab-content active">
+          <div class="callout-key mb-4">
+            <div class="flex items-center gap-2 mb-2">
+              <i data-lucide="key" class="w-4 h-4" style="color:var(--accent-cyan)"></i>
+              <span class="font-bold text-sm" style="color:var(--accent-cyan)">KEY TERM: Multiplexer</span>
+            </div>
+            <p class="text-sm" style="color:var(--text-secondary)">
+              Disebut juga <strong style="color:var(--text-primary)">data selector</strong>. Memiliki 2ⁿ jalur input, n jalur selection, dan 1 jalur output. Berdasarkan nilai n-bit selector, <strong style="color:var(--accent-green)">salah satu input diteruskan ke output</strong>.
+            </p>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div class="card p-5">
+              <h4 class="font-bold mb-3 text-sm" style="color:var(--accent-green)">4-to-1 MUX – Truth Table</h4>
+              <table class="truth-table">
+                <thead><tr><th>S₁</th><th>S₀</th><th>Y</th></tr></thead>
+                <tbody>
+                  <tr><td>0</td><td>0</td><td class="hl">I₀</td></tr>
+                  <tr><td>0</td><td>1</td><td class="hl">I₁</td></tr>
+                  <tr><td>1</td><td>0</td><td class="hl">I₂</td></tr>
+                  <tr><td>1</td><td>1</td><td class="hl">I₃</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="card p-5">
+              <h4 class="font-bold mb-3 text-sm" style="color:var(--accent-green)">Persamaan Output MUX</h4>
+              <pre><code><span class="cm">// Output = sum of (data × selection)</span>
+<span class="fn">Y</span> = <span class="op">I₀·(S₁'·S₀')</span>
+  + <span class="op">I₁·(S₁'·S₀)</span>
+  + <span class="op">I₂·(S₁·S₀')</span>
+  + <span class="op">I₃·(S₁·S₀)</span>
+
+<span class="cm">// MUX = Decoder + AND gates + OR gate</span>
+<span class="cm">// n:2ⁿ decoder → tambah 2ⁿ AND gate</span></code></pre>
+            </div>
+          </div>
+        </div>
+
+        <!-- MUX Lebih Besar -->
+        <div id="mux-larger" class="tab-content">
+          <div class="card p-5 mb-4">
+            <h4 class="font-bold mb-3 text-sm" style="color:var(--accent-green)">8-to-1 MUX dari MUX Lebih Kecil</h4>
+            <div class="space-y-4">
+              <div>
+                <p class="text-sm font-bold mb-2" style="color:var(--text-primary)">Cara 1: Dua 4:1 MUX + Satu 2:1 MUX</p>
+                <pre><code><span class="cm">// S₂ → select untuk 2:1 MUX (luar)</span>
+<span class="cm">// S₁, S₀ → select untuk kedua 4:1 MUX</span>
+MUX-A (I₀..I₃) → <span class="fn">F₀..₃</span> [<span class="op">pilih via S₁,S₀</span>]
+MUX-B (I₄..I₇) → <span class="fn">F₄..₇</span> [<span class="op">pilih via S₁,S₀</span>]
+MUX-C (F₀..₃, F₄..₇) → <span class="fn">Y</span> [<span class="op">pilih via S₂</span>]</code></pre>
+              </div>
+              <div>
+                <p class="text-sm font-bold mb-2" style="color:var(--text-primary)">Cara 2: Empat 2:1 MUX + Satu 4:1 MUX</p>
+                <pre><code><span class="cm">// S₀ → select untuk 4 MUX 2:1 (dalam)</span>
+<span class="cm">// S₂,S₁ → select untuk 4:1 MUX (luar)</span></code></pre>
+              </div>
+              <div>
+                <p class="text-sm font-bold mb-2" style="color:var(--text-primary)">16-to-1 MUX: Lima 4:1 MUX</p>
+                <pre><code><span class="cm">// 4 MUX 4:1 (dalam, pilih via S₁,S₀)</span>
+<span class="cm">// 1 MUX 4:1 (luar, pilih via S₃,S₂)</span></code></pre>
+              </div>
+            </div>
+          </div>
+          <div class="callout-tip">
+            <div class="flex items-center gap-2 mb-1">
+              <i data-lucide="lightbulb" class="w-4 h-4" style="color:var(--accent-green)"></i>
+              <span class="font-bold text-sm" style="color:var(--accent-green)">TIPS</span>
+            </div>
+            <p class="text-sm" style="color:var(--text-secondary)">Dari soal latihan: Untuk membangun 8:1 MUX bisa menggunakan <strong style="color:var(--text-primary)">4 MUX 2:1 → 2 MUX 2:1 → 1 MUX 2:1</strong>, atau <strong style="color:var(--text-primary)">2 MUX 4:1 → 1 MUX 2:1</strong>.</p>
+          </div>
+        </div>
+
+        <!-- MUX Implementasi Fungsi -->
+        <div id="mux-function" class="tab-content">
+          <div class="callout-key mb-4">
+            <div class="flex items-center gap-2 mb-2">
+              <i data-lucide="key" class="w-4 h-4" style="color:var(--accent-cyan)"></i>
+              <span class="font-bold text-sm" style="color:var(--accent-cyan)">Implementasi Fungsi Boolean via MUX</span>
+            </div>
+            <div class="space-y-2 mt-2">
+              <div class="step-item" data-step="1">
+                <p class="text-sm" style="color:var(--text-secondary)">Ekspresikan fungsi dalam bentuk <strong style="color:var(--text-primary)">sum-of-minterms</strong></p>
+              </div>
+              <div class="step-item" data-step="2">
+                <p class="text-sm" style="color:var(--text-secondary)">Hubungkan <strong style="color:var(--text-primary)">n variabel</strong> ke n <em>selection line</em> MUX 2ⁿ:1</p>
+              </div>
+              <div class="step-item" data-step="3">
+                <p class="text-sm" style="color:var(--text-secondary)">Pasang <strong style="color:var(--accent-green)">'1'</strong> pada data line yang merupakan minterm fungsi, <strong style="color:var(--accent-red)">'0'</strong> untuk yang bukan</p>
+              </div>
+            </div>
+          </div>
+          <div class="card p-5">
+            <h4 class="font-bold mb-3 text-sm" style="color:var(--accent-green)">Contoh: F(A,B,C) = Σm(1,3,5,6)</h4>
+            <pre><code><span class="cm">// Gunakan 8:1 MUX, connect A→S₂, B→S₁, C→S₀</span>
+I₀ = <span class="val">0</span>  <span class="cm">// minterm 0 bukan bagian fungsi</span>
+I₁ = <span class="val">1</span>  <span class="cm">// minterm 1 ✓ (m1)</span>
+I₂ = <span class="val">0</span>  <span class="cm">// minterm 2 tidak ada</span>
+I₃ = <span class="val">1</span>  <span class="cm">// minterm 3 ✓ (m3)</span>
+I₄ = <span class="val">0</span>  <span class="cm">// minterm 4 tidak ada</span>
+I₅ = <span class="val">1</span>  <span class="cm">// minterm 5 ✓ (m5)</span>
+I₆ = <span class="val">1</span>  <span class="cm">// minterm 6 ✓ (m6)</span>
+I₇ = <span class="val">0</span>  <span class="cm">// minterm 7 tidak ada</span>
+
+<span class="cm">// Output Y = m₁ + m₃ + m₅ + m₆ = F(A,B,C) ✓</span></code></pre>
+          </div>
+        </div>
+
+        <!-- DEMUX -->
+        <div id="demux-intro" class="tab-content">
+          <div class="callout-key mb-4">
+            <div class="flex items-center gap-2 mb-2">
+              <i data-lucide="key" class="w-4 h-4" style="color:var(--accent-cyan)"></i>
+              <span class="font-bold text-sm" style="color:var(--accent-cyan)">KEY TERM: Demultiplexer</span>
+            </div>
+            <p class="text-sm" style="color:var(--text-secondary)">
+              Kebalikan MUX. Satu <strong style="color:var(--text-primary)">data input</strong> diarahkan ke salah satu dari <strong style="color:var(--accent-orange)">2ⁿ output</strong> berdasarkan nilai selection line. <strong style="color:var(--accent-yellow)">Rangkaian DEMUX identik dengan Decoder + Enable!</strong>
+            </p>
+          </div>
+          <div class="card p-5 mb-4">
+            <h4 class="font-bold mb-3 text-sm" style="color:var(--accent-orange)">1-to-4 Demultiplexer</h4>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <table class="truth-table">
+                  <thead><tr><th>S₁</th><th>S₀</th><th>Y₀</th><th>Y₁</th><th>Y₂</th><th>Y₃</th></tr></thead>
+                  <tbody>
+                    <tr><td>0</td><td>0</td><td class="hl">D</td><td>0</td><td>0</td><td>0</td></tr>
+                    <tr><td>0</td><td>1</td><td>0</td><td class="hl">D</td><td>0</td><td>0</td></tr>
+                    <tr><td>1</td><td>0</td><td>0</td><td>0</td><td class="hl">D</td><td>0</td></tr>
+                    <tr><td>1</td><td>1</td><td>0</td><td>0</td><td>0</td><td class="hl">D</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <pre><code><span class="fn">Y₀</span> = <span class="op">D·S₁'·S₀'</span>
+<span class="fn">Y₁</span> = <span class="op">D·S₁'·S₀</span>
+<span class="fn">Y₂</span> = <span class="op">D·S₁·S₀'</span>
+<span class="fn">Y₃</span> = <span class="op">D·S₁·S₀</span>
+
+<span class="cm">// = Decoder 2×4 dengan:
+// D → Enable (E)
+// S₁,S₀ → Address inputs
+// Rangkaian IDENTIK!</span></code></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="section-divider"></div>
+
+    <!-- ===== SEQUENTIAL LOGIC ===== -->
+    <section id="section-sequential" class="section-anchor mb-12">
+      <div class="flex items-center gap-3 mb-6">
+        <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background:rgba(249,115,22,0.15)">
+          <i data-lucide="clock" class="w-4 h-4" style="color:var(--accent-orange)"></i>
+        </div>
+        <h2 class="text-2xl font-bold" style="color:var(--text-primary)">Sequential Logic – Pengantar</h2>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
+        <div class="card p-5" style="border-color: rgba(59,130,246,0.3)">
+          <div class="flex items-center gap-2 mb-3">
+            <span class="badge badge-blue">Combinational Circuit</span>
+          </div>
+          <p class="text-sm" style="color:var(--text-secondary)">Output hanya bergantung pada <strong style="color:var(--text-primary)">input saat ini (present input)</strong>. Tidak ada memori.</p>
+          <pre class="mt-3 text-xs"><code>output = f(input)</code></pre>
+        </div>
+        <div class="card p-5" style="border-color: rgba(249,115,22,0.3)">
+          <div class="flex items-center gap-2 mb-3">
+            <span class="badge badge-orange">Sequential Circuit</span>
+          </div>
+          <p class="text-sm" style="color:var(--text-secondary)">Output bergantung pada <strong style="color:var(--text-primary)">present input DAN state sebelumnya</strong>. Memiliki elemen memori.</p>
+          <pre class="mt-3 text-xs"><code>output = f(input, state)
+state(baru) = g(input, state)</code></pre>
+        </div>
+      </div>
+
+      <div class="card p-5 mb-5">
+        <h4 class="font-bold mb-3 text-sm" style="color:var(--accent-orange)">Tipe-tipe Sequential Circuit</h4>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div class="p-3 rounded-lg" style="background:rgba(59,130,246,0.06); border:1px solid rgba(59,130,246,0.2)">
+            <div class="font-bold text-sm mb-1" style="color:var(--accent-blue)">Synchronous</div>
+            <p class="text-xs" style="color:var(--text-secondary)">Output berubah hanya pada waktu tertentu (dipicu clock)</p>
+          </div>
+          <div class="p-3 rounded-lg" style="background:rgba(249,115,22,0.06); border:1px solid rgba(249,115,22,0.2)">
+            <div class="font-bold text-sm mb-1" style="color:var(--accent-orange)">Asynchronous</div>
+            <p class="text-xs" style="color:var(--text-secondary)">Output berubah kapan saja ketika input berubah</p>
+          </div>
+          <div class="p-3 rounded-lg" style="background:rgba(168,85,247,0.06); border:1px solid rgba(168,85,247,0.2)">
+            <div class="font-bold text-sm mb-1" style="color:var(--accent-purple)">Bistable (Multivibrator)</div>
+            <p class="text-xs" style="color:var(--text-secondary)">2 kondisi stabil → dasar dari Latch & Flip-Flop</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card p-5">
+        <h4 class="font-bold mb-3 text-sm" style="color:var(--accent-orange)">Memory Element – Karakteristik Dasar</h4>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <table class="truth-table">
+            <thead><tr><th>Perintah (di waktu t)</th><th>Q(t)</th><th>Q(t+1)</th></tr></thead>
+            <tbody>
+              <tr><td>Set</td><td>X</td><td class="hl">1</td></tr>
+              <tr><td>Reset</td><td>X</td><td style="color:var(--accent-red)">0</td></tr>
+              <tr><td>No Change</td><td>0</td><td>0</td></tr>
+              <tr><td>No Change</td><td>1</td><td class="hl">1</td></tr>
+            </tbody>
+          </table>
+          <div class="callout-key">
+            <p class="text-xs" style="color:var(--text-secondary)">
+              <strong style="color:var(--accent-cyan)">Q(t)</strong> = current state (state saat ini)<br>
+              <strong style="color:var(--accent-cyan)">Q(t+1) atau Q⁺</strong> = next state (state berikutnya)<br><br>
+              Tipe triggering:<br>
+              • <strong style="color:var(--text-primary)">Pulse-triggered</strong> → Latch (level-sensitive)<br>
+              • <strong style="color:var(--text-primary)">Edge-triggered</strong> → Flip-Flop (positive/negative edge)
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="section-divider"></div>
+
+    <!-- ===== LATCH ===== -->
+    <section id="section-latch" class="section-anchor mb-12">
+      <div class="flex items-center gap-3 mb-6">
+        <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background:rgba(234,179,8,0.15)">
+          <i data-lucide="lock" class="w-4 h-4" style="color:var(--accent-yellow)"></i>
+        </div>
+        <h2 class="text-2xl font-bold" style="color:var(--text-primary)">Latch</h2>
+      </div>
+
+      <div class="callout-key mb-5">
+        <div class="flex items-center gap-2 mb-2">
+          <i data-lucide="key" class="w-4 h-4" style="color:var(--accent-cyan)"></i>
+          <span class="font-bold text-sm" style="color:var(--accent-cyan)">KEY TERM: Latch vs Flip-Flop</span>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-1">
+          <div>
+            <strong style="color:var(--accent-yellow)">Latch (Asynchronous)</strong>
+            <p class="text-xs mt-1" style="color:var(--text-secondary)">Output langsung berubah saat input berubah. Tidak menunggu clock. Level-sensitive (aktif selama EN = HIGH atau LOW).</p>
+          </div>
+          <div>
+            <strong style="color:var(--accent-purple)">Flip-Flop (Synchronous)</strong>
+            <p class="text-xs mt-1" style="color:var(--text-secondary)">Output berubah hanya pada <em>edge</em> clock (rising atau falling). Edge-triggered.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex gap-2 mb-4 flex-wrap">
+        <button class="tab-btn active" onclick="switchTab('latch-tabs','latch-sr',this)">S-R Latch</button>
+        <button class="tab-btn" onclick="switchTab('latch-tabs','latch-d',this)">D Latch</button>
+      </div>
+
+      <div id="latch-tabs">
+        <!-- S-R Latch -->
+        <div id="latch-sr" class="tab-content active">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div class="card p-5">
+              <h4 class="font-bold mb-3 text-sm" style="color:var(--accent-yellow)">Active-High S-R Latch (NOR gate)</h4>
+              <table class="truth-table mb-3">
+                <thead><tr><th>S</th><th>R</th><th>Q</th><th>Q'</th><th>Keterangan</th></tr></thead>
+                <tbody>
+                  <tr><td>0</td><td>0</td><td>NC</td><td>NC</td><td style="color:var(--text-secondary)">No Change</td></tr>
+                  <tr><td>1</td><td>0</td><td class="hl">1</td><td>0</td><td style="color:var(--accent-green)">SET</td></tr>
+                  <tr><td>0</td><td>1</td><td>0</td><td class="hl">1</td><td style="color:var(--accent-red)">RESET</td></tr>
+                  <tr><td>1</td><td>1</td><td class="invalid">0</td><td class="invalid">0</td><td style="color:var(--accent-red)">INVALID!</td></tr>
+                </tbody>
+              </table>
+              <div class="callout-pitfall">
+                <div class="flex items-center gap-2 mb-1">
+                  <i data-lucide="alert-triangle" class="w-3.5 h-3.5" style="color:var(--accent-red)"></i>
+                  <span class="font-bold text-xs" style="color:var(--accent-red)">COMMON PITFALL</span>
+                </div>
+                <p class="text-xs" style="color:var(--text-secondary)">S=1 dan R=1 secara bersamaan menghasilkan kondisi <strong style="color:var(--accent-red)">INVALID</strong> (Q=Q'=0, melanggar komplemen). Kondisi ini harus dihindari!</p>
+              </div>
+            </div>
+            <div class="card p-5">
+              <h4 class="font-bold mb-3 text-sm" style="color:var(--accent-yellow)">Active-Low S-R Latch (NAND gate)</h4>
+              <table class="truth-table mb-3">
+                <thead><tr><th>S'</th><th>R'</th><th>Q</th><th>Q'</th><th>Keterangan</th></tr></thead>
+                <tbody>
+                  <tr><td style="color:var(--accent-green)">0</td><td>1</td><td class="hl">1</td><td>0</td><td style="color:var(--accent-green)">SET</td></tr>
+                  <tr><td>1</td><td style="color:var(--accent-green)">0</td><td>0</td><td class="hl">1</td><td style="color:var(--accent-red)">RESET</td></tr>
+                  <tr><td>1</td><td>1</td><td>NC</td><td>NC</td><td style="color:var(--text-secondary)">No Change</td></tr>
+                  <tr><td style="color:var(--accent-green)">0</td><td style="color:var(--accent-green)">0</td><td class="invalid">1</td><td class="invalid">1</td><td style="color:var(--accent-red)">INVALID!</td></tr>
+                </tbody>
+              </table>
+              <p class="text-xs" style="color:var(--text-secondary)">Pada active-low: latch aktif saat input = 0 (LOW). Logikanya terbalik dari active-high.</p>
+              <div class="callout-tip mt-3">
+                <p class="text-xs" style="color:var(--text-secondary)">Jawaban soal #13 (active-low): Time 0: S=0,R=1 → Q=<strong style="color:var(--accent-green)">1</strong>,Q'=0 (SET). Time 1: S=1,R=1 → Q=<strong style="color:var(--text-primary)">1</strong>,Q'=0 (NC). Time 2: S=1,R=0 → Q=<strong style="color:var(--accent-red)">0</strong>,Q'=1 (RESET).</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Gated S-R Latch -->
+          <div class="card p-5 mt-4">
+            <h4 class="font-bold mb-2 text-sm" style="color:var(--accent-yellow)">Gated S-R Latch (dengan Enable)</h4>
+            <p class="text-sm" style="color:var(--text-secondary)">S-R Latch + EN input + 2 NAND gate. Output berubah <strong style="color:var(--text-primary)">hanya saat EN = HIGH</strong>.</p>
+          </div>
+        </div>
+
+        <!-- D Latch -->
+        <div id="latch-d" class="tab-content">
+          <div class="callout-key mb-4">
+            <div class="flex items-center gap-2 mb-2">
+              <i data-lucide="key" class="w-4 h-4" style="color:var(--accent-cyan)"></i>
+              <span class="font-bold text-sm" style="color:var(--accent-cyan)">KEY TERM: Gated D Latch</span>
+            </div>
+            <p class="text-sm" style="color:var(--text-secondary)">
+              Dibuat dengan menghubungkan R = S' pada Gated S-R Latch. <strong style="color:var(--text-primary)">Mengeliminasi kondisi invalid!</strong> Saat EN=HIGH, Q mengikuti (follows) input D.
+            </p>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div class="card p-5">
+              <h4 class="font-bold mb-3 text-sm" style="color:var(--accent-yellow)">Characteristic Table – D Latch</h4>
+              <table class="truth-table">
+                <thead><tr><th>EN</th><th>D</th><th>Q(t+1)</th><th>Keterangan</th></tr></thead>
+                <tbody>
+                  <tr><td class="hl">1</td><td>0</td><td style="color:var(--accent-red)">0</td><td style="color:var(--text-secondary)">Reset</td></tr>
+                  <tr><td class="hl">1</td><td>1</td><td class="hl">1</td><td style="color:var(--accent-green)">Set</td></tr>
+                  <tr><td>0</td><td>X</td><td>Q(t)</td><td style="color:var(--text-secondary)">No Change</td></tr>
+                </tbody>
+              </table>
+              <p class="text-xs mt-3" style="color:var(--text-secondary)">Saat EN=1: Q(t+1) = <strong style="color:var(--accent-cyan)">D</strong></p>
+            </div>
+            <div>
+              <pre><code><span class="cm">// Jawaban soal #14 (active-high D Latch):</span>
+<span class="cm">// Asumsi EN selalu 1 (latch terbuka)</span>
+Time 0: D=0 → Q=<span class="val">0</span>, Q'=<span class="op">1</span>
+Time 1: D=1 → Q=<span class="val">1</span>, Q'=<span class="op">0</span>
+Time 2: D=0 → Q=<span class="val">0</span>, Q'=<span class="op">1</span></code></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="section-divider"></div>
+
+    <!-- ===== FLIP-FLOP ===== -->
+    <section id="section-flipflop" class="section-anchor mb-12">
+      <div class="flex items-center gap-3 mb-6">
+        <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background:rgba(168,85,247,0.15)">
+          <i data-lucide="zap" class="w-4 h-4" style="color:var(--accent-purple)"></i>
+        </div>
+        <h2 class="text-2xl font-bold" style="color:var(--text-primary)">Flip-Flop</h2>
+      </div>
+
+      <div class="callout-key mb-5">
+        <div class="flex items-center gap-2 mb-2">
+          <i data-lucide="key" class="w-4 h-4" style="color:var(--accent-cyan)"></i>
+          <span class="font-bold text-sm" style="color:var(--accent-cyan)">KEY TERM: Flip-Flop</span>
+        </div>
+        <p class="text-sm" style="color:var(--text-secondary)">
+          Perangkat bistable <strong style="color:var(--text-primary)">synchronous</strong>. Output berubah hanya pada <strong style="color:var(--accent-purple)">edge (tepi)</strong> sinyal clock: positive edge (LOW→HIGH) atau negative edge (HIGH→LOW). Berbeda dengan latch yang level-sensitive.
+        </p>
+      </div>
+
+      <div class="flex gap-2 mb-4 flex-wrap">
+        <button class="tab-btn active" onclick="switchTab('ff-tabs','ff-sr',this)">S-R FF</button>
+        <button class="tab-btn" onclick="switchTab('ff-tabs','ff-d',this)">D FF</button>
+        <button class="tab-btn" onclick="switchTab('ff-tabs','ff-jk',this)">J-K FF</button>
+        <button class="tab-btn" onclick="switchTab('ff-tabs','ff-t',this)">T FF</button>
+        <button class="tab-btn" onclick="switchTab('ff-tabs','ff-async',this)">Asynchronous Inputs</button>
+      </div>
+
+      <div id="ff-tabs">
+        <!-- S-R FF -->
+        <div id="ff-sr" class="tab-content active">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div class="card p-5">
+              <h4 class="font-bold mb-3 text-sm" style="color:var(--accent-purple)">Characteristic Table – S-R Flip-Flop</h4>
+              <p class="text-xs mb-2" style="color:var(--text-secondary)">↑ = clock transition LOW → HIGH (positive edge)</p>
+              <table class="truth-table">
+                <thead><tr><th>S</th><th>R</th><th>CLK</th><th>Q(t+1)</th><th>Keterangan</th></tr></thead>
+                <tbody>
+                  <tr><td>0</td><td>0</td><td>X</td><td>Q(t)</td><td style="color:var(--text-secondary)">No Change</td></tr>
+                  <tr><td>0</td><td>1</td><td>↑</td><td style="color:var(--accent-red)">0</td><td style="color:var(--accent-red)">Reset</td></tr>
+                  <tr><td>1</td><td>0</td><td>↑</td><td class="hl">1</td><td style="color:var(--accent-green)">Set</td></tr>
+                  <tr><td>1</td><td>1</td><td>↑</td><td class="invalid">?</td><td style="color:var(--accent-red)">Invalid!</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div>
+              <pre><code><span class="cm">// Jawaban soal #15 (S-R Flip-Flop):</span>
+<span class="cm">// Asumsi Q awal = ?</span>
+Time 0: S=0,R=1 → Q=<span class="val">0</span>, Q'=<span class="op">1</span> (Reset)
+Time 1: S=0,R=0 → Q=<span class="val">0</span>, Q'=<span class="op">1</span> (No Change)
+Time 2: S=1,R=0 → Q=<span class="val">1</span>, Q'=<span class="op">0</span> (Set)</code></pre>
+            </div>
+          </div>
+        </div>
+
+        <!-- D FF -->
+        <div id="ff-d" class="tab-content">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div class="card p-5">
+              <h4 class="font-bold mb-3 text-sm" style="color:var(--accent-purple)">Characteristic Table – D Flip-Flop</h4>
+              <table class="truth-table mb-3">
+                <thead><tr><th>D</th><th>CLK</th><th>Q(t+1)</th><th>Keterangan</th></tr></thead>
+                <tbody>
+                  <tr><td>1</td><td>↑</td><td class="hl">1</td><td style="color:var(--accent-green)">Set</td></tr>
+                  <tr><td>0</td><td>↑</td><td style="color:var(--accent-red)">0</td><td style="color:var(--accent-red)">Reset</td></tr>
+                </tbody>
+              </table>
+              <div class="callout-tip">
+                <p class="text-xs" style="color:var(--text-secondary)">Q(t+1) = <strong style="color:var(--accent-cyan)">D</strong> pada setiap clock edge. Q "follows" D.</p>
+              </div>
+            </div>
+            <div>
+              <pre><code><span class="cm">// Jawaban soal #16 (D Flip-Flop):</span>
+Time 0: D=0 → Q=<span class="val">0</span>, Q'=<span class="op">1</span>
+Time 1: D=1 → Q=<span class="val">1</span>, Q'=<span class="op">0</span>
+Time 2: D=0 → Q=<span class="val">0</span>, Q'=<span class="op">1</span>
+
+<span class="cm">// Aplikasi: Parallel Data Transfer</span>
+<span class="cm">// Simpan output X,Y,Z ke Q1,Q2,Q3
+// dipicu oleh clock edge</span></code></pre>
+            </div>
+          </div>
+        </div>
+
+        <!-- J-K FF -->
+        <div id="ff-jk" class="tab-content">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div class="card p-5">
+              <h4 class="font-bold mb-3 text-sm" style="color:var(--accent-purple)">Characteristic Table – J-K Flip-Flop</h4>
+              <table class="truth-table mb-3">
+                <thead><tr><th>J</th><th>K</th><th>CLK</th><th>Q(t+1)</th><th>Keterangan</th></tr></thead>
+                <tbody>
+                  <tr><td>0</td><td>0</td><td>↑</td><td>Q(t)</td><td style="color:var(--text-secondary)">No Change</td></tr>
+                  <tr><td>0</td><td>1</td><td>↑</td><td style="color:var(--accent-red)">0</td><td style="color:var(--accent-red)">Reset</td></tr>
+                  <tr><td>1</td><td>0</td><td>↑</td><td class="hl">1</td><td style="color:var(--accent-green)">Set</td></tr>
+                  <tr><td>1</td><td>1</td><td>↑</td><td>Q(t)'</td><td style="color:var(--accent-yellow)">Toggle!</td></tr>
+                </tbody>
+              </table>
+              <pre><code><span class="cm">// Persamaan karakteristik JK FF:</span>
+Q(t+1) = <span class="op">J·Q' + K'·Q</span></code></pre>
+            </div>
+            <div>
+              <div class="callout-tip mb-3">
+                <div class="flex items-center gap-2 mb-1">
+                  <i data-lucide="lightbulb" class="w-3.5 h-3.5" style="color:var(--accent-green)"></i>
+                  <span class="font-bold text-xs" style="color:var(--accent-green)">Keunggulan J-K FF</span>
+                </div>
+                <p class="text-xs" style="color:var(--text-secondary)">Tidak ada kondisi invalid! Saat J=K=1 → <strong style="color:var(--accent-yellow)">Toggle</strong> (output berbalik). Ini adalah perbedaan utama dari S-R FF.</p>
+              </div>
+              <pre><code><span class="cm">// Jawaban soal #17 (J-K FF):</span>
+Time 0: J=0,K=1 → Q=<span class="val">0</span>, Q'=<span class="op">1</span> (Reset)
+Time 1: J=1,K=1 → Q=<span class="val">1</span>, Q'=<span class="op">0</span> (Toggle dari 0)
+Time 2: J=0,K=0 → Q=<span class="val">1</span>, Q'=<span class="op">0</span> (No Change)
+Time 3: J=1,K=0 → Q=<span class="val">1</span>, Q'=<span class="op">0</span> (Set=tetap)</code></pre>
+            </div>
+          </div>
+        </div>
+
+        <!-- T FF -->
+        <div id="ff-t" class="tab-content">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div class="card p-5">
+              <h4 class="font-bold mb-3 text-sm" style="color:var(--accent-purple)">Characteristic Table – T Flip-Flop</h4>
+              <p class="text-xs mb-2" style="color:var(--text-secondary)">Single-input version dari J-K FF (J=K=T)</p>
+              <table class="truth-table mb-3">
+                <thead><tr><th>T</th><th>CLK</th><th>Q(t+1)</th><th>Keterangan</th></tr></thead>
+                <tbody>
+                  <tr><td>0</td><td>↑</td><td>Q(t)</td><td style="color:var(--text-secondary)">No Change</td></tr>
+                  <tr><td>1</td><td>↑</td><td>Q(t)'</td><td style="color:var(--accent-yellow)">Toggle</td></tr>
+                </tbody>
+              </table>
+              <pre><code><span class="cm">// Persamaan karakteristik T FF:</span>
+Q(t+1) = <span class="op">T⊕Q</span>  <span class="cm">(XOR)</span></code></pre>
+            </div>
+            <div>
+              <pre><code><span class="cm">// Jawaban soal #18 (T FF, Q awal=1):</span>
+Time 0: T=0 → Q=<span class="val">1</span> (No Change, Q awal=1)
+         Q'=<span class="op">0</span>
+Time 1: T=1 → Q=<span class="val">0</span> (Toggle dari 1)
+         Q'=<span class="op">1</span>
+Time 2: T=1 → Q=<span class="val">1</span> (Toggle dari 0)
+         Q'=<span class="op">0</span>
+Time 3: T=0 → Q=<span class="val">1</span> (No Change)
+         Q'=<span class="op">0</span></code></pre>
+              <div class="callout-warning mt-3">
+                <p class="text-xs" style="color:var(--text-secondary)">⚠️ Perhatikan bahwa Time 0 T=0 pada soal menggunakan Q awal = 1 (dari sebelum Time 0), bukan Q dari operasi baru!</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Async Inputs -->
+        <div id="ff-async" class="tab-content">
+          <div class="callout-key mb-4">
+            <div class="flex items-center gap-2 mb-2">
+              <i data-lucide="key" class="w-4 h-4" style="color:var(--accent-cyan)"></i>
+              <span class="font-bold text-sm" style="color:var(--accent-cyan)">KEY TERM: Asynchronous Inputs</span>
+            </div>
+            <p class="text-sm" style="color:var(--text-secondary)">
+              <strong style="color:var(--text-primary)">PRESET (PRE)</strong> dan <strong style="color:var(--text-primary)">CLEAR (CLR)</strong> atau <em>direct set (SD)</em> dan <em>direct reset (RD)</em>.<br><br>
+              Asynchronous inputs mempengaruhi state flip-flop <strong style="color:var(--accent-yellow)">terlepas dari clock</strong> — langsung, tanpa menunggu edge!
+            </p>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div class="card p-5">
+              <h4 class="font-bold mb-3 text-sm" style="color:var(--accent-yellow)">Perilaku Active-Low PRE dan CLR</h4>
+              <table class="truth-table">
+                <thead><tr><th>PRĒ</th><th>CLR̄</th><th>Q</th><th>Mode</th></tr></thead>
+                <tbody>
+                  <tr><td style="color:var(--accent-green)">0</td><td>1</td><td class="hl">1</td><td style="color:var(--accent-green)">Preset (Force SET)</td></tr>
+                  <tr><td>1</td><td style="color:var(--accent-green)">0</td><td style="color:var(--accent-red)">0</td><td style="color:var(--accent-red)">Clear (Force RESET)</td></tr>
+                  <tr><td>1</td><td>1</td><td>Normal</td><td style="color:var(--text-secondary)">Mode Normal (clock)</td></tr>
+                  <tr><td style="color:var(--accent-green)">0</td><td style="color:var(--accent-green)">0</td><td class="invalid">?</td><td style="color:var(--accent-red)">Invalid!</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div>
+              <div class="callout-pitfall mb-3">
+                <div class="flex items-center gap-2 mb-1">
+                  <i data-lucide="alert-triangle" class="w-3.5 h-3.5" style="color:var(--accent-red)"></i>
+                  <span class="font-bold text-xs" style="color:var(--accent-red)">COMMON PITFALL</span>
+                </div>
+                <p class="text-xs" style="color:var(--text-secondary)">
+                  • <strong>Active-low PRE/CLR</strong>: aktif saat = 0<br>
+                  • <strong>Active-high PRE/CLR</strong>: aktif saat = 1<br>
+                  Konversikan diagram soal #20 dengan membalik logika sinyal!
+                </p>
+              </div>
+              <pre><code><span class="cm">// Urutan operasi pada diagram:</span>
+<span class="cm">// Preset → Toggle → Clear</span>
+
+<span class="cm">// Active-low: PRĒ=0 → preset Q=1</span>
+<span class="cm">// Active-high: PRE=1 → preset Q=1</span>
+<span class="cm">// Sinyal hanya perlu diinversikan!</span></code></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="section-divider"></div>
+
+    <!-- ===== PRACTICE SUITE ===== -->
+    <section id="section-practice" class="section-anchor mb-12">
+      <div class="flex items-center gap-3 mb-6">
+        <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background:rgba(34,197,94,0.15)">
+          <i data-lucide="pencil" class="w-4 h-4" style="color:var(--accent-green)"></i>
+        </div>
+        <h2 class="text-2xl font-bold" style="color:var(--text-primary)">Latihan Interaktif</h2>
+        <span class="badge badge-green ml-2">5 Soal</span>
+      </div>
+
+      <p class="text-sm mb-6" style="color:var(--text-secondary)">Uji pemahaman kamu! Pilih jawaban, klik "Periksa", dan gunakan "Buka Penjelasan" jika butuh bantuan.</p>
+
+      <!-- Q1 -->
+      <div class="card p-6 mb-6" id="q1-card">
+        <div class="flex items-start justify-between gap-3 mb-4">
+          <div>
+            <span class="badge badge-cyan mb-2">Soal 1</span>
+            <span class="badge badge-blue ml-2 mb-2">Decoder</span>
+            <h3 class="font-bold text-base" style="color:var(--text-primary)">Sebuah 4×16 decoder ingin dibangun dari decoder 2×4 (dengan enable). Berapa jumlah minimum decoder 2×4 yang dibutuhkan?</h3>
+          </div>
+        </div>
+        <div class="space-y-2" id="q1-options">
+          <div class="quiz-option" onclick="selectOption('q1', 'a', this)"><span class="badge badge-cyan">A</span><span class="text-sm">2 decoder</span></div>
+          <div class="quiz-option" onclick="selectOption('q1', 'b', this)"><span class="badge badge-cyan">B</span><span class="text-sm">4 decoder</span></div>
+          <div class="quiz-option" onclick="selectOption('q1', 'c', this)"><span class="badge badge-cyan">C</span><span class="text-sm">5 decoder</span></div>
+          <div class="quiz-option" onclick="selectOption('q1', 'd', this)"><span class="badge badge-cyan">D</span><span class="text-sm">8 decoder</span></div>
+        </div>
+        <div class="mt-4 flex items-center gap-3 flex-wrap">
+          <button class="check-btn" onclick="checkAnswer('q1','c')">Periksa Jawaban</button>
+          <div class="feedback-correct" id="q1-correct"><i data-lucide="check-circle" class="w-4 h-4"></i> Benar!</div>
+          <div class="feedback-incorrect" id="q1-incorrect"><i data-lucide="x-circle" class="w-4 h-4"></i> Salah. Coba lagi!</div>
+        </div>
+        <div class="mt-3">
+          <button class="reveal-btn" onclick="toggleExplanation('q1-exp')">🔍 Buka Penjelasan</button>
+          <div class="explanation" id="q1-exp">
+            <p class="text-sm font-bold mb-2" style="color:var(--accent-purple)">Metodologi Penyelesaian:</p>
+            <div class="space-y-2">
+              <div class="step-item" data-step="1">
+                <p class="text-sm" style="color:var(--text-secondary)">4×16 decoder memiliki 4 input dan 16 output. Untuk membangun dari 2×4 decoder:</p>
+              </div>
+              <div class="step-item" data-step="2">
+                <p class="text-sm" style="color:var(--text-secondary)">2 bit MSB (bit 3,2) digunakan untuk memilih <em>kelompok</em> decoder mana yang aktif. Ini membutuhkan 1 decoder 2×4 sebagai <strong style="color:var(--text-primary)">selector</strong>, yang menghasilkan 4 sinyal enable.</p>
+              </div>
+              <div class="step-item" data-step="3">
+                <p class="text-sm" style="color:var(--text-secondary)">2 bit LSB (bit 1,0) masuk ke masing-masing dari <strong style="color:var(--text-primary)">4 decoder 2×4</strong> sebagai address. Total output: 4 × 4 = 16. ✓</p>
+              </div>
+              <div class="step-item" data-step="4">
+                <p class="text-sm" style="color:var(--text-secondary)">Total: 1 (selector) + 4 (decoder data) = <strong style="color:var(--accent-cyan)">5 decoder 2×4</strong>. Jawaban: C.</p>
+              </div>
+            </div>
+            <pre class="mt-3 text-xs"><code>2-bit MSB → 1× Decoder 2×4 (menghasilkan 4 enable)
+2-bit LSB → 4× Decoder 2×4 (masing-masing dengan 1 enable)
+Total = 1 + 4 = <span class="val">5</span> decoder 2×4</code></pre>
+          </div>
+        </div>
+      </div>
+
+      <!-- Q2 -->
+      <div class="card p-6 mb-6" id="q2-card">
+        <div class="flex items-start gap-3 mb-4">
+          <div>
+            <span class="badge badge-purple mb-2">Soal 2</span>
+            <span class="badge badge-green ml-2 mb-2">MUX</span>
+            <h3 class="font-bold text-base" style="color:var(--text-primary)">Jika F(A,B,C) = Σm(1,2,4,7) diimplementasikan menggunakan 8:1 MUX dengan A→S₂, B→S₁, C→S₀, nilai apakah yang harus dipasang pada input data I₃?</h3>
+          </div>
+        </div>
+        <div class="space-y-2" id="q2-options">
+          <div class="quiz-option" onclick="selectOption('q2', 'a', this)"><span class="badge badge-purple">A</span><span class="text-sm">I₃ = 0</span></div>
+          <div class="quiz-option" onclick="selectOption('q2', 'b', this)"><span class="badge badge-purple">B</span><span class="text-sm">I₃ = 1</span></div>
+          <div class="quiz-option" onclick="selectOption('q2', 'c', this)"><span class="badge badge-purple">C</span><span class="text-sm">I₃ = A</span></div>
+          <div class="quiz-option" onclick="selectOption('q2', 'd', this)"><span class="badge badge-purple">D</span><span class="text-sm">I₃ = C</span></div>
+        </div>
+        <div class="mt-4 flex items-center gap-3 flex-wrap">
+          <button class="check-btn" onclick="checkAnswer('q2','a')">Periksa Jawaban</button>
+          <div class="feedback-correct" id="q2-correct"><i data-lucide="check-circle" class="w-4 h-4"></i> Benar!</div>
+          <div class="feedback-incorrect" id="q2-incorrect"><i data-lucide="x-circle" class="w-4 h-4"></i> Salah. Coba lagi!</div>
+        </div>
+        <div class="mt-3">
+          <button class="reveal-btn" onclick="toggleExplanation('q2-exp')">🔍 Buka Penjelasan</button>
+          <div class="explanation" id="q2-exp">
+            <p class="text-sm font-bold mb-2" style="color:var(--accent-purple)">Metodologi Penyelesaian:</p>
+            <div class="space-y-2">
+              <div class="step-item" data-step="1">
+                <p class="text-sm" style="color:var(--text-secondary)">F(A,B,C) = Σm(1,2,4,7) berarti fungsi = 1 hanya pada minterm 1, 2, 4, dan 7.</p>
+              </div>
+              <div class="step-item" data-step="2">
+                <p class="text-sm" style="color:var(--text-secondary)">Pada 8:1 MUX, input data I_k bernilai 1 jika minterm ke-k ada dalam fungsi, dan 0 jika tidak.</p>
+              </div>
+              <div class="step-item" data-step="3">
+                <p class="text-sm" style="color:var(--text-secondary)">Minterm ke-3 (I₃) → cek apakah 3 ∈ {1,2,4,7}? <strong style="color:var(--accent-red)">Tidak ada</strong>. Maka <strong style="color:var(--accent-cyan)">I₃ = 0</strong>.</p>
+              </div>
+            </div>
+            <pre class="mt-3 text-xs"><code>I₀=0 I₁=<span class="val">1</span> I₂=<span class="val">1</span> I₃=<span class="val">0</span>
+I₄=<span class="val">1</span> I₅=0 I₆=0 I₇=<span class="val">1</span>
+<span class="cm">// m3 tidak ada di {1,2,4,7} → I₃ = 0</span></code></pre>
+          </div>
+        </div>
+      </div>
+
+      <!-- Q3 -->
+      <div class="card p-6 mb-6" id="q3-card">
+        <div class="flex items-start gap-3 mb-4">
+          <div>
+            <span class="badge badge-orange mb-2">Soal 3</span>
+            <span class="badge badge-orange ml-2 mb-2">J-K Flip-Flop</span>
+            <h3 class="font-bold text-base" style="color:var(--text-primary)">Sebuah J-K Flip-Flop memiliki Q saat ini = 1. Jika J=1 dan K=1 diberikan pada positive edge clock berikutnya, nilai Q(t+1) adalah?</h3>
+          </div>
+        </div>
+        <div class="space-y-2" id="q3-options">
+          <div class="quiz-option" onclick="selectOption('q3', 'a', this)"><span class="badge badge-orange">A</span><span class="text-sm">Q = 1 (tetap)</span></div>
+          <div class="quiz-option" onclick="selectOption('q3', 'b', this)"><span class="badge badge-orange">B</span><span class="text-sm">Q = 0 (Toggle)</span></div>
+          <div class="quiz-option" onclick="selectOption('q3', 'c', this)"><span class="badge badge-orange">C</span><span class="text-sm">Q = Invalid</span></div>
+          <div class="quiz-option" onclick="selectOption('q3', 'd', this)"><span class="badge badge-orange">D</span><span class="text-sm">Q = 0 (Reset)</span></div>
+        </div>
+        <div class="mt-4 flex items-center gap-3 flex-wrap">
+          <button class="check-btn" onclick="checkAnswer('q3','b')">Periksa Jawaban</button>
+          <div class="feedback-correct" id="q3-correct"><i data-lucide="check-circle" class="w-4 h-4"></i> Benar!</div>
+          <div class="feedback-incorrect" id="q3-incorrect"><i data-lucide="x-circle" class="w-4 h-4"></i> Salah. Coba lagi!</div>
+        </div>
+        <div class="mt-3">
+          <button class="reveal-btn" onclick="toggleExplanation('q3-exp')">🔍 Buka Penjelasan</button>
+          <div class="explanation" id="q3-exp">
+            <p class="text-sm font-bold mb-2" style="color:var(--accent-purple)">Metodologi Penyelesaian:</p>
+            <div class="space-y-2">
+              <div class="step-item" data-step="1">
+                <p class="text-sm" style="color:var(--text-secondary)">J=1, K=1 → kondisi Toggle pada J-K Flip-Flop.</p>
+              </div>
+              <div class="step-item" data-step="2">
+                <p class="text-sm" style="color:var(--text-secondary)">Toggle artinya: Q(t+1) = Q(t)' = komplemen dari Q saat ini.</p>
+              </div>
+              <div class="step-item" data-step="3">
+                <p class="text-sm" style="color:var(--text-secondary)">Q(t) = 1 → Q(t+1) = 1' = <strong style="color:var(--accent-cyan)">0</strong>.</p>
+              </div>
+            </div>
+            <pre class="mt-3 text-xs"><code>J=K=1 → Toggle
+Q(t)=1 → Q(t+1) = <span class="val">0</span>
+<span class="cm">// Ini keunggulan JK FF: tidak ada kondisi invalid!</span></code></pre>
+          </div>
+        </div>
+      </div>
+
+      <!-- Q4 -->
+      <div class="card p-6 mb-6" id="q4-card">
+        <div class="flex items-start gap-3 mb-4">
+          <div>
+            <span class="badge badge-blue mb-2">Soal 4</span>
+            <span class="badge badge-yellow ml-2 mb-2">S-R Latch</span>
+            <h3 class="font-bold text-base" style="color:var(--text-primary)">Pada active-high S-R Latch dengan Q saat ini = 0 dan Q' = 1, apa yang terjadi jika S=0 dan R=0 diberikan?</h3>
+          </div>
+        </div>
+        <div class="space-y-2" id="q4-options">
+          <div class="quiz-option" onclick="selectOption('q4', 'a', this)"><span class="badge badge-blue">A</span><span class="text-sm">Q berubah menjadi 1 (SET)</span></div>
+          <div class="quiz-option" onclick="selectOption('q4', 'b', this)"><span class="badge badge-blue">B</span><span class="text-sm">Q tetap 0, Q' tetap 1 (No Change)</span></div>
+          <div class="quiz-option" onclick="selectOption('q4', 'c', this)"><span class="badge badge-blue">C</span><span class="text-sm">Q=0, Q'=0 (Invalid)</span></div>
+          <div class="quiz-option" onclick="selectOption('q4', 'd', this)"><span class="badge badge-blue">D</span><span class="text-sm">Q berubah menjadi 0 (RESET)</span></div>
+        </div>
+        <div class="mt-4 flex items-center gap-3 flex-wrap">
+          <button class="check-btn" onclick="checkAnswer('q4','b')">Periksa Jawaban</button>
+          <div class="feedback-correct" id="q4-correct"><i data-lucide="check-circle" class="w-4 h-4"></i> Benar!</div>
+          <div class="feedback-incorrect" id="q4-incorrect"><i data-lucide="x-circle" class="w-4 h-4"></i> Salah. Coba lagi!</div>
+        </div>
+        <div class="mt-3">
+          <button class="reveal-btn" onclick="toggleExplanation('q4-exp')">🔍 Buka Penjelasan</button>
+          <div class="explanation" id="q4-exp">
+            <p class="text-sm font-bold mb-2" style="color:var(--accent-purple)">Metodologi Penyelesaian:</p>
+            <div class="space-y-2">
+              <div class="step-item" data-step="1">
+                <p class="text-sm" style="color:var(--text-secondary)">Pada characteristic table S-R Latch: S=0, R=0 → kondisi <strong style="color:var(--text-primary)">No Change (Memorise)</strong>.</p>
+              </div>
+              <div class="step-item" data-step="2">
+                <p class="text-sm" style="color:var(--text-secondary)">Latch akan mempertahankan state sebelumnya: Q=0, Q'=1.</p>
+              </div>
+              <div class="step-item" data-step="3">
+                <p class="text-sm" style="color:var(--text-secondary)">Inilah fungsi "memory" dari latch — mampu menyimpan informasi saat tidak ada perintah baru.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Q5 -->
+      <div class="card p-6 mb-6" id="q5-card">
+        <div class="flex items-start gap-3 mb-4">
+          <div>
+            <span class="badge badge-green mb-2">Soal 5</span>
+            <span class="badge badge-purple ml-2 mb-2">T Flip-Flop</span>
+            <h3 class="font-bold text-base" style="color:var(--text-primary)">T Flip-Flop memiliki nilai Q awal = 1 (sebelum Time 0). Urutan input T adalah: 0, 1, 0, 1. Berapakah nilai Q setelah Time 3 (setelah 4 clock edge)?</h3>
+          </div>
+        </div>
+        <div class="space-y-2" id="q5-options">
+          <div class="quiz-option" onclick="selectOption('q5', 'a', this)"><span class="badge badge-green">A</span><span class="text-sm">Q = 0</span></div>
+          <div class="quiz-option" onclick="selectOption('q5', 'b', this)"><span class="badge badge-green">B</span><span class="text-sm">Q = 1</span></div>
+          <div class="quiz-option" onclick="selectOption('q5', 'c', this)"><span class="badge badge-green">C</span><span class="text-sm">Q = Invalid</span></div>
+          <div class="quiz-option" onclick="selectOption('q5', 'd', this)"><span class="badge badge-green">D</span><span class="text-sm">Q = Tidak bisa ditentukan</span></div>
+        </div>
+        <div class="mt-4 flex items-center gap-3 flex-wrap">
+          <button class="check-btn" onclick="checkAnswer('q5','b')">Periksa Jawaban</button>
+          <div class="feedback-correct" id="q5-correct"><i data-lucide="check-circle" class="w-4 h-4"></i> Benar!</div>
+          <div class="feedback-incorrect" id="q5-incorrect"><i data-lucide="x-circle" class="w-4 h-4"></i> Salah. Coba lagi!</div>
+        </div>
+        <div class="mt-3">
+          <button class="reveal-btn" onclick="toggleExplanation('q5-exp')">🔍 Buka Penjelasan</button>
+          <div class="explanation" id="q5-exp">
+            <p class="text-sm font-bold mb-2" style="color:var(--accent-purple)">Metodologi Penyelesaian (step-by-step):</p>
+            <pre class="text-xs"><code><span class="cm">// Q awal (sebelum Time 0) = 1</span>
+Time 0: T=<span class="val">0</span> → No Change → Q = <span class="val">1</span>
+Time 1: T=<span class="val">1</span> → Toggle   → Q = <span class="val">0</span> (dari 1)
+Time 2: T=<span class="val">0</span> → No Change → Q = <span class="val">0</span>
+Time 3: T=<span class="val">1</span> → Toggle   → Q = <span class="val">1</span> (dari 0)
+
+<span class="cm">// Jawaban: setelah Time 3, Q = 1</span></code></pre>
+            <p class="text-xs mt-2" style="color:var(--text-secondary)">Ini sesuai dengan jawaban soal #18 dari latihan. Gunakan rumus Q(t+1) = T⊕Q sebagai verifikasi: 1⊕0 = 1 ✓</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Score Summary -->
+      <div class="card p-6" style="border-color: rgba(0,212,255,0.3); background: rgba(0,212,255,0.03)">
+        <div class="flex items-center gap-3 mb-3">
+          <i data-lucide="trophy" class="w-5 h-5" style="color:var(--accent-yellow)"></i>
+          <h3 class="font-bold" style="font-family:'Syne',sans-serif">Skor Latihan</h3>
+        </div>
+        <div class="score-display text-4xl mb-2" id="score-display">0 / 5</div>
+        <p class="text-sm" style="color:var(--text-secondary)">Selesaikan semua soal untuk melihat skor akhirmu!</p>
+      </div>
+    </section>
+
+    <div class="section-divider"></div>
+
+    <!-- ===== FLASH CARDS ===== -->
+    <section id="section-flashcard" class="section-anchor mb-12">
+      <div class="flex items-center gap-3 mb-6">
+        <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background:rgba(59,130,246,0.15)">
+          <i data-lucide="layers" class="w-4 h-4" style="color:var(--accent-blue)"></i>
+        </div>
+        <h2 class="text-2xl font-bold" style="color:var(--text-primary)">Flash Cards – Klik untuk Balik!</h2>
+      </div>
+      <p class="text-sm mb-6" style="color:var(--text-secondary)">Klik kartu untuk melihat jawaban. Bagus untuk review cepat sebelum ujian!</p>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+
+        <div class="flip-card-container" style="min-height:140px">
+          <div class="flip-card" onclick="this.classList.toggle('flipped')">
+            <div class="flip-front">
+              <p class="text-sm font-bold" style="color:var(--text-primary)">Apa perbedaan Latch dan Flip-Flop?</p>
+            </div>
+            <div class="flip-back">
+              <div class="text-xs" style="color:var(--text-secondary)">
+                <strong style="color:var(--accent-yellow)">Latch</strong>: Asynchronous, output langsung berubah saat input berubah (level-sensitive).<br><br>
+                <strong style="color:var(--accent-purple)">Flip-Flop</strong>: Synchronous, output berubah hanya pada clock edge (edge-triggered).
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="flip-card-container" style="min-height:140px">
+          <div class="flip-card" onclick="this.classList.toggle('flipped')">
+            <div class="flip-front">
+              <p class="text-sm font-bold" style="color:var(--text-primary)">Apa kondisi Toggle pada J-K FF?</p>
+            </div>
+            <div class="flip-back">
+              <div class="text-xs" style="color:var(--text-secondary)">
+                <strong style="color:var(--accent-yellow)">J=1, K=1</strong> → Toggle: Q(t+1) = Q(t)'<br><br>
+                Ini membuat J-K FF lebih unggul dari S-R FF karena tidak ada kondisi invalid.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="flip-card-container" style="min-height:140px">
+          <div class="flip-card" onclick="this.classList.toggle('flipped')">
+            <div class="flip-front">
+              <p class="text-sm font-bold" style="color:var(--text-primary)">Mengapa DEMUX sama dengan Decoder + Enable?</p>
+            </div>
+            <div class="flip-back">
+              <div class="text-xs" style="color:var(--text-secondary)">
+                Pada DEMUX: Data D masuk ke Enable, selection line ke address decoder. Rangkaian dan persamaan Boolean-nya identik.<br><br>
+                Y₀ = D·S₁'·S₀' = E·X'·Y'
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="flip-card-container" style="min-height:140px">
+          <div class="flip-card" onclick="this.classList.toggle('flipped')">
+            <div class="flip-front">
+              <p class="text-sm font-bold" style="color:var(--text-primary)">Rumus Q(t+1) untuk T Flip-Flop?</p>
+            </div>
+            <div class="flip-back">
+              <div class="text-xs" style="color:var(--text-secondary)">
+                <strong style="color:var(--accent-cyan)">Q(t+1) = T ⊕ Q(t)</strong><br><br>
+                T=0 → No Change (Q tetap)<br>
+                T=1 → Toggle (Q berbalik)
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="flip-card-container" style="min-height:140px">
+          <div class="flip-card" onclick="this.classList.toggle('flipped')">
+            <div class="flip-front">
+              <p class="text-sm font-bold" style="color:var(--text-primary)">Bagaimana mengimplementasikan fungsi Boolean dengan MUX?</p>
+            </div>
+            <div class="flip-back">
+              <div class="text-xs" style="color:var(--text-secondary)">
+                1. Ekspresikan sebagai sum-of-minterms<br>
+                2. Hubungkan n variabel ke n selection line<br>
+                3. I_k = 1 jika minterm k ada, 0 jika tidak<br><br>
+                Output = fungsi yang diinginkan ✓
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="flip-card-container" style="min-height:140px">
+          <div class="flip-card" onclick="this.classList.toggle('flipped')">
+            <div class="flip-front">
+              <p class="text-sm font-bold" style="color:var(--text-primary)">Apa yang dimaksud Asynchronous Input PRE dan CLR?</p>
+            </div>
+            <div class="flip-back">
+              <div class="text-xs" style="color:var(--text-secondary)">
+                Input yang mempengaruhi state FF <strong style="color:var(--accent-yellow)">tanpa menunggu clock</strong>.<br><br>
+                PRE → Force Q=1 (Preset)<br>
+                CLR → Force Q=0 (Clear)<br>
+                Normal mode: PRE=CLR=0 (active-low)
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="text-center py-8 mt-8" style="border-top: 1px solid var(--border-subtle)">
+      <p class="text-xs" style="color:var(--text-secondary)">
+        DDAK · CSIM601251 · Fasilkom UI · Topik 05 – Combinational Circuits MSI & Sequential Logic<br>
+        Slide oleh: Erdefi Rakun · Soal Latihan oleh: Heri Kurniawan
+      </p>
+    </footer>
+
+  </main>
+</div>
+
+<script>
+// === TAB SWITCHING ===
+function switchTab(groupId, targetId, btn) {
+  const group = document.getElementById(groupId);
+  if (!group) return;
+  group.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+  const target = document.getElementById(targetId);
+  if (target) target.classList.add('active');
+  const parent = btn.closest('[class*="flex"]');
+  if (parent) parent.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+// === QUIZ LOGIC ===
+let scores = {};
+let answered = {};
+let correctCount = 0;
+
+function selectOption(qId, option, el) {
+  if (answered[qId]) return;
+  const container = document.getElementById(qId + '-options');
+  container.querySelectorAll('.quiz-option').forEach(o => o.style.opacity = '0.5');
+  el.style.opacity = '1';
+  el.dataset.selected = option;
+}
+
+function checkAnswer(qId, correctAnswer) {
+  if (answered[qId]) return;
+  const container = document.getElementById(qId + '-options');
+  const options = container.querySelectorAll('.quiz-option');
+  let selected = null;
+  options.forEach(o => { if (o.dataset.selected) selected = o.dataset.selected; });
+  if (!selected) { alert('Pilih jawaban terlebih dahulu!'); return; }
+
+  answered[qId] = true;
+  options.forEach((o, i) => {
+    const letter = String.fromCharCode(97 + i);
+    o.style.opacity = '1';
+    o.style.cursor = 'default';
+    o.onclick = null;
+    if (letter === correctAnswer) o.classList.add('correct');
+    if (letter === selected && selected !== correctAnswer) o.classList.add('incorrect');
+  });
+
+  const correctEl = document.getElementById(qId + '-correct');
+  const incorrectEl = document.getElementById(qId + '-incorrect');
+  if (selected === correctAnswer) {
+    correctEl.classList.add('show');
+    if (!scores[qId]) { scores[qId] = 1; correctCount++; updateScore(); }
+  } else {
+    incorrectEl.classList.add('show');
+  }
+  lucide.createIcons();
+}
+
+function updateScore() {
+  const total = 5;
+  const display = document.getElementById('score-display');
+  const global = document.getElementById('global-score');
+  const sidebar = document.getElementById('sidebar-score');
+  if (display) display.textContent = correctCount + ' / ' + total;
+  if (global) global.textContent = correctCount + ' / ' + total;
+  if (sidebar) sidebar.textContent = correctCount + '/' + total;
+}
+
+// === EXPLANATION TOGGLE ===
+function toggleExplanation(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.classList.toggle('show');
+}
+
+// === ACTIVE NAV ===
+function updateActiveNav() {
+  const sections = document.querySelectorAll('.section-anchor');
+  const navLinks = document.querySelectorAll('.nav-link');
+  let current = '';
+  sections.forEach(s => {
+    if (window.scrollY >= s.offsetTop - 120) current = s.id;
+  });
+  navLinks.forEach(link => {
+    link.classList.remove('active');
+    if (link.getAttribute('href') === '#' + current) link.classList.add('active');
+  });
+}
+
+window.addEventListener('scroll', updateActiveNav);
+updateActiveNav();
+
+// === LUCIDE ICONS ===
+document.addEventListener('DOMContentLoaded', function() {
+  lucide.createIcons();
+});
+lucide.createIcons();
+</script>
 </body>
 </html>

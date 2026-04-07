@@ -1,15 +1,971 @@
 <!DOCTYPE html>
 <html lang="id" class="dark">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Module On Working</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>TOPIK 08 – Pengenalan AVR | DDAK Week 7</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Sora:wght@300;400;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --accent: #22d3ee;
+    --accent2: #f472b6;
+    --bg-deep: #060b14;
+    --bg-card: #0d1829;
+    --bg-card2: #111f35;
+    --border: #1e3a5f;
+    --text-dim: #7ca3c8;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: 'Sora', sans-serif;
+    background: var(--bg-deep);
+    color: #e2eaf4;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  code, pre, .mono { font-family: 'JetBrains Mono', monospace; }
+
+  /* Background grid */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image:
+      linear-gradient(rgba(34,211,238,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(34,211,238,0.04) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none; z-index: 0;
+  }
+
+  /* Glow blobs */
+  .blob1 { position:fixed; width:600px; height:600px; border-radius:50%; background:radial-gradient(circle, rgba(34,211,238,0.08) 0%, transparent 70%); top:-200px; left:-200px; pointer-events:none; z-index:0; }
+  .blob2 { position:fixed; width:500px; height:500px; border-radius:50%; background:radial-gradient(circle, rgba(244,114,182,0.07) 0%, transparent 70%); bottom:-100px; right:-100px; pointer-events:none; z-index:0; }
+
+  .container { position:relative; z-index:1; }
+
+  /* Nav */
+  nav { background: rgba(6,11,20,0.85); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); position: sticky; top:0; z-index:100; }
+
+  /* Section headers */
+  .section-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(34,211,238,0.1); border: 1px solid rgba(34,211,238,0.3);
+    color: var(--accent); border-radius: 99px; padding: 4px 14px; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+  }
+
+  /* Cards */
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .card:hover { border-color: rgba(34,211,238,0.3); box-shadow: 0 0 30px rgba(34,211,238,0.06); }
+
+  /* Key term box */
+  .callout-key {
+    background: rgba(34,211,238,0.06); border-left: 3px solid var(--accent);
+    border-radius: 0 12px 12px 0; padding: 14px 18px;
+  }
+  .callout-warn {
+    background: rgba(251,191,36,0.07); border-left: 3px solid #fbbf24;
+    border-radius: 0 12px 12px 0; padding: 14px 18px;
+  }
+  .callout-danger {
+    background: rgba(244,114,182,0.07); border-left: 3px solid var(--accent2);
+    border-radius: 0 12px 12px 0; padding: 14px 18px;
+  }
+  .callout-tip {
+    background: rgba(52,211,153,0.07); border-left: 3px solid #34d399;
+    border-radius: 0 12px 12px 0; padding: 14px 18px;
+  }
+
+  /* Register map visual */
+  .reg-row { display:flex; align-items:center; gap:8px; margin:3px 0; }
+  .reg-box {
+    background: var(--bg-card2); border: 1px solid var(--border);
+    border-radius: 6px; padding: 4px 10px; font-size:0.78rem; mono;
+    min-width: 50px; text-align:center;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .reg-box.highlight { background: rgba(34,211,238,0.15); border-color: var(--accent); color: var(--accent); }
+  .reg-box.special { background: rgba(244,114,182,0.15); border-color: var(--accent2); color: var(--accent2); }
+  .reg-box.semi { background: rgba(251,191,36,0.12); border-color: #fbbf24; color: #fde68a; }
+
+  /* Code block */
+  .code-block {
+    background: #050d1a; border: 1px solid var(--border);
+    border-radius: 12px; overflow:hidden;
+  }
+  .code-header {
+    background: var(--bg-card2); border-bottom: 1px solid var(--border);
+    padding: 8px 16px; display:flex; align-items:center; justify-content:space-between;
+    font-size:0.75rem; color: var(--text-dim);
+  }
+  .code-body { padding: 20px; overflow-x:auto; }
+  .code-body code { font-size:0.85rem; line-height:1.8; }
+
+  /* Syntax colors */
+  .kw { color: #7dd3fc; }    /* instruction */
+  .reg { color: #86efac; }   /* register */
+  .imm { color: #fde68a; }   /* immediate */
+  .cmt { color: #4b6a8a; font-style: italic; }
+  .lbl { color: #f472b6; }   /* label */
+  .dir { color: #c4b5fd; }   /* directive */
+
+  /* Step walkthrough */
+  .step-btn {
+    background: var(--bg-card2); border: 1px solid var(--border);
+    border-radius: 8px; padding: 8px 14px; font-size:0.8rem; cursor:pointer;
+    transition: all 0.2s; color: #cbd5e1; font-family:'Sora',sans-serif;
+  }
+  .step-btn.active { background: rgba(34,211,238,0.15); border-color: var(--accent); color: var(--accent); }
+  .step-btn:hover { border-color: rgba(34,211,238,0.4); }
+
+  .step-highlight { background: rgba(34,211,238,0.12); border-radius: 4px; }
+  .step-panel { background: var(--bg-card2); border:1px solid var(--border); border-radius:12px; padding:16px; }
+
+  /* SREG bits */
+  .sreg-bit {
+    display:flex; flex-direction:column; align-items:center;
+    background: var(--bg-card2); border:1px solid var(--border);
+    border-radius:8px; padding:8px 10px; min-width:48px; cursor:pointer;
+    transition: all 0.2s;
+  }
+  .sreg-bit:hover { border-color:var(--accent); }
+  .sreg-bit .bit-name { font-size:0.7rem; font-weight:700; font-family:'JetBrains Mono',monospace; }
+  .sreg-bit .bit-val { font-size:1.1rem; font-weight:800; font-family:'JetBrains Mono',monospace; color: var(--accent); }
+
+  /* Quiz */
+  .quiz-option {
+    background: var(--bg-card2); border: 1px solid var(--border);
+    border-radius: 10px; padding: 12px 16px; cursor:pointer;
+    transition: all 0.2s; display:flex; align-items:center; gap:12px;
+    font-size: 0.9rem;
+  }
+  .quiz-option:hover:not(.disabled) { border-color: rgba(34,211,238,0.4); background: rgba(34,211,238,0.05); }
+  .quiz-option.correct { border-color: #34d399; background: rgba(52,211,153,0.1); color: #34d399; }
+  .quiz-option.wrong { border-color: var(--accent2); background: rgba(244,114,182,0.1); color: var(--accent2); }
+  .quiz-option.disabled { cursor: not-allowed; opacity: 0.7; }
+
+  .explanation {
+    background: rgba(52,211,153,0.06); border:1px solid rgba(52,211,153,0.2);
+    border-radius:12px; padding:16px; margin-top:12px;
+    display:none;
+  }
+  .explanation.show { display:block; }
+
+  /* Opcode viz */
+  .opcode-bit {
+    display:inline-block; width:28px; height:28px; line-height:28px;
+    text-align:center; font-family:'JetBrains Mono',monospace; font-size:0.8rem;
+    border:1px solid var(--border); border-radius:4px;
+  }
+  .opcode-bit.fixed { background:rgba(124,179,235,0.15); color:#7dd3fc; }
+  .opcode-bit.dest { background:rgba(134,239,172,0.15); color:#86efac; }
+  .opcode-bit.src { background:rgba(253,230,138,0.15); color:#fde68a; }
+  .opcode-bit.imm-b { background:rgba(196,181,253,0.15); color:#c4b5fd; }
+
+  /* Progress */
+  progress { appearance: none; }
+  progress::-webkit-progress-bar { background: var(--bg-card2); border-radius:99px; }
+  progress::-webkit-progress-value { background: linear-gradient(90deg, var(--accent), var(--accent2)); border-radius:99px; }
+
+  /* Scroll reveal */
+  .reveal { opacity:0; transform:translateY(24px); transition: opacity 0.5s, transform 0.5s; }
+  .reveal.visible { opacity:1; transform:translateY(0); }
+
+  /* Table */
+  table { width:100%; border-collapse:collapse; font-size:0.85rem; }
+  th { background: var(--bg-card2); color: var(--accent); padding:10px 14px; text-align:left; font-weight:600; border-bottom: 1px solid var(--border); }
+  td { padding:9px 14px; border-bottom:1px solid rgba(30,58,95,0.5); }
+  tr:hover td { background: rgba(34,211,238,0.03); }
+
+  /* Tab */
+  .tab-btn { padding:8px 20px; border-radius:8px; font-size:0.85rem; cursor:pointer; transition:all 0.2s; border:1px solid transparent; font-family:'Sora',sans-serif; }
+  .tab-btn.active { background:rgba(34,211,238,0.15); border-color:var(--accent); color:var(--accent); }
+  .tab-btn:not(.active) { color: var(--text-dim); }
+  .tab-btn:not(.active):hover { background:var(--bg-card2); }
+
+  .tab-panel { display:none; }
+  .tab-panel.active { display:block; }
+
+  /* Tooltip */
+  .tooltip-trigger { cursor:help; border-bottom:1px dashed var(--accent); color:var(--accent); }
+
+  /* Score badge */
+  .score-badge {
+    display:inline-block; background:rgba(34,211,238,0.15); border:1px solid var(--accent);
+    color:var(--accent); border-radius:99px; padding:2px 12px; font-size:0.8rem; font-weight:700;
+    font-family:'JetBrains Mono',monospace;
+  }
+
+  /* Animated line */
+  @keyframes scanline { 0%{top:0} 100%{top:100%} }
+  .scan { position:absolute; left:0; right:0; height:2px; background:linear-gradient(90deg,transparent,var(--accent),transparent); opacity:0.4; animation:scanline 3s linear infinite; pointer-events:none; }
+
+  /* Memory map */
+  .mem-row { display:flex; align-items:center; gap:0; }
+  .mem-addr { font-family:'JetBrains Mono',monospace; font-size:0.7rem; color: var(--text-dim); width:52px; text-align:right; padding-right:8px; }
+  .mem-cell { flex:1; height:24px; border:1px solid rgba(30,58,95,0.6); display:flex; align-items:center; justify-content:center; font-size:0.7rem; font-family:'JetBrains Mono',monospace; }
+  .mem-cell.gpr { background:rgba(134,239,172,0.1); color:#86efac; }
+  .mem-cell.io { background:rgba(253,230,138,0.1); color:#fde68a; }
+  .mem-cell.sram { background:rgba(124,163,200,0.1); color:#7ca3c8; }
+  .mem-cell.empty { background:transparent; }
+</style>
 </head>
-<body class="bg-[#0a0e1a] text-gray-400 h-screen flex items-center justify-center font-sans">
-    <div class="text-center p-8 bg-white/5 border border-white/10 rounded-2xl shadow-2xl">
-        <h1 class="text-3xl font-bold text-white mb-4 tracking-tight">On Working</h1>
-        <p class="text-gray-500">Materi ini sedang dalam proses pembaharuan. Mohon cek kembali nanti.</p>
+<body>
+
+<div class="blob1"></div>
+<div class="blob2"></div>
+
+<!-- NAVBAR -->
+<nav>
+  <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <div class="w-8 h-8 rounded-lg bg-cyan-500/20 border border-cyan-500/40 flex items-center justify-center">
+        <i data-lucide="cpu" class="w-4 h-4 text-cyan-400"></i>
+      </div>
+      <div>
+        <div class="text-sm font-bold text-white leading-tight">TOPIK 08</div>
+        <div class="text-xs text-slate-400">Pengenalan AVR – DDAK Week 7</div>
+      </div>
     </div>
+    <div class="hidden md:flex items-center gap-1 text-xs text-slate-400">
+      <span class="score-badge" id="globalScore">Skor: 0 / 5</span>
+    </div>
+  </div>
+</nav>
+
+<div class="container max-w-6xl mx-auto px-4 py-10 space-y-16">
+
+  <!-- HERO -->
+  <div class="reveal text-center space-y-5">
+    <div class="section-badge"><i data-lucide="zap" class="w-3 h-3"></i> Materi Interaktif</div>
+    <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight">
+      Pengenalan <span class="text-cyan-400">AVR</span>
+      <br/><span class="text-2xl font-light text-slate-400">Architecture, Register, & Assembly Commands</span>
+    </h1>
+    <p class="text-slate-400 max-w-2xl mx-auto leading-relaxed">Halaman ini merupakan rangkuman interaktif dari materi Asistensi DDAK Week 7 — mencakup arsitektur AVR, jenis-jenis register, set instruksi, opcode, dan contoh program AVR.</p>
+    <div class="flex flex-wrap justify-center gap-3 text-xs">
+      <div class="flex items-center gap-1.5 bg-slate-800/60 border border-slate-700 rounded-full px-3 py-1.5 text-slate-300"><i data-lucide="book-open" class="w-3 h-3 text-cyan-400"></i> 5 Soal Latihan</div>
+      <div class="flex items-center gap-1.5 bg-slate-800/60 border border-slate-700 rounded-full px-3 py-1.5 text-slate-300"><i data-lucide="code-2" class="w-3 h-3 text-pink-400"></i> Walkthrough Program</div>
+      <div class="flex items-center gap-1.5 bg-slate-800/60 border border-slate-700 rounded-full px-3 py-1.5 text-slate-300"><i data-lucide="layers" class="w-3 h-3 text-yellow-400"></i> Visualisasi Opcode</div>
+    </div>
+  </div>
+
+  <!-- ================================================
+       SECTION 1: CONCEPTUAL DEEP DIVE
+  ================================================ -->
+  <section class="reveal space-y-8">
+    <div class="flex items-center gap-3">
+      <div class="section-badge"><i data-lucide="brain" class="w-3 h-3"></i> Section 1</div>
+      <h2 class="text-2xl font-bold">Conceptual Deep Dive</h2>
+    </div>
+
+    <!-- AVR Overview tabs -->
+    <div class="card p-6 space-y-5">
+      <div class="flex flex-wrap gap-2" id="overviewTabs">
+        <button class="tab-btn active" onclick="switchTab('overview','what')">Apa itu AVR?</button>
+        <button class="tab-btn" onclick="switchTab('overview','arch')">Arsitektur</button>
+        <button class="tab-btn" onclick="switchTab('overview','memory')">Memory</button>
+        <button class="tab-btn" onclick="switchTab('overview','registers')">Register</button>
+      </div>
+
+      <!-- What is AVR -->
+      <div class="tab-panel active" id="overview-what">
+        <div class="grid md:grid-cols-2 gap-5">
+          <div class="space-y-4">
+            <h3 class="text-lg font-semibold text-cyan-400">Advanced Virtual RISC</h3>
+            <p class="text-slate-300 text-sm leading-relaxed">AVR adalah mikrokontroler berbasis arsitektur <strong class="text-white">RISC (Reduced Instruction Set Computing)</strong> yang dikembangkan oleh <strong class="text-white">Alf-Egil Bogen</strong> dan <strong class="text-white">Vegard Wollan</strong> di bawah perusahaan Atmel.</p>
+            <div class="callout-key">
+              <p class="text-xs font-bold text-cyan-400 mb-1">KEY TERM — RISC vs CISC</p>
+              <p class="text-sm text-slate-300">RISC menggunakan instruksi yang <em>lebih sederhana</em> sehingga setiap instruksi cukup diselesaikan dalam <strong>1 clock cycle</strong>. Berbeda dengan CISC yang memiliki instruksi kompleks namun butuh banyak clock cycle.</p>
+            </div>
+          </div>
+          <div class="space-y-3">
+            <h4 class="text-sm font-semibold text-slate-400 uppercase tracking-wider">Karakteristik Utama</h4>
+            <div class="space-y-2">
+              <div class="flex items-start gap-3 p-3 rounded-lg bg-slate-800/40 border border-slate-700/50">
+                <i data-lucide="zap" class="w-4 h-4 text-cyan-400 mt-0.5 flex-shrink-0"></i>
+                <div><p class="text-sm font-semibold text-white">Single Cycle Execution</p><p class="text-xs text-slate-400">1 instruksi per 1 external clock — performa tinggi</p></div>
+              </div>
+              <div class="flex items-start gap-3 p-3 rounded-lg bg-slate-800/40 border border-slate-700/50">
+                <i data-lucide="battery-low" class="w-4 h-4 text-green-400 mt-0.5 flex-shrink-0"></i>
+                <div><p class="text-sm font-semibold text-white">Low Power Consumption</p><p class="text-xs text-slate-400">Efisien secara daya, cocok untuk embedded system</p></div>
+              </div>
+              <div class="flex items-start gap-3 p-3 rounded-lg bg-slate-800/40 border border-slate-700/50">
+                <i data-lucide="database" class="w-4 h-4 text-yellow-400 mt-0.5 flex-shrink-0"></i>
+                <div><p class="text-sm font-semibold text-white">32 General Purpose Registers</p><p class="text-xs text-slate-400">Semua register terhubung langsung ke ALU</p></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Architecture -->
+      <div class="tab-panel" id="overview-arch">
+        <div class="grid md:grid-cols-2 gap-6">
+          <div>
+            <h3 class="text-lg font-semibold text-cyan-400 mb-4">Blok Diagram AVR CPU</h3>
+            <!-- ASCII-style architecture diagram -->
+            <div class="bg-slate-900/70 border border-slate-700 rounded-xl p-4 text-xs font-mono space-y-1">
+              <div class="flex gap-2 items-center">
+                <div class="border border-cyan-500/50 rounded px-3 py-1.5 bg-cyan-500/10 text-cyan-300 text-center w-28">Program Counter</div>
+                <span class="text-slate-600">↔</span>
+                <div class="border border-pink-500/50 rounded px-3 py-1.5 bg-pink-500/10 text-pink-300 text-center w-28">Stack Pointer</div>
+              </div>
+              <div class="ml-2 text-slate-600">↓</div>
+              <div class="border border-cyan-500/50 rounded px-3 py-1.5 bg-cyan-500/10 text-cyan-300 text-center w-28">Program Flash</div>
+              <div class="ml-2 text-slate-600">↓</div>
+              <div class="flex gap-2">
+                <div class="border border-slate-600 rounded px-3 py-1.5 bg-slate-800/50 text-slate-300 text-center w-32">Instruction Register</div>
+                <span class="text-slate-600">→</span>
+                <div class="border border-yellow-500/50 rounded px-3 py-1.5 bg-yellow-500/10 text-yellow-300 text-center w-32">General Purpose Reg</div>
+              </div>
+              <div class="ml-2 text-slate-600">↓</div>
+              <div class="border border-slate-600 rounded px-3 py-1.5 bg-slate-800/50 text-slate-300 text-center w-32">Instruction Decoder</div>
+              <div class="ml-2 text-slate-600">↓</div>
+              <div class="flex gap-4 items-center">
+                <div class="border border-slate-600 rounded px-3 py-1.5 bg-slate-800/50 text-slate-300 text-center w-24">Control Lines</div>
+                <div class="border border-green-500/50 rounded px-3 py-1.5 bg-green-500/10 text-green-300 text-center w-16">ALU</div>
+                <span class="text-slate-600">→</span>
+                <div class="border border-purple-500/50 rounded px-3 py-1.5 bg-purple-500/10 text-purple-300 text-center w-28">Status Register</div>
+              </div>
+            </div>
+          </div>
+          <div class="space-y-4">
+            <h4 class="text-sm font-semibold text-slate-400 uppercase tracking-wider">Komponen CPU AVR</h4>
+            <div class="space-y-2 text-sm">
+              <div class="callout-key"><strong class="text-cyan-400">Program Flash</strong> <span class="text-slate-300">— Menyimpan instruksi/program. Non-volatile (data tetap saat daya mati). Alamat $000–$FFF.</span></div>
+              <div class="callout-warn"><strong class="text-yellow-400">SRAM (Data Memory)</strong> <span class="text-slate-300">— Menyimpan variabel sementara. Volatile (hilang saat daya mati). Alamat $000–$25F.</span></div>
+              <div class="callout-tip"><strong class="text-green-400">ALU</strong> <span class="text-slate-300">— Melakukan operasi aritmetika (ADD, SUB) dan logika (AND, OR, XOR).</span></div>
+              <div class="callout-danger"><strong class="text-pink-400">Status Register (SREG)</strong> <span class="text-slate-300">— 8 flag indikator hasil operasi terakhir. Update otomatis setiap instruksi.</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Memory -->
+      <div class="tab-panel" id="overview-memory">
+        <div class="grid md:grid-cols-2 gap-6">
+          <div>
+            <h3 class="text-lg font-semibold text-cyan-400 mb-3">Program Memory (Flash)</h3>
+            <div class="space-y-1 text-xs">
+              <div class="mem-row"><div class="mem-addr">$000</div><div class="mem-cell border-t border-cyan-500/30" style="background:rgba(34,211,238,0.12);color:#22d3ee;">Boot Flash Section (top)</div></div>
+              <div class="mem-row"><div class="mem-addr"></div><div class="mem-cell" style="height:80px;background:rgba(34,211,238,0.06);color:#7dd3fc;">Application Flash<br/>4K × 16 bits<br/>16-bit wide</div></div>
+              <div class="mem-row"><div class="mem-addr">$FFF</div><div class="mem-cell border-b border-cyan-500/30" style="background:rgba(34,211,238,0.12);color:#22d3ee;">End</div></div>
+            </div>
+            <div class="callout-key mt-3 text-xs">
+              <strong class="text-cyan-400">Perhatian:</strong> Program memory menggunakan <strong>word counter</strong> (16-bit per word), bukan byte counter.
+            </div>
+          </div>
+          <div>
+            <h3 class="text-lg font-semibold text-yellow-400 mb-3">Data Memory (SRAM)</h3>
+            <div class="space-y-0.5 text-xs">
+              <div class="mem-row"><div class="mem-addr">$000</div><div class="mem-cell gpr">32 General Purpose Registers (R0–R31)</div></div>
+              <div class="mem-row"><div class="mem-addr">$01F</div><div class="mem-cell gpr"></div></div>
+              <div class="mem-row"><div class="mem-addr">$020</div><div class="mem-cell io">64 I/O Registers</div></div>
+              <div class="mem-row"><div class="mem-addr">$05F</div><div class="mem-cell io"></div></div>
+              <div class="mem-row"><div class="mem-addr">$060</div><div class="mem-cell sram">Internal SRAM 512 × 8</div></div>
+              <div class="mem-row"><div class="mem-addr">$25F</div><div class="mem-cell sram"></div></div>
+            </div>
+            <div class="flex gap-3 mt-3 flex-wrap">
+              <div class="flex items-center gap-1.5 text-xs"><div class="w-3 h-3 rounded mem-cell gpr flex-shrink-0"></div><span class="text-green-300">GPR ($000–$01F)</span></div>
+              <div class="flex items-center gap-1.5 text-xs"><div class="w-3 h-3 rounded mem-cell io flex-shrink-0"></div><span class="text-yellow-300">I/O Reg ($020–$05F)</span></div>
+              <div class="flex items-center gap-1.5 text-xs"><div class="w-3 h-3 rounded mem-cell sram flex-shrink-0"></div><span class="text-slate-300">SRAM ($060–$25F)</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Registers -->
+      <div class="tab-panel" id="overview-registers">
+        <div class="grid md:grid-cols-2 gap-6">
+          <div>
+            <h3 class="text-lg font-semibold text-cyan-400 mb-4">32 General Purpose Registers</h3>
+            <div class="space-y-1">
+              <!-- R0-R15 -->
+              <div class="flex items-center gap-2">
+                <div class="reg-box w-14">R0</div>
+                <div class="flex-1 h-px bg-slate-700"></div>
+                <span class="text-xs text-slate-500">General Register</span>
+              </div>
+              <div class="text-xs text-slate-600 ml-2">R1 … R14</div>
+              <div class="flex items-center gap-2">
+                <div class="reg-box w-14">R15</div>
+                <div class="flex-1 h-px bg-slate-700"></div>
+                <span class="text-xs text-slate-500">General Register</span>
+              </div>
+              <!-- R16-R31 -->
+              <div class="flex items-center gap-2 mt-1">
+                <div class="reg-box semi w-14">R16</div>
+                <div class="flex-1 h-px bg-yellow-500/40"></div>
+                <span class="text-xs text-yellow-400">Semi-Special (immediate OK)</span>
+              </div>
+              <div class="text-xs text-yellow-600 ml-2">R17 … R25</div>
+              <!-- X pointer R26-R27 -->
+              <div class="flex items-center gap-2 mt-1">
+                <div class="reg-box special w-14">R26 (XL)</div>
+                <div class="flex-1 h-px bg-pink-500/40"></div>
+                <span class="text-xs text-pink-400">X Pointer (low)</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <div class="reg-box special w-14">R27 (XH)</div>
+                <div class="flex-1 h-px bg-pink-500/40"></div>
+                <span class="text-xs text-pink-400">X Pointer (high)</span>
+              </div>
+              <!-- Y pointer -->
+              <div class="flex items-center gap-2">
+                <div class="reg-box special w-14">R28 (YL)</div>
+                <div class="flex-1 h-px bg-pink-500/40"></div>
+                <span class="text-xs text-pink-400">Y Pointer (low)</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <div class="reg-box special w-14">R29 (YH)</div>
+                <div class="flex-1 h-px bg-pink-500/40"></div>
+                <span class="text-xs text-pink-400">Y Pointer (high)</span>
+              </div>
+              <!-- Z pointer -->
+              <div class="flex items-center gap-2">
+                <div class="reg-box highlight w-14">R30 (ZL)</div>
+                <div class="flex-1 h-px bg-cyan-500/40"></div>
+                <span class="text-xs text-cyan-400">Z Pointer (low) ★</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <div class="reg-box highlight w-14">R31 (ZH)</div>
+                <div class="flex-1 h-px bg-cyan-500/40"></div>
+                <span class="text-xs text-cyan-400">Z Pointer (high) ★</span>
+              </div>
+            </div>
+          </div>
+          <div class="space-y-4">
+            <div class="callout-key">
+              <p class="text-xs font-bold text-cyan-400 mb-1">KEY TERM — Semi-Special Registers (R16–R31)</p>
+              <p class="text-sm text-slate-300">Hanya R16–R31 yang bisa digunakan dengan instruksi yang mengandung <strong>konstanta (immediate)</strong> seperti <code class="text-yellow-300">LDI</code>, <code class="text-yellow-300">ANDI</code>, <code class="text-yellow-300">CPI</code>, <code class="text-yellow-300">SBCI</code>, <code class="text-yellow-300">SUBI</code>.</p>
+            </div>
+            <div class="callout-danger">
+              <p class="text-xs font-bold text-pink-400 mb-1">COMMON PITFALL ⚠️</p>
+              <p class="text-sm text-slate-300"><code class="text-pink-300">LDI R15, 150</code> → <strong class="text-red-400">ERROR!</strong><br/>R15 bukan termasuk R16–R31, sehingga tidak bisa dioperasikan dengan immediate value secara langsung. Selalu gunakan <strong>R16–R31</strong> untuk instruksi immediate.</p>
+            </div>
+            <div class="callout-tip">
+              <p class="text-xs font-bold text-green-400 mb-1">KEY TERM — Z Register (R31:R30)</p>
+              <p class="text-sm text-slate-300">Register Z adalah satu-satunya pointer yang bisa mengakses <strong>Program Memory (Flash)</strong>. X dan Y hanya bisa mengakses Data Memory (SRAM).</p>
+            </div>
+            <div class="callout-warn">
+              <p class="text-xs font-bold text-yellow-400 mb-1">KEY TERM — Volatile vs Non-Volatile</p>
+              <p class="text-sm text-slate-300"><strong>Volatile</strong> (data hilang saat daya mati): <code class="text-yellow-300">SRAM</code>, <code class="text-yellow-300">Register</code>.<br/><strong>Non-Volatile</strong> (data tetap): <code class="text-yellow-300">Flash Memory</code>, <code class="text-yellow-300">EEPROM</code>.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Status Register Interactive -->
+    <div class="card p-6 space-y-5">
+      <div class="flex items-center gap-3">
+        <i data-lucide="flag" class="w-5 h-5 text-purple-400"></i>
+        <h3 class="text-xl font-bold">Status Register (SREG) — Interaktif</h3>
+      </div>
+      <p class="text-sm text-slate-400">Klik setiap bit untuk melihat penjelasannya.</p>
+      <div class="flex flex-wrap gap-2 justify-center" id="sregContainer">
+        <!-- Generated by JS -->
+      </div>
+      <div id="sregInfo" class="step-panel hidden">
+        <p class="text-sm font-semibold text-cyan-400" id="sregBitName"></p>
+        <p class="text-sm text-slate-300 mt-1" id="sregBitDesc"></p>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ================================================
+       SECTION 2: ALGORITHM & LOGIC VISUALIZATION
+  ================================================ -->
+  <section class="reveal space-y-8">
+    <div class="flex items-center gap-3">
+      <div class="section-badge" style="background:rgba(244,114,182,0.1);border-color:rgba(244,114,182,0.3);color:#f472b6;"><i data-lucide="code-2" class="w-3 h-3"></i> Section 2</div>
+      <h2 class="text-2xl font-bold">Algorithm & Logic Visualization</h2>
+    </div>
+
+    <!-- Code Walkthrough -->
+    <div class="card p-6 space-y-5">
+      <div class="flex items-center gap-3">
+        <i data-lucide="terminal" class="w-5 h-5 text-green-400"></i>
+        <h3 class="text-xl font-bold">Walkthrough Program AVR</h3>
+      </div>
+      <p class="text-sm text-slate-400">Klik setiap langkah untuk melihat penjelasan baris kode yang aktif.</p>
+
+      <div class="grid md:grid-cols-2 gap-5">
+        <!-- Code block -->
+        <div class="code-block relative overflow-hidden">
+          <div class="scan"></div>
+          <div class="code-header">
+            <span class="flex items-center gap-2"><i data-lucide="file-code" class="w-3.5 h-3.5"></i> program_avr.asm</span>
+            <span class="text-cyan-400">ATmega8515</span>
+          </div>
+          <div class="code-body">
+            <code>
+<div id="codeLine0" class="block rounded px-1"><span class="dir">.include</span> <span class="imm">"m8515def.inc"</span></div>
+<div class="block h-3"></div>
+<div id="codeLine1" class="block rounded px-1"><span class="dir">.def</span> <span class="reg">op1</span> = <span class="reg">r16</span></div>
+<div id="codeLine2" class="block rounded px-1"><span class="dir">.def</span> <span class="reg">op2</span> = <span class="reg">r17</span></div>
+<div class="block h-3"></div>
+<div id="codeLine3" class="block rounded px-1"><span class="kw">ldi</span>  <span class="reg">op1</span>, <span class="imm">$BA</span></div>
+<div id="codeLine4" class="block rounded px-1"><span class="kw">ldi</span>  <span class="reg">op2</span>, <span class="imm">19</span></div>
+<div class="block h-3"></div>
+<div id="codeLine5" class="block rounded px-1"><span class="kw">and</span>  <span class="reg">op1</span>, <span class="reg">op2</span></div>
+<div class="block h-3"></div>
+<div id="codeLine6" class="block rounded px-1"><span class="kw">ldi</span>  <span class="reg">YL</span>, <span class="imm">0xAB</span></div>
+<div id="codeLine7" class="block rounded px-1"><span class="kw">ldi</span>  <span class="reg">YH</span>, <span class="imm">0x01</span></div>
+<div class="block h-3"></div>
+<div id="codeLine8" class="block rounded px-1"><span class="kw">st</span>   <span class="reg">Y</span>, <span class="reg">op1</span></div>
+<div class="block h-3"></div>
+<div id="codeLine9" class="block rounded px-1"><span class="lbl">forever:</span></div>
+<div id="codeLine10" class="block rounded px-1 ml-6"><span class="kw">rjmp</span> <span class="lbl">forever</span></div>
+            </code>
+          </div>
+        </div>
+
+        <!-- Steps panel -->
+        <div class="space-y-3">
+          <div class="flex flex-wrap gap-2" id="stepsContainer">
+            <!-- Generated by JS -->
+          </div>
+          <div class="step-panel min-h-32" id="stepExplanation">
+            <p class="text-xs text-slate-500 italic">← Pilih langkah untuk melihat penjelasan</p>
+          </div>
+          <!-- Register state table -->
+          <div class="code-block">
+            <div class="code-header"><span>State Register (setelah langkah dipilih)</span></div>
+            <div class="p-3">
+              <table class="text-xs">
+                <thead><tr><th>Register</th><th>Value (Hex)</th><th>Value (Bin)</th></tr></thead>
+                <tbody id="regStateTable">
+                  <tr><td class="text-green-300">op1 (R16)</td><td id="r16val">—</td><td id="r16bin">—</td></tr>
+                  <tr><td class="text-green-300">op2 (R17)</td><td id="r17val">—</td><td id="r17bin">—</td></tr>
+                  <tr><td class="text-pink-300">YL (R28)</td><td id="ylval">—</td><td id="ylbin">—</td></tr>
+                  <tr><td class="text-pink-300">YH (R29)</td><td id="yhval">—</td><td id="yhbin">—</td></tr>
+                  <tr><td class="text-cyan-300">Y (alamat)</td><td id="yaddr" colspan="2">—</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Opcode Visualization -->
+    <div class="card p-6 space-y-5">
+      <div class="flex items-center gap-3">
+        <i data-lucide="binary" class="w-5 h-5 text-yellow-400"></i>
+        <h3 class="text-xl font-bold">Visualisasi Opcode</h3>
+        <span class="text-xs text-slate-500">— Cara membaca 16-bit opcode instruksi AVR</span>
+      </div>
+
+      <div class="grid md:grid-cols-2 gap-6">
+        <!-- ADD R1, R5 example -->
+        <div class="space-y-4">
+          <h4 class="text-sm font-semibold text-cyan-400">Contoh: ADD R1, R5</h4>
+          <div class="space-y-2">
+            <p class="text-xs text-slate-400">Format 16-bit opcode untuk instruksi ADD:</p>
+            <div class="flex flex-wrap gap-1 items-center">
+              <div class="opcode-bit fixed">0</div>
+              <div class="opcode-bit fixed">0</div>
+              <div class="opcode-bit fixed">0</div>
+              <div class="opcode-bit fixed">0</div>
+              <span class="text-slate-600 text-xs mx-1">|</span>
+              <div class="opcode-bit fixed">1</div>
+              <div class="opcode-bit fixed">1</div>
+              <div class="opcode-bit src">r</div>
+              <div class="opcode-bit dest">d</div>
+              <span class="text-slate-600 text-xs mx-1">|</span>
+              <div class="opcode-bit dest">d</div>
+              <div class="opcode-bit dest">d</div>
+              <div class="opcode-bit dest">d</div>
+              <div class="opcode-bit dest">d</div>
+              <span class="text-slate-600 text-xs mx-1">|</span>
+              <div class="opcode-bit src">r</div>
+              <div class="opcode-bit src">r</div>
+              <div class="opcode-bit src">r</div>
+              <div class="opcode-bit src">r</div>
+            </div>
+            <div class="flex flex-wrap gap-3 text-xs mt-2">
+              <div class="flex items-center gap-1"><div class="opcode-bit fixed w-4 h-4 text-xs">x</div><span class="text-blue-300">Fixed bits</span></div>
+              <div class="flex items-center gap-1"><div class="opcode-bit dest w-4 h-4 text-xs">d</div><span class="text-green-300">Rd (destination)</span></div>
+              <div class="flex items-center gap-1"><div class="opcode-bit src w-4 h-4 text-xs">r</div><span class="text-yellow-300">Rr (source)</span></div>
+            </div>
+          </div>
+          <div class="space-y-2">
+            <p class="text-xs text-slate-400">ADD R1, R5 → Rd=1 (00001), Rr=5 (00101)</p>
+            <div class="flex flex-wrap gap-1">
+              <div class="opcode-bit fixed">0</div>
+              <div class="opcode-bit fixed">0</div>
+              <div class="opcode-bit fixed">0</div>
+              <div class="opcode-bit fixed">0</div>
+              <span class="text-slate-600 text-xs mx-1">|</span>
+              <div class="opcode-bit fixed">1</div>
+              <div class="opcode-bit fixed">1</div>
+              <div class="opcode-bit src">0</div>
+              <div class="opcode-bit dest">0</div>
+              <span class="text-slate-600 text-xs mx-1">|</span>
+              <div class="opcode-bit dest">0</div>
+              <div class="opcode-bit dest">0</div>
+              <div class="opcode-bit dest">0</div>
+              <div class="opcode-bit dest">1</div>
+              <span class="text-slate-600 text-xs mx-1">|</span>
+              <div class="opcode-bit src">0</div>
+              <div class="opcode-bit src">1</div>
+              <div class="opcode-bit src">0</div>
+              <div class="opcode-bit src">1</div>
+            </div>
+            <div class="callout-tip text-xs">
+              <p class="text-green-400 font-bold">Hasil: 0000 1100 0001 0101</p>
+              <p class="text-slate-300 mt-1">Hex: <strong>0C15</strong>. Karena AVR menyimpan dengan <strong>little-endian</strong>, byte ditukar → disimpan sebagai <strong>150C</strong>.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- ANDI R20, 85 example -->
+        <div class="space-y-4">
+          <h4 class="text-sm font-semibold text-yellow-400">Contoh: ANDI R20, 85</h4>
+          <div class="space-y-2">
+            <p class="text-xs text-slate-400">Format 16-bit opcode untuk instruksi ANDI:</p>
+            <div class="flex flex-wrap gap-1 items-center">
+              <div class="opcode-bit fixed">0</div>
+              <div class="opcode-bit fixed">1</div>
+              <div class="opcode-bit fixed">1</div>
+              <div class="opcode-bit fixed">1</div>
+              <span class="text-slate-600 text-xs mx-1">|</span>
+              <div class="opcode-bit imm-b">K</div>
+              <div class="opcode-bit imm-b">K</div>
+              <div class="opcode-bit imm-b">K</div>
+              <div class="opcode-bit imm-b">K</div>
+              <span class="text-slate-600 text-xs mx-1">|</span>
+              <div class="opcode-bit dest">d</div>
+              <div class="opcode-bit dest">d</div>
+              <div class="opcode-bit dest">d</div>
+              <div class="opcode-bit dest">d</div>
+              <span class="text-slate-600 text-xs mx-1">|</span>
+              <div class="opcode-bit imm-b">K</div>
+              <div class="opcode-bit imm-b">K</div>
+              <div class="opcode-bit imm-b">K</div>
+              <div class="opcode-bit imm-b">K</div>
+            </div>
+          </div>
+          <div class="callout-warn text-xs">
+            <p class="text-yellow-400 font-bold mb-1">Perhatian! d hanya 4 bit (R16–R31)</p>
+            <p class="text-slate-300">ANDI Rd,K: Operand d rentang 16–31. Karena itu d dikurangi 16 sebelum dikodekan ke opcode.<br/>R20 → d = 20−16 = <strong>4</strong> = 0100</p>
+          </div>
+          <div class="space-y-1 text-xs">
+            <p class="text-slate-400">ANDI R20, 85: d=4 (0100), K=85=01010101</p>
+            <div class="flex flex-wrap gap-1">
+              <div class="opcode-bit fixed">0</div>
+              <div class="opcode-bit fixed">1</div>
+              <div class="opcode-bit fixed">1</div>
+              <div class="opcode-bit fixed">1</div>
+              <span class="text-slate-600 text-xs mx-1">|</span>
+              <div class="opcode-bit imm-b">0</div>
+              <div class="opcode-bit imm-b">1</div>
+              <div class="opcode-bit imm-b">0</div>
+              <div class="opcode-bit imm-b">1</div>
+              <span class="text-slate-600 text-xs mx-1">|</span>
+              <div class="opcode-bit dest">0</div>
+              <div class="opcode-bit dest">1</div>
+              <div class="opcode-bit dest">0</div>
+              <div class="opcode-bit dest">0</div>
+              <span class="text-slate-600 text-xs mx-1">|</span>
+              <div class="opcode-bit imm-b">0</div>
+              <div class="opcode-bit imm-b">1</div>
+              <div class="opcode-bit imm-b">0</div>
+              <div class="opcode-bit imm-b">1</div>
+            </div>
+            <div class="callout-tip mt-2">
+              <p class="text-green-400 font-bold">Hasil: 0111 0101 0100 0101</p>
+              <p class="text-slate-300 mt-1">Hex: <strong>7545</strong> → Little-endian: <strong>4575</strong></p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Instruction table -->
+      <div class="mt-4">
+        <h4 class="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-3">Instruksi AVR Penting</h4>
+        <div class="overflow-x-auto">
+          <table>
+            <thead>
+              <tr><th>Mnemonic</th><th>Kategori</th><th>Deskripsi</th><th>Operand</th><th>Clock</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><code class="kw">LDI</code></td><td class="text-blue-300">Load/Store</td><td>Load 8-bit immediate ke register</td><td>R16–R31, K</td><td>1</td></tr>
+              <tr><td><code class="kw">MOV</code></td><td class="text-blue-300">Load/Store</td><td>Copy register ke register</td><td>Rd, Rr</td><td>1</td></tr>
+              <tr><td><code class="kw">ADD</code></td><td class="text-green-300">Aritmetika</td><td>Penjumlahan tanpa carry</td><td>Rd, Rr</td><td>1</td></tr>
+              <tr><td><code class="kw">SUB</code></td><td class="text-green-300">Aritmetika</td><td>Pengurangan tanpa borrow</td><td>Rd, Rr</td><td>1</td></tr>
+              <tr><td><code class="kw">AND</code></td><td class="text-purple-300">Logika</td><td>Logical AND</td><td>Rd, Rr</td><td>1</td></tr>
+              <tr><td><code class="kw">ANDI</code></td><td class="text-purple-300">Logika</td><td>Logical AND dengan immediate</td><td>R16–R31, K</td><td>1</td></tr>
+              <tr><td><code class="kw">OR</code></td><td class="text-purple-300">Logika</td><td>Logical OR</td><td>Rd, Rr</td><td>1</td></tr>
+              <tr><td><code class="kw">EOR</code></td><td class="text-purple-300">Logika</td><td>Logical XOR</td><td>Rd, Rr</td><td>1</td></tr>
+              <tr><td><code class="kw">LD</code></td><td class="text-blue-300">Load/Store</td><td>Load indirect melalui X/Y/Z</td><td>Rd, X/Y/Z</td><td>2</td></tr>
+              <tr><td><code class="kw">ST</code></td><td class="text-blue-300">Load/Store</td><td>Store indirect melalui X/Y/Z</td><td>X/Y/Z, Rr</td><td>2</td></tr>
+              <tr><td><code class="kw">LPM</code></td><td class="text-cyan-300">Program Mem</td><td>Load dari program memory (via Z)</td><td>—</td><td>3</td></tr>
+              <tr><td><code class="kw">RJMP</code></td><td class="text-yellow-300">Flow Control</td><td>Relative jump ke label</td><td>k</td><td>2</td></tr>
+              <tr><td><code class="kw">RCALL</code></td><td class="text-yellow-300">Flow Control</td><td>Relative call subroutine</td><td>k</td><td>3</td></tr>
+              <tr><td><code class="kw">CPI</code></td><td class="text-pink-300">Compare</td><td>Compare dengan 8-bit immediate</td><td>R16–R31, K</td><td>1</td></tr>
+              <tr><td><code class="kw">NEG</code></td><td class="text-green-300">Aritmetika</td><td>Two's complement negation</td><td>Rd</td><td>1</td></tr>
+              <tr><td><code class="kw">NOP</code></td><td class="text-slate-300">Misc</td><td>No operation</td><td>—</td><td>1</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================================
+       SECTION 3: INTERACTIVE PRACTICE SUITE
+  ================================================ -->
+  <section class="reveal space-y-8">
+    <div class="flex items-center gap-3">
+      <div class="section-badge" style="background:rgba(52,211,153,0.1);border-color:rgba(52,211,153,0.3);color:#34d399;"><i data-lucide="pencil" class="w-3 h-3"></i> Section 3</div>
+      <h2 class="text-2xl font-bold">Interactive Practice Suite</h2>
+      <div class="ml-auto score-badge" id="sectionScore">0 / 5 Benar</div>
+    </div>
+
+    <div id="quizContainer" class="space-y-6">
+      <!-- Questions rendered by JS -->
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="reveal text-center text-xs text-slate-600 pb-8 space-y-1">
+    <p>TOPIK 08 – Pengenalan AVR | DDAK Week 7 | Fakultas Ilmu Komputer UI</p>
+    <p class="text-slate-700">Materi: Arsitektur AVR, Register, Instruksi, Opcode, Contoh Program</p>
+  </footer>
+
+</div>
+
+<script>
+// ===================== DATA =====================
+
+const sregBits = [
+  { name:'I', bit:7, full:'Global Interrupt Enable', desc:'Set agar semua interrupt dienable secara global. Jika bit ini 0, semua interrupt dinonaktifkan.' },
+  { name:'T', bit:6, full:'Bit Copy Storage', desc:'Dipakai oleh instruksi BLD (Bit Load) dan BST (Bit Store) untuk menyimpan dan mengambil bit secara individual.' },
+  { name:'H', bit:5, full:'Half Carry Flag', desc:'Set jika ada half carry (carry dari bit 3 ke bit 4) dalam operasi aritmetika. Digunakan untuk operasi BCD.' },
+  { name:'S', bit:4, full:'Sign Bit', desc:'S = N XOR V. Digunakan untuk tes signed (bertanda). Menunjukkan tanda "sesungguhnya" dari hasil operasi.' },
+  { name:'V', bit:3, full:"Two's Complement Overflow Flag", desc:"Set jika hasil penjumlahan atau pengurangan menyebabkan overflow dalam representasi two's complement." },
+  { name:'N', bit:2, full:'Negative Flag', desc:'Set jika MSB (bit 7) dari hasil operasi bernilai 1, artinya hasil operasi bernilai negatif.' },
+  { name:'Z', bit:1, full:'Zero Flag', desc:'Set jika hasil operasi bernilai 0. Sangat sering digunakan dalam instruksi percabangan (BREQ, BRNE).' },
+  { name:'C', bit:0, full:'Carry Flag', desc:'Set jika ada carry dari MSB pada operasi aritmetika. Juga digunakan dalam operasi shift dan rotate.' },
+];
+
+const walkthroughSteps = [
+  { label:'.include', lines:[0], r16:null, r17:null, yl:null, yh:null, desc:'<strong>.include "m8515def.inc"</strong> — Menyertakan file definisi untuk mikrokontroler ATmega8515. File ini berisi definisi nama-nama I/O register dan konstanta khusus chip ini.' },
+  { label:'.def', lines:[1,2], r16:null, r17:null, yl:null, yh:null, desc:'<strong>.def op1=r16 / .def op2=r17</strong> — Direktif <code class="text-purple-300">.def</code> membuat alias (nama pengganti) untuk register. Sekarang <code class="text-green-300">op1</code> merujuk ke <code class="text-green-300">R16</code> dan <code class="text-green-300">op2</code> merujuk ke <code class="text-green-300">R17</code>.' },
+  { label:'LDI op1', lines:[3], r16:0xBA, r17:null, yl:null, yh:null, desc:'<strong>ldi op1, $BA</strong> — Load Immediate. Menyimpan nilai konstan <code class="text-yellow-300">0xBA</code> (= 186 desimal = 10111010 biner) langsung ke register <code class="text-green-300">op1 (R16)</code>.' },
+  { label:'LDI op2', lines:[4], r16:0xBA, r17:19, yl:null, yh:null, desc:'<strong>ldi op2, 19</strong> — Menyimpan nilai <code class="text-yellow-300">19</code> (= 0x13 = 00010011 biner) ke register <code class="text-green-300">op2 (R17)</code>.' },
+  { label:'AND', lines:[5], r16:0x12, r17:19, yl:null, yh:null, desc:'<strong>and op1, op2</strong> — Logical AND antara op1 dan op2, hasilnya disimpan di op1.<br/><br/><code>10111010 (0xBA)</code><br/><code>AND 00010011 (0x13=19)</code><br/><code>= 00010010 = 0x12</code><br/><br/>op1 (R16) sekarang bernilai <strong>0x12</strong>.' },
+  { label:'LDI YL', lines:[6], r16:0x12, r17:19, yl:0xAB, yh:null, desc:'<strong>ldi YL, 0xAB</strong> — Menyimpan 0xAB ke YL (R28), yaitu byte rendah dari pointer Y.' },
+  { label:'LDI YH', lines:[7], r16:0x12, r17:19, yl:0xAB, yh:0x01, desc:'<strong>ldi YH, 0x01</strong> — Menyimpan 0x01 ke YH (R29), yaitu byte tinggi dari pointer Y.<br/>Sekarang Y = 0x01AB — ini adalah alamat SRAM yang akan dituju.' },
+  { label:'ST Y, op1', lines:[8], r16:0x12, r17:19, yl:0xAB, yh:0x01, desc:'<strong>st Y, op1</strong> — Store Indirect. Menyimpan nilai <code class="text-green-300">op1 (0x12)</code> ke alamat memori yang ditunjuk oleh register Y (<code class="text-pink-300">0x01AB</code>).' },
+  { label:'forever:', lines:[9,10], r16:0x12, r17:19, yl:0xAB, yh:0x01, desc:'<strong>forever: / rjmp forever</strong> — Label <code class="text-pink-300">forever:</code> menandai posisi kode. Instruksi <code class="text-yellow-300">rjmp forever</code> melakukan <em>relative jump</em> kembali ke label forever, menciptakan <strong>infinite loop</strong>.' },
+];
+
+const quizData = [
+  {
+    q: 'Instruksi mana yang akan menyebabkan ERROR pada assembler AVR?',
+    options: ['LDI R16, 100', 'LDI R31, 255', 'MOV R5, R16', 'LDI R15, 50'],
+    correct: 3,
+    explanation: '<strong>LDI R15, 50 → ERROR!</strong><br/><br/>Instruksi <code>LDI</code> (Load Immediate) hanya bisa digunakan pada register R16–R31 (Semi-Special Registers). Register R15 dan di bawahnya TIDAK bisa dioperasikan dengan instruksi yang mengandung konstanta (immediate).<br/><br/><strong>Cara menyelesaikan:</strong> Gunakan R16–R31 untuk LDI. Jika perlu menempatkan nilai di R15, lakukan: <code>LDI R16, 50</code> lalu <code>MOV R15, R16</code>.',
+  },
+  {
+    q: 'Pasangan register mana yang digunakan untuk mengakses Program Memory (Flash)?',
+    options: ['R27:R26 (X Pointer)', 'R29:R28 (Y Pointer)', 'R31:R30 (Z Pointer)', 'R25:R24'],
+    correct: 2,
+    explanation: '<strong>R31:R30 — Z Pointer</strong><br/><br/>Z Pointer (R31:R30) adalah satu-satunya pointer yang bisa mengakses Program Memory/Flash menggunakan instruksi <code>LPM</code>.<br/><br/>X Pointer (R27:R26) dan Y Pointer (R29:R28) hanya bisa mengakses Data Memory (SRAM).<br/><br/>R25:R24 biasanya digunakan untuk 16-bit counter pada interrupt, bukan sebagai memory pointer.',
+  },
+  {
+    q: 'Penyimpanan apa saja yang bersifat VOLATILE dalam mikrokontroler ATMega8515?',
+    options: ['Flash Memory dan EEPROM', 'SRAM dan Register', 'Flash Memory dan Register', 'EEPROM dan SRAM'],
+    correct: 1,
+    explanation: '<strong>SRAM dan Register</strong> bersifat volatile.<br/><br/>Volatile berarti data akan HILANG saat daya/sistem dimatikan.<br/><br/><strong>Volatile:</strong> SRAM (menyimpan variabel sementara) dan General Purpose Registers (menyimpan data yang sedang diproses).<br/><strong>Non-Volatile:</strong> Flash Memory (program tersimpan permanen) dan EEPROM (data tersimpan permanen).',
+  },
+  {
+    q: 'Program berikut dieksekusi:<br/><code class="text-green-300">ldi R16, 0xBA<br/>ldi R17, 19<br/>and R16, R17</code><br/>Berapa nilai R16 setelah instruksi AND?',
+    options: ['0xBA', '0x19 (19 desimal)', '0x12 (18 desimal)', '0xAD'],
+    correct: 2,
+    explanation: '<strong>Jawaban: 0x12</strong><br/><br/>Operasi AND bit per bit:<br/><br/><code>0xBA = 1011 1010</code><br/><code>0x13 = 0001 0011  (19 desimal = 0x13)</code><br/><code>AND = 0001 0010 = 0x12 = 18 desimal</code><br/><br/>AND menghasilkan 1 hanya jika KEDUA bit bernilai 1. Perhatikan bahwa 19 dalam desimal = 0x13, bukan 0x19!',
+  },
+  {
+    q: 'Apa yang dimaksud dengan opcode instruksi AVR?',
+    options: ['Nama mnemonic instruksi seperti ADD, MOV', '16-bit binary yang merepresentasikan operasi sehingga hardware tahu apa yang harus dilakukan', 'Alamat memori tempat instruksi disimpan', 'Flag status yang dipengaruhi instruksi'],
+    correct: 1,
+    explanation: '<strong>Opcode adalah 16-bit binary representation dari sebuah instruksi.</strong><br/><br/>Opcode adalah hasil translasi dari kode assembly (mnemonic) menjadi bahasa mesin yang dipahami hardware.<br/><br/>Contoh: <code>ADD R1, R5</code> → opcode <code>0000 1100 0001 0101</code> (biner) = <code>0C15</code> (hex). Karena AVR menggunakan sistem <strong>little-endian</strong>, byte disimpan terbalik sehingga menjadi <code>15 0C</code>.',
+  },
+];
+
+// ===================== SREG =====================
+const sregContainer = document.getElementById('sregContainer');
+const sregInfo = document.getElementById('sregInfo');
+const sregBitName = document.getElementById('sregBitName');
+const sregBitDesc = document.getElementById('sregBitDesc');
+
+sregBits.forEach((bit) => {
+  const el = document.createElement('div');
+  el.className = 'sreg-bit';
+  el.innerHTML = `<div class="bit-name text-purple-300">${bit.name}</div><div class="text-xs text-slate-500">bit ${bit.bit}</div>`;
+  el.onclick = () => {
+    document.querySelectorAll('.sreg-bit').forEach(b => b.style.borderColor = '');
+    el.style.borderColor = '#c4b5fd';
+    sregInfo.classList.remove('hidden');
+    sregBitName.textContent = `Bit ${bit.bit} — ${bit.name}: ${bit.full}`;
+    sregBitDesc.innerHTML = bit.desc;
+  };
+  sregContainer.appendChild(el);
+});
+
+// ===================== WALKTHROUGH =====================
+const stepsContainer = document.getElementById('stepsContainer');
+const stepExplanation = document.getElementById('stepExplanation');
+
+function fmtHex(v) { return v===null?'—':'0x'+v.toString(16).toUpperCase().padStart(2,'0'); }
+function fmtBin(v) { return v===null?'—':v.toString(2).padStart(8,'0'); }
+
+walkthroughSteps.forEach((step, i) => {
+  const btn = document.createElement('button');
+  btn.className = 'step-btn';
+  btn.textContent = `Step ${i+1}: ${step.label}`;
+  btn.onclick = () => {
+    document.querySelectorAll('.step-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    // highlight lines
+    for (let li=0; li<=10; li++) {
+      const el = document.getElementById(`codeLine${li}`);
+      if (el) el.classList.remove('step-highlight');
+    }
+    step.lines.forEach(l => {
+      const el = document.getElementById(`codeLine${l}`);
+      if (el) el.classList.add('step-highlight');
+    });
+    stepExplanation.innerHTML = `<p class="text-sm text-slate-200 leading-relaxed">${step.desc}</p>`;
+    // update register state
+    document.getElementById('r16val').textContent = fmtHex(step.r16);
+    document.getElementById('r16bin').textContent = fmtBin(step.r16);
+    document.getElementById('r17val').textContent = fmtHex(step.r17);
+    document.getElementById('r17bin').textContent = fmtBin(step.r17);
+    document.getElementById('ylval').textContent = fmtHex(step.yl);
+    document.getElementById('ylbin').textContent = fmtBin(step.yl);
+    document.getElementById('yhval').textContent = fmtHex(step.yh);
+    document.getElementById('yhbin').textContent = fmtBin(step.yh);
+    if (step.yl !== null && step.yh !== null) {
+      const addr = (step.yh << 8) | step.yl;
+      document.getElementById('yaddr').textContent = '0x'+addr.toString(16).toUpperCase().padStart(4,'0');
+    } else {
+      document.getElementById('yaddr').textContent = '—';
+    }
+  };
+  stepsContainer.appendChild(btn);
+});
+
+// ===================== TABS =====================
+function switchTab(group, id) {
+  const panels = document.querySelectorAll(`[id^="${group}-"]`);
+  panels.forEach(p => p.classList.remove('active'));
+  const activePanel = document.getElementById(`${group}-${id}`);
+  if (activePanel) activePanel.classList.add('active');
+  const tabsEl = document.getElementById(`${group}Tabs`);
+  if (tabsEl) {
+    tabsEl.querySelectorAll('.tab-btn').forEach((btn,i) => {
+      btn.classList.remove('active');
+    });
+    const ids = ['what','arch','memory','registers'];
+    const idx = ids.indexOf(id);
+    if (idx >= 0 && tabsEl.children[idx]) tabsEl.children[idx].classList.add('active');
+  }
+}
+
+// ===================== QUIZ =====================
+let score = 0;
+const answeredQuestions = new Set();
+
+const quizContainer = document.getElementById('quizContainer');
+
+quizData.forEach((q, qi) => {
+  const qCard = document.createElement('div');
+  qCard.className = 'card p-6 space-y-4';
+  qCard.innerHTML = `
+    <div class="flex items-start gap-3">
+      <div class="w-8 h-8 rounded-lg bg-green-500/20 border border-green-500/40 flex items-center justify-center flex-shrink-0 mt-0.5">
+        <span class="text-green-400 font-bold text-sm">${qi+1}</span>
+      </div>
+      <div class="flex-1">
+        <p class="text-base font-semibold text-white leading-relaxed">${q.q}</p>
+      </div>
+    </div>
+    <div class="space-y-2" id="options-${qi}">
+      ${q.options.map((opt, oi) => `
+        <div class="quiz-option" id="opt-${qi}-${oi}" onclick="handleAnswer(${qi}, ${oi})">
+          <div class="w-6 h-6 rounded-full border border-slate-600 flex items-center justify-center flex-shrink-0 text-xs font-mono font-bold">${String.fromCharCode(65+oi)}</div>
+          <span>${opt}</span>
+        </div>
+      `).join('')}
+    </div>
+    <div class="flex items-center justify-between">
+      <div id="feedback-${qi}" class="text-sm font-semibold"></div>
+      <button class="text-xs text-cyan-400 hover:text-cyan-300 underline" onclick="toggleExplanation(${qi})">Reveal Explanation</button>
+    </div>
+    <div class="explanation" id="explanation-${qi}">
+      <div class="flex items-start gap-2">
+        <i data-lucide="lightbulb" class="w-4 h-4 text-yellow-400 flex-shrink-0 mt-0.5"></i>
+        <div class="text-sm text-slate-300 leading-relaxed">${q.explanation}</div>
+      </div>
+    </div>
+  `;
+  quizContainer.appendChild(qCard);
+});
+
+function handleAnswer(qi, selected) {
+  if (answeredQuestions.has(qi)) return;
+  answeredQuestions.add(qi);
+
+  const q = quizData[qi];
+  const opts = document.querySelectorAll(`#options-${qi} .quiz-option`);
+  opts.forEach((el, oi) => {
+    el.classList.add('disabled');
+    if (oi === q.correct) el.classList.add('correct');
+    else if (oi === selected) el.classList.add('wrong');
+  });
+
+  const fb = document.getElementById(`feedback-${qi}`);
+  if (selected === q.correct) {
+    score++;
+    fb.innerHTML = '<span class="text-green-400">✓ Benar!</span>';
+  } else {
+    fb.innerHTML = '<span class="text-pink-400">✗ Salah — lihat penjelasan di bawah</span>';
+    document.getElementById(`explanation-${qi}`).classList.add('show');
+  }
+  updateScore();
+  lucide.createIcons();
+}
+
+function toggleExplanation(qi) {
+  const el = document.getElementById(`explanation-${qi}`);
+  el.classList.toggle('show');
+}
+
+function updateScore() {
+  const total = quizData.length;
+  document.getElementById('globalScore').textContent = `Skor: ${score} / ${total}`;
+  document.getElementById('sectionScore').textContent = `${score} / ${total} Benar`;
+}
+
+// ===================== SCROLL REVEAL =====================
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// Init lucide
+lucide.createIcons();
+</script>
 </body>
 </html>

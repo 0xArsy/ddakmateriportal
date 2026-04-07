@@ -26,7 +26,11 @@ def build_index():
         {"id": "01", "title": "Topik 01: Introduction", "file": "TOPIK 01.html"},
         {"id": "02", "title": "Topik 02: Boolean Algebra", "file": "TOPIK 02.html"},
         {"id": "03", "title": "Topik 03: Karnaugh Map", "file": "TOPIK 03.html"},
-        {"id": "04", "title": "Topik 04: Logic Gates and Combinational Logic", "file": "TOPIK 04.html"}
+        {"id": "04", "title": "Topik 04: Logic Gates and Combinational Logic", "file": "TOPIK 04.html"},
+        {"id": "05", "title": "Topik 05: Combinational circuits MSI and Sequential circuits", "file": "TOPIK 05.html"},
+        {"id": "06", "title": "Topik 06: Sequential circuits analysis, register and memory", "file": "TOPIK 06.html"},
+        {"id": "07", "title": "Topik 07: Intro to computer architecture & Intro to Datapath", "file": "TOPIK 07.html"},
+        {"id": "08", "title": "Topik 08: Introduction to AVR", "file": "TOPIK 08.html"}
     ]
     
     search_index = []

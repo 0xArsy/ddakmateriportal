@@ -1,15 +1,1204 @@
 <!DOCTYPE html>
 <html lang="id" class="dark">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Module On Working</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>TOPIK 07 – Computer Design Basics: Datapath & Arsitektur Komputer</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #0a0e1a;
+    --surface: #111827;
+    --surface2: #1a2236;
+    --border: #1e2d45;
+    --accent: #3b82f6;
+    --accent2: #06b6d4;
+    --accent3: #8b5cf6;
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --green: #10b981;
+    --red: #ef4444;
+    --yellow: #f59e0b;
+  }
+  * { box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    line-height: 1.7;
+  }
+  h1, h2, h3, h4 { font-family: 'Syne', sans-serif; }
+  code, pre, .mono { font-family: 'JetBrains Mono', monospace; }
+
+  /* Animated grid background */
+  .grid-bg {
+    background-image:
+      linear-gradient(rgba(59,130,246,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(59,130,246,0.04) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+
+  /* Glow effects */
+  .glow-blue { box-shadow: 0 0 30px rgba(59,130,246,0.15); }
+  .glow-cyan { box-shadow: 0 0 30px rgba(6,182,212,0.15); }
+  .glow-purple { box-shadow: 0 0 30px rgba(139,92,246,0.15); }
+
+  /* Cards */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    transition: border-color 0.3s, box-shadow 0.3s;
+  }
+  .card:hover { border-color: rgba(59,130,246,0.4); }
+
+  /* Key term badge */
+  .key-term {
+    background: linear-gradient(135deg, rgba(59,130,246,0.15), rgba(6,182,212,0.1));
+    border: 1px solid rgba(59,130,246,0.3);
+    border-radius: 8px;
+    padding: 1rem 1.25rem;
+  }
+
+  /* Callout */
+  .callout-warning {
+    background: rgba(245,158,11,0.08);
+    border-left: 3px solid var(--yellow);
+    border-radius: 0 8px 8px 0;
+    padding: 1rem 1.25rem;
+  }
+  .callout-info {
+    background: rgba(59,130,246,0.08);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 8px 8px 0;
+    padding: 1rem 1.25rem;
+  }
+  .callout-success {
+    background: rgba(16,185,129,0.08);
+    border-left: 3px solid var(--green);
+    border-radius: 0 8px 8px 0;
+    padding: 1rem 1.25rem;
+  }
+
+  /* Code blocks */
+  pre {
+    background: #090d18;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.25rem;
+    overflow-x: auto;
+    font-size: 0.825rem;
+    line-height: 1.7;
+  }
+  .kw { color: #60a5fa; }
+  .str { color: #34d399; }
+  .cmt { color: #475569; font-style: italic; }
+  .num { color: #fbbf24; }
+  .fn { color: #c084fc; }
+  .op { color: #fb7185; }
+
+  /* Step highlight */
+  .step-active {
+    background: rgba(59,130,246,0.12);
+    border-color: rgba(59,130,246,0.5) !important;
+  }
+
+  /* Quiz */
+  .option-btn {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    text-align: left;
+    width: 100%;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+  }
+  .option-btn:hover { border-color: var(--accent); background: rgba(59,130,246,0.08); }
+  .option-correct { border-color: var(--green) !important; background: rgba(16,185,129,0.12) !important; color: #6ee7b7 !important; }
+  .option-wrong { border-color: var(--red) !important; background: rgba(239,68,68,0.12) !important; color: #fca5a5 !important; }
+
+  /* Nav tab */
+  .nav-tab {
+    padding: 0.5rem 1.25rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border: 1px solid transparent;
+    white-space: nowrap;
+  }
+  .nav-tab.active {
+    background: rgba(59,130,246,0.15);
+    border-color: rgba(59,130,246,0.4);
+    color: #93c5fd;
+  }
+  .nav-tab:not(.active) { color: var(--muted); }
+  .nav-tab:not(.active):hover { color: var(--text); background: var(--surface2); }
+
+  /* Section */
+  .section { display: none; }
+  .section.active { display: block; }
+
+  /* Progress bar */
+  .progress-bar {
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: 2px;
+    transition: width 0.4s;
+  }
+
+  /* Diagram box */
+  .diag-box {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    background: var(--surface2);
+    text-align: center;
+    font-size: 0.8rem;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .diag-arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--accent);
+    font-size: 1.2rem;
+  }
+
+  /* Walk step */
+  .walk-step {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.875rem 1rem;
+    background: var(--surface2);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .walk-step.active-step {
+    border-color: var(--accent);
+    background: rgba(59,130,246,0.1);
+  }
+  .walk-step .step-num {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.75rem; font-weight: 700;
+    flex-shrink: 0;
+    transition: background 0.2s;
+  }
+  .walk-step.active-step .step-num { background: var(--accent); }
+
+  /* Table */
+  table { border-collapse: collapse; width: 100%; font-size: 0.85rem; }
+  th { background: var(--surface2); border: 1px solid var(--border); padding: 0.6rem 0.8rem; text-align: center; font-family: 'Syne', sans-serif; font-size: 0.8rem; color: #93c5fd; }
+  td { border: 1px solid var(--border); padding: 0.55rem 0.8rem; text-align: center; }
+  tr:nth-child(even) td { background: rgba(30,45,69,0.4); }
+
+  /* Reveal */
+  .reveal-content { display: none; }
+  .reveal-content.open { display: block; }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--muted); }
+
+  /* Hero gradient */
+  .hero-grad {
+    background: linear-gradient(135deg, rgba(59,130,246,0.08) 0%, rgba(6,182,212,0.05) 50%, rgba(139,92,246,0.08) 100%);
+  }
+
+  /* Badge */
+  .badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 2px 8px; border-radius: 20px;
+    font-size: 0.72rem; font-weight: 600;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .badge-blue { background: rgba(59,130,246,0.15); color: #93c5fd; border: 1px solid rgba(59,130,246,0.3); }
+  .badge-cyan { background: rgba(6,182,212,0.15); color: #67e8f9; border: 1px solid rgba(6,182,212,0.3); }
+  .badge-purple { background: rgba(139,92,246,0.15); color: #c4b5fd; border: 1px solid rgba(139,92,246,0.3); }
+  .badge-green { background: rgba(16,185,129,0.15); color: #6ee7b7; border: 1px solid rgba(16,185,129,0.3); }
+
+  /* Pulse dot */
+  @keyframes pulse-ring { 0% { transform: scale(0.8); opacity: 1; } 100% { transform: scale(1.5); opacity: 0; } }
+  .pulse-dot::before { content:''; position:absolute; width:100%; height:100%; border-radius:50%; background:var(--accent); animation: pulse-ring 1.5s ease-out infinite; }
+  .pulse-dot { position:relative; width:10px; height:10px; border-radius:50%; background:var(--accent); flex-shrink:0; }
+
+  /* Smooth transitions */
+  .fade-in { animation: fadeIn 0.35s ease; }
+  @keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
+</style>
 </head>
-<body class="bg-[#0a0e1a] text-gray-400 h-screen flex items-center justify-center font-sans">
-    <div class="text-center p-8 bg-white/5 border border-white/10 rounded-2xl shadow-2xl">
-        <h1 class="text-3xl font-bold text-white mb-4 tracking-tight">On Working</h1>
-        <p class="text-gray-500">Materi ini sedang dalam proses pembaharuan. Mohon cek kembali nanti.</p>
+<body class="grid-bg">
+
+<!-- ===================== HEADER ===================== -->
+<header class="border-b border-[#1e2d45] sticky top-0 z-50" style="background:rgba(10,14,26,0.92);backdrop-filter:blur(12px)">
+  <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
+    <div class="flex items-center gap-3">
+      <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background:linear-gradient(135deg,#3b82f6,#06b6d4)">
+        <i data-lucide="cpu" class="w-4 h-4 text-white"></i>
+      </div>
+      <div>
+        <div class="text-xs text-[#64748b] mono">CSIM601251 / IKS21501</div>
+        <div class="font-bold text-sm" style="font-family:Syne,sans-serif;">TOPIK 07 — Datapath & Arsitektur Komputer</div>
+      </div>
     </div>
+    <div id="quiz-progress-wrap" class="hidden items-center gap-2 text-xs text-[#64748b]">
+      <span id="quiz-score-display">Skor: 0/5</span>
+    </div>
+  </div>
+  <!-- Tab nav -->
+  <div class="max-w-6xl mx-auto px-4 pb-0 flex gap-1 overflow-x-auto">
+    <button class="nav-tab active" onclick="switchSection('conceptual')">
+      <span class="flex items-center gap-1.5"><i data-lucide="brain" class="w-3.5 h-3.5"></i>Konsep</span>
+    </button>
+    <button class="nav-tab" onclick="switchSection('visualization')">
+      <span class="flex items-center gap-1.5"><i data-lucide="git-branch" class="w-3.5 h-3.5"></i>Visualisasi</span>
+    </button>
+    <button class="nav-tab" onclick="switchSection('alu-table')">
+      <span class="flex items-center gap-1.5"><i data-lucide="table" class="w-3.5 h-3.5"></i>Tabel ALU</span>
+    </button>
+    <button class="nav-tab" onclick="switchSection('practice')">
+      <span class="flex items-center gap-1.5"><i data-lucide="zap" class="w-3.5 h-3.5"></i>Latihan</span>
+    </button>
+  </div>
+</header>
+
+<!-- ===================== HERO ===================== -->
+<div class="hero-grad border-b border-[#1e2d45]">
+  <div class="max-w-6xl mx-auto px-4 py-8">
+    <div class="flex flex-wrap items-center gap-3 mb-3">
+      <span class="badge badge-blue">Fasilkom UI</span>
+      <span class="badge badge-cyan">Computer Design Basics</span>
+      <span class="badge badge-purple">Part 1: Datapath</span>
+    </div>
+    <h1 class="text-2xl md:text-4xl font-extrabold mb-2" style="font-family:Syne,sans-serif;line-height:1.2;">
+      Datapath, ALU, Shifter<br/><span style="color:#60a5fa;">& Arsitektur Komputer</span>
+    </h1>
+    <p class="text-[#94a3b8] max-w-2xl text-sm md:text-base">
+      Halaman pembelajaran interaktif berbasis materi kuliah CSIM601251 dan IKS21501.
+      Pelajari bagaimana sebuah komputer memproses instruksi dari level hardware hingga eksekusi kode.
+    </p>
+  </div>
+</div>
+
+<div class="max-w-6xl mx-auto px-4 py-8">
+
+<!-- =================== SECTION: KONSEP =================== -->
+<div id="sec-conceptual" class="section active fade-in">
+
+  <!-- Intro Architecture -->
+  <div class="mb-10">
+    <div class="flex items-center gap-2 mb-4">
+      <div class="pulse-dot"></div>
+      <h2 class="text-xl font-bold" style="font-family:Syne,sans-serif;">1. Gambaran Besar: Von Neumann Architecture</h2>
+    </div>
+
+    <div class="callout-info mb-5">
+      <p class="text-sm text-[#93c5fd] font-semibold mb-1">💡 Mental Model</p>
+      <p class="text-sm">Bayangkan komputer sebagai sebuah <strong>pabrik</strong>: ada <em>gudang bahan baku</em> (Memory), <em>mesin produksi</em> (Datapath/ALU), <em>manajer</em> (Control Unit), dan <em>conveyor belt</em> (Bus) yang mengangkut data antar bagian.</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+      <div class="card p-4 glow-blue">
+        <div class="flex items-center gap-2 mb-2">
+          <i data-lucide="database" class="w-4 h-4 text-blue-400"></i>
+          <span class="font-bold text-sm text-blue-300" style="font-family:Syne,sans-serif;">Memory</span>
+        </div>
+        <p class="text-xs text-[#94a3b8]">Menyimpan <strong>program dan data</strong>. Diakses oleh Datapath melalui bus.</p>
+      </div>
+      <div class="card p-4 glow-cyan">
+        <div class="flex items-center gap-2 mb-2">
+          <i data-lucide="settings" class="w-4 h-4 text-cyan-400"></i>
+          <span class="font-bold text-sm text-cyan-300" style="font-family:Syne,sans-serif;">Datapath</span>
+        </div>
+        <p class="text-xs text-[#94a3b8]">Komponen yang <strong>melakukan operasi</strong> pada data — berisi register, ALU, dan shifter.</p>
+      </div>
+      <div class="card p-4 glow-purple">
+        <div class="flex items-center gap-2 mb-2">
+          <i data-lucide="sliders" class="w-4 h-4 text-purple-400"></i>
+          <span class="font-bold text-sm text-purple-300" style="font-family:Syne,sans-serif;">Control Unit</span>
+        </div>
+        <p class="text-xs text-[#94a3b8]">Mengirim <strong>sinyal kendali</strong> yang menentukan operasi datapath, memory, dan I/O.</p>
+      </div>
+    </div>
+
+    <!-- Key Terms Grid -->
+    <h3 class="text-lg font-bold mb-3" style="font-family:Syne,sans-serif;">🔑 Key Terms</h3>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-6">
+      <div class="key-term">
+        <p class="text-xs font-bold text-blue-300 mono mb-1">ISA (Instruction Set Architecture)</p>
+        <p class="text-xs text-[#cbd5e1]">Spesifikasi komputer dari sudut pandang programmer di level terendah. Berfungsi sebagai <strong>interface antara hardware dan software</strong>.</p>
+      </div>
+      <div class="key-term">
+        <p class="text-xs font-bold text-cyan-300 mono mb-1">Computer Architecture</p>
+        <p class="text-xs text-[#cbd5e1]">Deskripsi high-level dari hardware yang mengimplementasikan komputer berdasarkan ISA. Mencakup kecepatan, biaya, dan keandalan.</p>
+      </div>
+      <div class="key-term">
+        <p class="text-xs font-bold text-purple-300 mono mb-1">Microoperation</p>
+        <p class="text-xs text-[#cbd5e1]">Operasi dasar yang dilakukan pada data yang tersimpan di register. Contoh: <span class="mono text-yellow-300">R0 ← R1 + R2</span></p>
+      </div>
+      <div class="key-term">
+        <p class="text-xs font-bold text-green-300 mono mb-1">Register File</p>
+        <p class="text-xs text-[#cbd5e1]">Sekumpulan register dengan <strong>shared access resources</strong> (multiplexer, decoder). Tampak seperti memory berbasis flip-flop.</p>
+      </div>
+      <div class="key-term">
+        <p class="text-xs font-bold text-yellow-300 mono mb-1">Control Word</p>
+        <p class="text-xs text-[#cbd5e1]">Kumpulan sinyal kontrol yang terorganisir. Untuk mengeksekusi microinstruction, kita mengaplikasikan nilai control word selama satu clock cycle.</p>
+      </div>
+      <div class="key-term">
+        <p class="text-xs font-bold text-red-300 mono mb-1">Bus</p>
+        <p class="text-xs text-[#cbd5e1]">Jalur komunikasi (shared transfer path) antar komponen. Terdiri dari <strong>data bus, control bus, address bus</strong>. Lebar bus menentukan kapasitas transfer.</p>
+      </div>
+    </div>
+
+    <!-- Common Pitfalls -->
+    <div class="callout-warning mb-6">
+      <p class="text-sm font-bold text-yellow-300 mb-2">⚠️ Common Pitfalls</p>
+      <ul class="text-xs text-[#fde68a] space-y-1.5">
+        <li>• <strong>ISA ≠ Computer Architecture</strong>: ISA adalah "tampilan" komputer bagi programmer; arsitektur adalah implementasi hardware-nya. Keduanya saling terkait tapi berbeda level abstraksi.</li>
+        <li>• <strong>Data bus ≠ Address bus</strong>: Lebar data bus = ukuran word (data yang diproses). Lebar address bus menentukan <em>berapa banyak</em> lokasi memori yang bisa diakses (n-bit → 2ⁿ alamat).</li>
+        <li>• <strong>Datapath ≠ ALU</strong>: Datapath adalah sistem lengkap (register file + ALU + shifter + bus + mux). ALU hanyalah satu komponen di dalamnya.</li>
+        <li>• <strong>Clock period vs. Clock frequency</strong>: Keduanya <em>kebalikan</em> satu sama lain. Frekuensi tinggi = period pendek = lebih banyak siklus per detik.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Datapath Section -->
+  <div class="mb-10">
+    <div class="flex items-center gap-2 mb-4">
+      <div class="pulse-dot" style="background:var(--accent2)"></div>
+      <h2 class="text-xl font-bold" style="font-family:Syne,sans-serif;">2. Datapath: Komponen & Cara Kerja</h2>
+    </div>
+
+    <div class="callout-info mb-4">
+      <p class="text-sm">Sebuah <strong>datapath</strong> dispesifikasikan oleh tiga hal: <em>(1) sekumpulan register</em>, <em>(2) microoperations yang dilakukan pada data di register</em>, dan <em>(3) control interface</em>.</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
+      <div class="card p-4">
+        <h4 class="font-bold text-sm mb-2 text-cyan-300" style="font-family:Syne,sans-serif;">Komponen Register</h4>
+        <ul class="text-xs text-[#94a3b8] space-y-1">
+          <li>• <span class="text-white">Individual registers</span> — register terpisah (R0, R1, R2, R3)</li>
+          <li>• <span class="text-white">Register file</span> — sekumpulan register dengan akses bersama via mux/decoder</li>
+          <li>• <span class="text-white">Kombinasi keduanya</span></li>
+        </ul>
+      </div>
+      <div class="card p-4">
+        <h4 class="font-bold text-sm mb-2 text-purple-300" style="font-family:Syne,sans-serif;">Shared Resources</h4>
+        <ul class="text-xs text-[#94a3b8] space-y-1">
+          <li>• <span class="text-white">Bus</span> — jalur transfer data bersama (Bus A, Bus B, Bus D)</li>
+          <li>• <span class="text-white">ALU</span> — shared resource untuk aritmatika & logika</li>
+          <li>• <span class="text-white">Shifter</span> — shared resource untuk operasi shift</li>
+          <li>• <span class="text-white">Multiplexer (MUX)</span> — pemilih jalur data</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Microoperation Example -->
+    <h3 class="text-base font-bold mb-3 text-white" style="font-family:Syne,sans-serif;">Contoh: Microoperation <span class="mono text-yellow-300">R0 ← R1 + R2</span></h3>
+    <div class="card p-4 mb-4">
+      <div class="space-y-2">
+        <div class="flex items-start gap-3 text-xs">
+          <span class="badge badge-blue shrink-0">1</span>
+          <span>Aplikasikan <span class="mono text-yellow-300">01</span> ke <strong>A select</strong> → konten R1 ke Bus A</span>
+        </div>
+        <div class="flex items-start gap-3 text-xs">
+          <span class="badge badge-blue shrink-0">2</span>
+          <span>Aplikasikan <span class="mono text-yellow-300">10</span> ke <strong>B select</strong> + <span class="mono text-yellow-300">0</span> ke <strong>MB select</strong> → konten R2 ke Bus B</span>
+        </div>
+        <div class="flex items-start gap-3 text-xs">
+          <span class="badge badge-blue shrink-0">3</span>
+          <span>Aplikasikan <span class="mono text-yellow-300">0010</span> ke <strong>G select</strong> → ALU melakukan penjumlahan: G = Bus A + Bus B</span>
+        </div>
+        <div class="flex items-start gap-3 text-xs">
+          <span class="badge badge-blue shrink-0">4</span>
+          <span>Aplikasikan <span class="mono text-yellow-300">0</span> ke <strong>MF select</strong> + <span class="mono text-yellow-300">0</span> ke <strong>MD select</strong> → nilai G ke Bus D</span>
+        </div>
+        <div class="flex items-start gap-3 text-xs">
+          <span class="badge badge-blue shrink-0">5</span>
+          <span>Aplikasikan <span class="mono text-yellow-300">00</span> ke <strong>Destination select</strong> → aktifkan Load input ke R0</span>
+        </div>
+        <div class="flex items-start gap-3 text-xs">
+          <span class="badge badge-blue shrink-0">6</span>
+          <span>Aplikasikan <span class="mono text-yellow-300">1</span> ke <strong>Load Enable</strong> → R0 di-load pada clock pulse</span>
+        </div>
+      </div>
+      <div class="mt-3 pt-3 border-t border-[#1e2d45]">
+        <div class="callout-success text-xs"><strong>⏱ Total: 1 clock cycle</strong> untuk menyelesaikan satu microoperation.</div>
+      </div>
+    </div>
+
+    <!-- Control Word Fields -->
+    <h3 class="text-base font-bold mb-3" style="font-family:Syne,sans-serif;">Field Control Word (16-bit)</h3>
+    <div class="card p-4 overflow-x-auto mb-4">
+      <div class="flex gap-1 min-w-max mb-2">
+        <div class="diag-box w-24 text-purple-300">DA<br/><span class="text-[#64748b] text-[10px]">bits 15-13</span></div>
+        <div class="diag-box w-24 text-blue-300">AA<br/><span class="text-[#64748b] text-[10px]">bits 12-10</span></div>
+        <div class="diag-box w-24 text-cyan-300">BA<br/><span class="text-[#64748b] text-[10px]">bits 9-7</span></div>
+        <div class="diag-box w-14 text-yellow-300">MB<br/><span class="text-[#64748b] text-[10px]">bit 6</span></div>
+        <div class="diag-box w-24 text-green-300">FS<br/><span class="text-[#64748b] text-[10px]">bits 5-2</span></div>
+        <div class="diag-box w-14 text-red-300">MD<br/><span class="text-[#64748b] text-[10px]">bit 1</span></div>
+        <div class="diag-box w-14 text-orange-300">RW<br/><span class="text-[#64748b] text-[10px]">bit 0</span></div>
+      </div>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-2 mt-3 text-xs">
+        <div><span class="text-purple-300 font-bold">DA</span> — D Address (register tujuan)</div>
+        <div><span class="text-blue-300 font-bold">AA</span> — A Address (source A)</div>
+        <div><span class="text-cyan-300 font-bold">BA</span> — B Address (source B)</div>
+        <div><span class="text-yellow-300 font-bold">MB</span> — Mux B (0=register, 1=constant)</div>
+        <div><span class="text-green-300 font-bold">FS</span> — Function Select (4-bit)</div>
+        <div><span class="text-red-300 font-bold">MD</span> — Mux D (0=function, 1=data in)</div>
+        <div><span class="text-orange-300 font-bold">RW</span> — Register Write (0=no, 1=yes)</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ALU Section -->
+  <div class="mb-10">
+    <div class="flex items-center gap-2 mb-4">
+      <div class="pulse-dot" style="background:var(--accent3)"></div>
+      <h2 class="text-xl font-bold" style="font-family:Syne,sans-serif;">3. Arithmetic Logic Unit (ALU)</h2>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-5">
+      <div class="card p-4 text-center">
+        <i data-lucide="plus-circle" class="w-8 h-8 text-blue-400 mx-auto mb-2"></i>
+        <p class="font-bold text-sm text-blue-300" style="font-family:Syne,sans-serif;">Arithmetic Circuit</p>
+        <p class="text-xs text-[#94a3b8] mt-1">n-bit parallel adder + B input logic. Menangani operasi: transfer, increment, add, subtract, decrement.</p>
+      </div>
+      <div class="card p-4 text-center">
+        <i data-lucide="layers" class="w-8 h-8 text-purple-400 mx-auto mb-2"></i>
+        <p class="font-bold text-sm text-purple-300" style="font-family:Syne,sans-serif;">Logic Circuit</p>
+        <p class="text-xs text-[#94a3b8] mt-1">Implementasikan: AND, OR, XOR, NOT per bit menggunakan custom circuit (lebih efisien dari MUX).</p>
+      </div>
+      <div class="card p-4 text-center">
+        <i data-lucide="toggle-left" class="w-8 h-8 text-cyan-400 mx-auto mb-2"></i>
+        <p class="font-bold text-sm text-cyan-300" style="font-family:Syne,sans-serif;">Selector (S₂)</p>
+        <p class="text-xs text-[#94a3b8] mt-1">S₂=0 → pilih arithmetic circuit. S₂=1 → pilih logic circuit. Diseleksi via 2-to-1 MUX.</p>
+      </div>
+    </div>
+
+    <div class="callout-warning mb-5">
+      <p class="text-sm font-bold text-yellow-300 mb-1">⚠️ Tentang B Input Logic</p>
+      <p class="text-xs text-[#fde68a]">Hanya ada <strong>4 fungsi B</strong> yang bisa dipilih sebagai Y dalam G = A + Y: <span class="mono">all 0s, B, B̄ (komplemen B), all 1s</span>. Kombinasi dengan C<sub>in</sub>=0 atau 1 menghasilkan 8 fungsi aritmatika berbeda.</p>
+    </div>
+
+    <h3 class="text-base font-bold mb-3" style="font-family:Syne,sans-serif;">Logic Circuit — Custom Design (lebih efisien)</h3>
+    <div class="card p-4 mb-4">
+      <p class="text-xs text-[#94a3b8] mb-3">Formula: <span class="mono text-yellow-300">Gᵢ = S̄₀AᵢBᵢ + S̄₁AᵢB̄ᵢ + S₀AᵢB̄ᵢ + S₁S̄₀Āᵢ</span></p>
+      <div class="grid grid-cols-2 gap-3 text-xs">
+        <div class="callout-success">
+          <p class="font-bold text-green-300 mb-1">Custom Design</p>
+          <p>Gate input count: <span class="mono text-green-400">&lt; 20</span></p>
+        </div>
+        <div class="callout-warning">
+          <p class="font-bold text-yellow-300 mb-1">MUX Solution</p>
+          <p>Gate input count: <span class="mono text-yellow-400">&gt; 29</span></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Shifter Section -->
+  <div class="mb-10">
+    <div class="flex items-center gap-2 mb-4">
+      <div class="pulse-dot" style="background:#10b981"></div>
+      <h2 class="text-xl font-bold" style="font-family:Syne,sans-serif;">4. Shifter</h2>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
+      <div class="card p-4">
+        <h4 class="font-bold text-sm mb-2 text-green-300" style="font-family:Syne,sans-serif;">Basic Left/Right Shifter</h4>
+        <div class="space-y-1.5 text-xs">
+          <div class="flex justify-between border-b border-[#1e2d45] pb-1">
+            <span class="mono text-yellow-300">(S₁,S₀) = 00</span><span>Pass B unchanged</span>
+          </div>
+          <div class="flex justify-between border-b border-[#1e2d45] pb-1">
+            <span class="mono text-yellow-300">(S₁,S₀) = 01</span><span>Right shift</span>
+          </div>
+          <div class="flex justify-between border-b border-[#1e2d45] pb-1">
+            <span class="mono text-yellow-300">(S₁,S₀) = 10</span><span>Left shift</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="mono text-yellow-300">(S₁,S₀) = 11</span><span class="text-[#64748b]">Unused</span>
+          </div>
+        </div>
+        <div class="mt-3 pt-2 border-t border-[#1e2d45] text-xs text-[#94a3b8]">
+          Serial Input: <span class="mono text-cyan-300">I_R</span> (right), <span class="mono text-cyan-300">I_L</span> (left)<br/>
+          Serial Output: <span class="mono text-cyan-300">R</span> = MSB input, <span class="mono text-cyan-300">L</span> = LSB input
+        </div>
+      </div>
+      <div class="card p-4">
+        <h4 class="font-bold text-sm mb-2 text-purple-300" style="font-family:Syne,sans-serif;">Barrel Shifter</h4>
+        <p class="text-xs text-[#94a3b8] mb-2">Rotate: bit yang keluar dimasukkan ke posisi kosong.</p>
+        <div class="space-y-1.5 text-xs">
+          <div class="flex justify-between border-b border-[#1e2d45] pb-1">
+            <span class="mono text-purple-300">S = 00</span><span>Posisi tidak berubah</span>
+          </div>
+          <div class="flex justify-between border-b border-[#1e2d45] pb-1">
+            <span class="mono text-purple-300">S = 01</span><span>Rotate left 1 posisi</span>
+          </div>
+          <div class="flex justify-between border-b border-[#1e2d45] pb-1">
+            <span class="mono text-purple-300">S = 10</span><span>Rotate left 2 posisi</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="mono text-purple-300">S = 11</span><span>Rotate left 3 posisi</span>
+          </div>
+        </div>
+        <div class="mt-3 pt-2 border-t border-[#1e2d45] text-xs text-[#94a3b8]">
+          Large barrel shifter → layers of MUX (contoh 64-bit: layer 1 shift 0/16/32/48, layer 2 shift 0/4/8/12, layer 3 shift 0/1/2/3)
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Moore's Law & ISA -->
+  <div class="mb-10">
+    <div class="flex items-center gap-2 mb-4">
+      <div class="pulse-dot" style="background:#f59e0b"></div>
+      <h2 class="text-xl font-bold" style="font-family:Syne,sans-serif;">5. ISA, CPU & Moore's Law</h2>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div class="card p-4">
+        <h4 class="font-bold text-sm mb-2 text-yellow-300" style="font-family:Syne,sans-serif;">CPU = Control + ALU + Registers</h4>
+        <ul class="text-xs text-[#94a3b8] space-y-1.5">
+          <li><span class="text-white font-semibold">Control Unit</span> — monitor & arahkan urutan instruksi</li>
+          <li><span class="text-white font-semibold">ALU</span> — operasi aritmatika & logika (add, sub, and, or, not, inc...)</li>
+          <li><span class="text-white font-semibold">Registers</span> — memori cepat dalam CPU (PC, ACC, IR, MAR, MDR)</li>
+        </ul>
+        <div class="mt-3 pt-2 border-t border-[#1e2d45] text-xs">
+          <p class="text-[#94a3b8]">Siklus eksekusi instruksi:</p>
+          <div class="flex items-center gap-1 mt-1 flex-wrap">
+            <span class="badge badge-blue">Fetch</span>
+            <span class="text-[#64748b]">→</span>
+            <span class="badge badge-cyan">Decode</span>
+            <span class="text-[#64748b]">→</span>
+            <span class="badge badge-purple">Execute</span>
+            <span class="text-[#64748b]">→</span>
+            <span class="badge badge-green">Store</span>
+          </div>
+        </div>
+      </div>
+      <div class="card p-4">
+        <h4 class="font-bold text-sm mb-2 text-orange-300" style="font-family:Syne,sans-serif;">Moore's Law</h4>
+        <p class="text-xs text-[#94a3b8] mb-2">Gordon Moore (Intel co-founder) memprediksi tahun 1965:</p>
+        <div class="callout-info text-xs mb-2">
+          <strong>Densitas transistor akan berlipat ganda setiap 18 bulan</strong> → peningkatan clock frequency.
+        </div>
+        <p class="text-xs text-[#94a3b8]">Dari 1971–2005: total 36.000× peningkatan. Analoginya: perjalanan LA ke NYC bisa dalam hitungan detik dengan hanya beberapa sen!</p>
+        <div class="mt-2 callout-warning text-xs">
+          <strong>Roadblock:</strong> Power density jadi masalah — buruk untuk pendinginan, keandalan, dan lingkungan.
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- end sec-conceptual -->
+
+<!-- =================== SECTION: VISUALISASI =================== -->
+<div id="sec-visualization" class="section fade-in">
+  <h2 class="text-xl font-bold mb-6" style="font-family:Syne,sans-serif;">🔄 Visualisasi & Walkthrough Algoritma</h2>
+
+  <!-- Datapath Flow -->
+  <div class="card p-5 mb-6">
+    <h3 class="text-base font-bold mb-4 text-cyan-300" style="font-family:Syne,sans-serif;">Alur Datapath: Register File → Function Unit → Bus D</h3>
+    <div class="flex flex-col items-center gap-2 overflow-x-auto py-2">
+      <!-- Row 1 -->
+      <div class="flex gap-3 items-start flex-wrap justify-center">
+        <div class="diag-box" style="border-color:#3b82f6;color:#93c5fd;min-width:110px;">Register File<br/><span class="text-[10px] text-[#64748b]">R0–R7 (8×n)</span></div>
+        <div class="diag-arrow">→</div>
+        <div class="flex flex-col gap-1">
+          <div class="diag-box" style="border-color:#06b6d4;color:#67e8f9;min-width:80px;">MUX B<br/><span class="text-[10px] text-[#64748b]">B data / Const</span></div>
+        </div>
+        <div class="diag-arrow">→</div>
+        <div class="diag-box" style="border-color:#8b5cf6;color:#c4b5fd;min-width:90px;">Bus A &amp; Bus B<br/><span class="text-[10px] text-[#64748b]">n-bit</span></div>
+      </div>
+      <div class="diag-arrow text-2xl">↓</div>
+      <!-- Row 2 -->
+      <div class="flex gap-3 items-center flex-wrap justify-center">
+        <div class="diag-box" style="border-color:#10b981;color:#6ee7b7;min-width:120px;">Function Unit<br/><span class="text-[10px] text-[#64748b]">ALU (G) + Shifter (H)</span></div>
+        <div class="diag-arrow">→</div>
+        <div class="diag-box" style="border-color:#f59e0b;color:#fcd34d;min-width:80px;">MUX F<br/><span class="text-[10px] text-[#64748b]">G / H</span></div>
+        <div class="diag-arrow">→</div>
+        <div class="diag-box" style="border-color:#ef4444;color:#fca5a5;min-width:80px;">MUX D<br/><span class="text-[10px] text-[#64748b]">F / Data in</span></div>
+        <div class="diag-arrow">→</div>
+        <div class="diag-box" style="border-color:#3b82f6;color:#93c5fd;min-width:80px;">Bus D<br/><span class="text-[10px] text-[#64748b]">→ Register</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Walkthrough: R0 ← R1 + R2 -->
+  <div class="card p-5 mb-6">
+    <h3 class="text-base font-bold mb-2 text-yellow-300" style="font-family:Syne,sans-serif;">
+      Walkthrough: <span class="mono">R0 ← R1 + R2</span>
+    </h3>
+    <p class="text-xs text-[#94a3b8] mb-4">Klik setiap langkah untuk melihat penjelasan detail.</p>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-3" id="walkthrough-container">
+      <div class="walk-step active-step" onclick="selectStep(this, 0)">
+        <div class="flex items-center gap-3">
+          <div class="step-num">1</div>
+          <div>
+            <p class="text-xs font-bold">A select = <span class="mono text-yellow-300">01</span></p>
+            <p class="text-xs text-[#64748b]">Pilih R1 ke Bus A</p>
+          </div>
+        </div>
+      </div>
+      <div class="walk-step" onclick="selectStep(this, 1)">
+        <div class="flex items-center gap-3">
+          <div class="step-num">2</div>
+          <div>
+            <p class="text-xs font-bold">B select = <span class="mono text-yellow-300">10</span>, MB = <span class="mono text-yellow-300">0</span></p>
+            <p class="text-xs text-[#64748b]">Pilih R2 ke Bus B</p>
+          </div>
+        </div>
+      </div>
+      <div class="walk-step" onclick="selectStep(this, 2)">
+        <div class="flex items-center gap-3">
+          <div class="step-num">3</div>
+          <div>
+            <p class="text-xs font-bold">G select = <span class="mono text-yellow-300">0010</span></p>
+            <p class="text-xs text-[#64748b]">ALU: G = A + B</p>
+          </div>
+        </div>
+      </div>
+      <div class="walk-step" onclick="selectStep(this, 3)">
+        <div class="flex items-center gap-3">
+          <div class="step-num">4</div>
+          <div>
+            <p class="text-xs font-bold">MF = <span class="mono text-yellow-300">0</span>, MD = <span class="mono text-yellow-300">0</span></p>
+            <p class="text-xs text-[#64748b]">G → Bus D</p>
+          </div>
+        </div>
+      </div>
+      <div class="walk-step" onclick="selectStep(this, 4)">
+        <div class="flex items-center gap-3">
+          <div class="step-num">5</div>
+          <div>
+            <p class="text-xs font-bold">Dest select = <span class="mono text-yellow-300">00</span></p>
+            <p class="text-xs text-[#64748b]">Enable Load ke R0</p>
+          </div>
+        </div>
+      </div>
+      <div class="walk-step" onclick="selectStep(this, 5)">
+        <div class="flex items-center gap-3">
+          <div class="step-num">6</div>
+          <div>
+            <p class="text-xs font-bold">Load Enable = <span class="mono text-yellow-300">1</span></p>
+            <p class="text-xs text-[#64748b]">R0 di-load saat clock pulse ✓</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="step-explanation" class="mt-4 callout-info text-xs"></div>
+  </div>
+
+  <!-- Code Block: Control Word Encoding -->
+  <div class="card p-5 mb-6">
+    <h3 class="text-base font-bold mb-4 text-purple-300" style="font-family:Syne,sans-serif;">Representasi Binary Control Word</h3>
+    <p class="text-xs text-[#94a3b8] mb-3">Contoh encoding untuk microoperation <span class="mono text-yellow-300">R1 ← R2 − R3</span> (TABLE 9-7 dari materi)</p>
+    <pre><span class="cmt">-- FORMAT: DA | AA | BA | MB | FS | MD | RW</span>
+<span class="cmt">-- R1 ← R2 - R3  (subtract = A + B̄ + 1)</span>
+DA=<span class="num">001</span>  AA=<span class="num">010</span>  BA=<span class="num">011</span>  MB=<span class="num">0</span>  FS=<span class="num">0101</span>  MD=<span class="num">0</span>  RW=<span class="num">1</span>
+
+<span class="cmt">-- R4 ← sl R6  (shift left R6)</span>
+DA=<span class="num">100</span>  AA=<span class="num">XXX</span>  BA=<span class="num">110</span>  MB=<span class="num">0</span>  FS=<span class="num">1110</span>  MD=<span class="num">0</span>  RW=<span class="num">1</span>
+
+<span class="cmt">-- R7 ← R7 + 1  (increment)</span>
+DA=<span class="num">111</span>  AA=<span class="num">111</span>  BA=<span class="num">XXX</span>  MB=<span class="num">X</span>  FS=<span class="num">0001</span>  MD=<span class="num">0</span>  RW=<span class="num">1</span>
+
+<span class="cmt">-- R1 ← R0 + 2  (add with constant)</span>
+DA=<span class="num">001</span>  AA=<span class="num">000</span>  BA=<span class="num">XXX</span>  MB=<span class="num">1</span>  FS=<span class="num">0010</span>  MD=<span class="num">0</span>  RW=<span class="num">1</span>
+
+<span class="cmt">-- Data out ← R3  (output, no register write)</span>
+DA=<span class="num">XXX</span>  AA=<span class="num">XXX</span>  BA=<span class="num">011</span>  MB=<span class="num">0</span>  FS=<span class="num">XXXX</span>  MD=<span class="num">X</span>  RW=<span class="num">0</span>
+
+<span class="cmt">-- R5 ← 0  (XOR: R0 ⊕ R0 = 0)</span>
+DA=<span class="num">101</span>  AA=<span class="num">000</span>  BA=<span class="num">000</span>  MB=<span class="num">0</span>  FS=<span class="num">1010</span>  MD=<span class="num">0</span>  RW=<span class="num">1</span></pre>
+  </div>
+
+  <!-- FS Codes Explanation -->
+  <div class="card p-5 mb-6">
+    <h3 class="text-base font-bold mb-4 text-green-300" style="font-family:Syne,sans-serif;">Boolean Equations untuk FS → G/H Select</h3>
+    <pre><span class="cmt">-- MFS (MF Select): apakah output dari ALU atau Shifter?</span>
+MFS = <span class="fn">F₃</span> · <span class="fn">F₂</span>   <span class="cmt">-- 1 jika FS(3:2) = 11 (artinya: operasi shift)</span>
+
+<span class="cmt">-- G Select (untuk ALU arithmetic/logic):</span>
+GS<span class="kw">ᵢ</span> = <span class="fn">Fᵢ</span>           <span class="cmt">-- langsung dari bit FS ke-i</span>
+
+<span class="cmt">-- H Select (untuk Shifter):</span>
+HS<span class="kw">ᵢ</span> = <span class="fn">Fᵢ</span>           <span class="cmt">-- langsung dari bit FS ke-i</span>
+
+<span class="cmt">-- Contoh: FS = 1100 → MFS=1 (pakai Shifter), HS = 00 → F = B (pass)</span>
+<span class="cmt">-- Contoh: FS = 1101 → MFS=1 (pakai Shifter), HS = 01 → F = sr B</span>
+<span class="cmt">-- Contoh: FS = 1110 → MFS=1 (pakai Shifter), HS = 10 → F = sl B</span></pre>
+  </div>
+
+  <!-- Instruction Execution Cycle -->
+  <div class="card p-5">
+    <h3 class="text-base font-bold mb-4 text-blue-300" style="font-family:Syne,sans-serif;">Siklus Eksekusi Instruksi (Code Execution)</h3>
+    <div class="flex flex-col items-center gap-0">
+      <div class="diag-box w-48" style="border-color:#3b82f6;color:#93c5fd;">Instruction Fetch<br/><span class="text-[10px] text-[#64748b]">PC → MAR → Memory → IR</span></div>
+      <div class="diag-arrow">↓</div>
+      <div class="diag-box w-48" style="border-color:#06b6d4;color:#67e8f9;">Instruction Decode<br/><span class="text-[10px] text-[#64748b]">Control unit decode IR</span></div>
+      <div class="diag-arrow">↓</div>
+      <div class="diag-box w-48" style="border-color:#8b5cf6;color:#c4b5fd;">Operand Fetch<br/><span class="text-[10px] text-[#64748b]">Ambil operand dari register/memory</span></div>
+      <div class="diag-arrow">↓</div>
+      <div class="diag-box w-48" style="border-color:#10b981;color:#6ee7b7;">Execute<br/><span class="text-[10px] text-[#64748b]">ALU/Shifter lakukan operasi</span></div>
+      <div class="diag-arrow">↓</div>
+      <div class="diag-box w-48" style="border-color:#f59e0b;color:#fcd34d;">Result Store<br/><span class="text-[10px] text-[#64748b]">Simpan hasil ke register/memory</span></div>
+      <div class="diag-arrow">↓</div>
+      <div class="diag-box w-48" style="border-color:#3b82f6;color:#93c5fd;">Next Instruction<br/><span class="text-[10px] text-[#64748b]">PC++ → kembali ke Fetch</span></div>
+    </div>
+  </div>
+</div><!-- end sec-visualization -->
+
+<!-- =================== SECTION: ALU TABLE =================== -->
+<div id="sec-alu-table" class="section fade-in">
+  <h2 class="text-xl font-bold mb-6" style="font-family:Syne,sans-serif;">📊 Tabel Referensi ALU & Control Word</h2>
+
+  <!-- TABLE 9-2: ALU Function -->
+  <div class="card p-5 mb-6 overflow-x-auto">
+    <h3 class="text-base font-bold mb-3 text-cyan-300" style="font-family:Syne,sans-serif;">TABLE 9-2: Function Table for ALU</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>S₂</th><th>S₁</th><th>S₀</th><th>C<sub>in</sub></th><th>Operation</th><th>Function</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>0</td><td>0</td><td>0</td><td>0</td><td class="mono text-green-300">G = A</td><td>Transfer A</td></tr>
+        <tr><td>0</td><td>0</td><td>0</td><td>1</td><td class="mono text-green-300">G = A + 1</td><td>Increment A</td></tr>
+        <tr><td>0</td><td>0</td><td>1</td><td>0</td><td class="mono text-green-300">G = A + B</td><td>Addition</td></tr>
+        <tr><td>0</td><td>0</td><td>1</td><td>1</td><td class="mono text-green-300">G = A + B + 1</td><td>Add with carry</td></tr>
+        <tr><td>0</td><td>1</td><td>0</td><td>0</td><td class="mono text-yellow-300">G = A + B̄</td><td>A plus 1s complement B</td></tr>
+        <tr><td>0</td><td>1</td><td>0</td><td>1</td><td class="mono text-yellow-300">G = A + B̄ + 1</td><td>Subtraction (A − B)</td></tr>
+        <tr><td>0</td><td>1</td><td>1</td><td>0</td><td class="mono text-yellow-300">G = A − 1</td><td>Decrement A</td></tr>
+        <tr><td>0</td><td>1</td><td>1</td><td>1</td><td class="mono text-yellow-300">G = A</td><td>Transfer A</td></tr>
+        <tr><td>1</td><td>X</td><td>0</td><td>0</td><td class="mono text-purple-300">G = A ∧ B</td><td>AND</td></tr>
+        <tr><td>1</td><td>X</td><td>0</td><td>1</td><td class="mono text-purple-300">G = A ∨ B</td><td>OR</td></tr>
+        <tr><td>1</td><td>X</td><td>1</td><td>0</td><td class="mono text-purple-300">G = A ⊕ B</td><td>XOR</td></tr>
+        <tr><td>1</td><td>X</td><td>1</td><td>1</td><td class="mono text-purple-300">G = Ā</td><td>NOT (1s complement)</td></tr>
+        <tr><td>1</td><td>1</td><td>0</td><td>0</td><td class="mono text-cyan-300">G = B</td><td>Transfer B (Shifter: pass)</td></tr>
+        <tr><td>1</td><td>1</td><td>0</td><td>1</td><td class="mono text-cyan-300">G = sr B</td><td>Shift right B</td></tr>
+        <tr><td>1</td><td>1</td><td>1</td><td>0</td><td class="mono text-cyan-300">G = sl B</td><td>Shift left B</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- TABLE 9-5: Control Word Encoding -->
+  <div class="card p-5 mb-6 overflow-x-auto">
+    <h3 class="text-base font-bold mb-3 text-green-300" style="font-family:Syne,sans-serif;">TABLE 9-5: Encoding of Control Word (DA, AA, BA)</h3>
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 text-xs">
+      <div>
+        <p class="font-bold text-white mb-2" style="font-family:Syne,sans-serif;">DA / AA / BA (Register)</p>
+        <table class="text-xs">
+          <thead><tr><th>Register</th><th>Code</th></tr></thead>
+          <tbody>
+            <tr><td>R0</td><td class="mono text-yellow-300">000</td></tr>
+            <tr><td>R1</td><td class="mono text-yellow-300">001</td></tr>
+            <tr><td>R2</td><td class="mono text-yellow-300">010</td></tr>
+            <tr><td>R3</td><td class="mono text-yellow-300">011</td></tr>
+            <tr><td>R4</td><td class="mono text-yellow-300">100</td></tr>
+            <tr><td>R5</td><td class="mono text-yellow-300">101</td></tr>
+            <tr><td>R6</td><td class="mono text-yellow-300">110</td></tr>
+            <tr><td>R7</td><td class="mono text-yellow-300">111</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div>
+        <p class="font-bold text-white mb-2" style="font-family:Syne,sans-serif;">MB (Mux B)</p>
+        <table class="text-xs">
+          <thead><tr><th>Function</th><th>Code</th></tr></thead>
+          <tbody>
+            <tr><td>Register</td><td class="mono text-yellow-300">0</td></tr>
+            <tr><td>Constant</td><td class="mono text-yellow-300">1</td></tr>
+          </tbody>
+        </table>
+        <p class="font-bold text-white mt-3 mb-2" style="font-family:Syne,sans-serif;">MD (Mux D)</p>
+        <table class="text-xs">
+          <thead><tr><th>Function</th><th>Code</th></tr></thead>
+          <tbody>
+            <tr><td>Function unit</td><td class="mono text-yellow-300">0</td></tr>
+            <tr><td>Data in</td><td class="mono text-yellow-300">1</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div>
+        <p class="font-bold text-white mb-2" style="font-family:Syne,sans-serif;">RW (Register Write)</p>
+        <table class="text-xs">
+          <thead><tr><th>Function</th><th>Code</th></tr></thead>
+          <tbody>
+            <tr><td>No Write</td><td class="mono text-yellow-300">0</td></tr>
+            <tr><td>Write</td><td class="mono text-yellow-300">1</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div>
+        <p class="font-bold text-white mb-2" style="font-family:Syne,sans-serif;">FS Select (4-bit)</p>
+        <table class="text-xs">
+          <thead><tr><th>Code</th><th>Function</th></tr></thead>
+          <tbody>
+            <tr><td class="mono text-yellow-300">0000</td><td>F = A</td></tr>
+            <tr><td class="mono text-yellow-300">0001</td><td>F = A+1</td></tr>
+            <tr><td class="mono text-yellow-300">0010</td><td>F = A+B</td></tr>
+            <tr><td class="mono text-yellow-300">0101</td><td>F = A−B</td></tr>
+            <tr><td class="mono text-yellow-300">0110</td><td>F = A−1</td></tr>
+            <tr><td class="mono text-yellow-300">1000</td><td>F = A∧B</td></tr>
+            <tr><td class="mono text-yellow-300">1001</td><td>F = A∨B</td></tr>
+            <tr><td class="mono text-yellow-300">1010</td><td>F = A⊕B</td></tr>
+            <tr><td class="mono text-yellow-300">1011</td><td>F = Ā</td></tr>
+            <tr><td class="mono text-yellow-300">1100</td><td>F = B</td></tr>
+            <tr><td class="mono text-yellow-300">1101</td><td>F = sr B</td></tr>
+            <tr><td class="mono text-yellow-300">1110</td><td>F = sl B</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- TABLE 9-1: Arithmetic Circuit -->
+  <div class="card p-5 overflow-x-auto">
+    <h3 class="text-base font-bold mb-3 text-yellow-300" style="font-family:Syne,sans-serif;">TABLE 9-1: Arithmetic Circuit — B Input Functions</h3>
+    <table>
+      <thead>
+        <tr><th>S₁</th><th>S₀</th><th>Y (B input)</th><th>C<sub>in</sub>=0</th><th>C<sub>in</sub>=1</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>0</td><td>0</td><td class="mono">all 0s</td>
+          <td class="mono text-green-300">G = A (transfer)</td>
+          <td class="mono text-green-300">G = A + 1 (increment)</td>
+        </tr>
+        <tr>
+          <td>0</td><td>1</td><td class="mono">B</td>
+          <td class="mono text-blue-300">G = A + B (add)</td>
+          <td class="mono text-blue-300">G = A + B + 1</td>
+        </tr>
+        <tr>
+          <td>1</td><td>0</td><td class="mono">B̄</td>
+          <td class="mono text-yellow-300">G = A + B̄</td>
+          <td class="mono text-yellow-300">G = A + B̄ + 1 (subtract)</td>
+        </tr>
+        <tr>
+          <td>1</td><td>1</td><td class="mono">all 1s</td>
+          <td class="mono text-red-300">G = A − 1 (decrement)</td>
+          <td class="mono text-red-300">G = A (transfer)</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="callout-info mt-3 text-xs">
+      💡 Subtraction = A + B̄ + 1 (Two's complement: komplemen B kemudian tambah 1 via C<sub>in</sub>)
+    </div>
+  </div>
+</div><!-- end sec-alu-table -->
+
+<!-- =================== SECTION: PRACTICE =================== -->
+<div id="sec-practice" class="section fade-in">
+  <div class="flex items-center justify-between mb-6">
+    <h2 class="text-xl font-bold" style="font-family:Syne,sans-serif;">⚡ Interactive Practice Suite</h2>
+    <div class="text-xs text-[#64748b]">Skor: <span id="score-display" class="text-white font-bold">0</span> / <span id="total-display">5</span></div>
+  </div>
+
+  <!-- Progress -->
+  <div class="bg-[#1e2d45] rounded-full mb-6" style="height:4px;">
+    <div class="progress-bar" id="progress-bar" style="width:0%"></div>
+  </div>
+
+  <!-- Q1 -->
+  <div class="card p-5 mb-5" id="q1">
+    <div class="flex items-center gap-2 mb-3">
+      <span class="badge badge-blue">Q1</span>
+      <span class="badge badge-cyan">Konseptual</span>
+    </div>
+    <p class="font-semibold text-sm mb-4">Sebuah komputer memiliki <strong>address bus 32-bit</strong>. Berapa banyak lokasi memori yang dapat dialamatkan?</p>
+    <div class="space-y-2" id="q1-opts">
+      <button class="option-btn" onclick="checkAnswer(this,'q1',false)">A. 32 lokasi</button>
+      <button class="option-btn" onclick="checkAnswer(this,'q1',false)">B. 1.024 lokasi (2¹⁰)</button>
+      <button class="option-btn" onclick="checkAnswer(this,'q1',true)">C. 4.294.967.296 lokasi (2³²)</button>
+      <button class="option-btn" onclick="checkAnswer(this,'q1',false)">D. 65.536 lokasi (2¹⁶)</button>
+    </div>
+    <div class="mt-3 text-xs text-[#64748b]" id="q1-feedback"></div>
+    <div class="mt-3">
+      <button class="text-xs text-blue-400 hover:text-blue-300 flex items-center gap-1" onclick="toggleReveal('q1-explain')">
+        <i data-lucide="eye" class="w-3 h-3"></i> Reveal Explanation
+      </button>
+      <div id="q1-explain" class="reveal-content mt-2 callout-info text-xs">
+        <p class="font-bold text-blue-300 mb-1">📐 Metodologi</p>
+        <p>Lebar address bus menentukan <em>jumlah alamat yang dapat diakses</em>. Formula: <span class="mono text-yellow-300">jumlah alamat = 2^n</span> di mana n = lebar bus.</p>
+        <p class="mt-1">Untuk n=32: 2³² = 4.294.967.296 ≈ 4 GB lokasi memori. Itulah mengapa sistem 32-bit hanya bisa mengakses maksimal 4 GB RAM secara langsung.</p>
+        <p class="mt-1 text-[#64748b]">Contoh lain: n=16 → 2¹⁶ = 65.536 alamat; n=64 → 2⁶⁴ = jumlah yang sangat besar (16 exabyte).</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Q2 -->
+  <div class="card p-5 mb-5" id="q2">
+    <div class="flex items-center gap-2 mb-3">
+      <span class="badge badge-blue">Q2</span>
+      <span class="badge badge-purple">ALU / Control Word</span>
+    </div>
+    <p class="font-semibold text-sm mb-4">Untuk melakukan microoperation <span class="mono text-yellow-300">R1 ← R2 − R3</span>, nilai FS (Function Select) yang benar adalah?</p>
+    <div class="space-y-2" id="q2-opts">
+      <button class="option-btn" onclick="checkAnswer(this,'q2',false)">A. FS = <span class="mono">0010</span> (F = A + B)</button>
+      <button class="option-btn" onclick="checkAnswer(this,'q2',true)">B. FS = <span class="mono">0101</span> (F = A + B̄ + 1)</button>
+      <button class="option-btn" onclick="checkAnswer(this,'q2',false)">C. FS = <span class="mono">0000</span> (F = A)</button>
+      <button class="option-btn" onclick="checkAnswer(this,'q2',false)">D. FS = <span class="mono">1010</span> (F = A ⊕ B)</button>
+    </div>
+    <div class="mt-3 text-xs text-[#64748b]" id="q2-feedback"></div>
+    <div class="mt-3">
+      <button class="text-xs text-blue-400 hover:text-blue-300 flex items-center gap-1" onclick="toggleReveal('q2-explain')">
+        <i data-lucide="eye" class="w-3 h-3"></i> Reveal Explanation
+      </button>
+      <div id="q2-explain" class="reveal-content mt-2 callout-info text-xs">
+        <p class="font-bold text-blue-300 mb-1">📐 Metodologi: Two's Complement Subtraction</p>
+        <p>Pengurangan dalam hardware dilakukan dengan <strong>two's complement</strong>: <span class="mono text-yellow-300">A − B = A + B̄ + 1</span></p>
+        <p class="mt-1">• B̄ = komplemen (NOT) dari B → dicapai dengan S₁=1, S₀=0 pada B input logic → Y = B̄</p>
+        <p>• +1 dari C<sub>in</sub>=1 → dalam FS, C<sub>in</sub> dikodekan sebagai bit S₀ yang terlibat</p>
+        <p class="mt-1">Dari Table 9-4/9-5: <span class="mono text-yellow-300">FS = 0101</span> → G Select = 0101 → operasi G = A + B̄ + 1 = A − B ✓</p>
+        <p class="mt-1 text-[#64748b]">Full control word: DA=001 (R1), AA=010 (R2), BA=011 (R3), MB=0, FS=0101, MD=0, RW=1</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Q3 -->
+  <div class="card p-5 mb-5" id="q3">
+    <div class="flex items-center gap-2 mb-3">
+      <span class="badge badge-blue">Q3</span>
+      <span class="badge badge-green">Shifter</span>
+    </div>
+    <p class="font-semibold text-sm mb-4">Pada 4-bit basic left/right shifter, jika input B = <span class="mono text-yellow-300">1011</span> dan (S₁,S₀) = <span class="mono text-yellow-300">01</span> dengan I_R = <span class="mono text-yellow-300">0</span>, maka output H adalah?</p>
+    <div class="space-y-2" id="q3-opts">
+      <button class="option-btn" onclick="checkAnswer(this,'q3',false)">A. <span class="mono">1011</span> (tidak berubah)</button>
+      <button class="option-btn" onclick="checkAnswer(this,'q3',false)">B. <span class="mono">0110</span> (left shift)</button>
+      <button class="option-btn" onclick="checkAnswer(this,'q3',true)">C. <span class="mono">0101</span> (right shift, I_R=0)</button>
+      <button class="option-btn" onclick="checkAnswer(this,'q3',false)">D. <span class="mono">1101</span> (rotate right)</button>
+    </div>
+    <div class="mt-3 text-xs text-[#64748b]" id="q3-feedback"></div>
+    <div class="mt-3">
+      <button class="text-xs text-blue-400 hover:text-blue-300 flex items-center gap-1" onclick="toggleReveal('q3-explain')">
+        <i data-lucide="eye" class="w-3 h-3"></i> Reveal Explanation
+      </button>
+      <div id="q3-explain" class="reveal-content mt-2 callout-info text-xs">
+        <p class="font-bold text-blue-300 mb-1">📐 Metodologi: Right Shift</p>
+        <p>(S₁,S₀) = 01 → <strong>Right shift</strong> operation.</p>
+        <p class="mt-1">Pada right shift: setiap bit bergeser ke kanan 1 posisi.</p>
+        <p class="mono mt-1 text-yellow-300">B = 1  0  1  1</p>
+        <p class="mono text-white">       B3 B2 B1 B0</p>
+        <p class="mt-1">Setelah right shift: bit MSB diisi oleh <strong>I_R</strong> (serial input untuk right shift)</p>
+        <p class="mono mt-1 text-green-300">H = I_R  B3  B2  B1 = 0  1  0  1 = 0101 ✓</p>
+        <p class="mt-1 text-[#64748b]">B0 (bit paling kanan) keluar sebagai serial output R = B0 = 1</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Q4 -->
+  <div class="card p-5 mb-5" id="q4">
+    <div class="flex items-center gap-2 mb-3">
+      <span class="badge badge-blue">Q4</span>
+      <span class="badge badge-purple">Control Word</span>
+    </div>
+    <p class="font-semibold text-sm mb-4">Microoperation <span class="mono text-yellow-300">R4 ← Data in</span> memerlukan nilai MD dan RW berturut-turut:</p>
+    <div class="space-y-2" id="q4-opts">
+      <button class="option-btn" onclick="checkAnswer(this,'q4',false)">A. MD=0, RW=0</button>
+      <button class="option-btn" onclick="checkAnswer(this,'q4',false)">B. MD=0, RW=1</button>
+      <button class="option-btn" onclick="checkAnswer(this,'q4',true)">C. MD=1, RW=1</button>
+      <button class="option-btn" onclick="checkAnswer(this,'q4',false)">D. MD=1, RW=0</button>
+    </div>
+    <div class="mt-3 text-xs text-[#64748b]" id="q4-feedback"></div>
+    <div class="mt-3">
+      <button class="text-xs text-blue-400 hover:text-blue-300 flex items-center gap-1" onclick="toggleReveal('q4-explain')">
+        <i data-lucide="eye" class="w-3 h-3"></i> Reveal Explanation
+      </button>
+      <div id="q4-explain" class="reveal-content mt-2 callout-info text-xs">
+        <p class="font-bold text-blue-300 mb-1">📐 Metodologi: Load dari External Data</p>
+        <p><strong>MUX D</strong> memilih antara dua sumber untuk Bus D:</p>
+        <p class="mt-1">• MD=0 → Bus D menerima output dari <strong>Function Unit</strong> (hasil ALU/Shifter)</p>
+        <p>• MD=1 → Bus D menerima <strong>Data in</strong> (dari eksternal/memori) ← ini yang kita butuhkan</p>
+        <p class="mt-1">Setelah data ada di Bus D, kita ingin <strong>menulis ke register R4</strong>:</p>
+        <p>• RW=1 → aktifkan Register Write</p>
+        <p>• DA=100 (R4) → R4 adalah register tujuan</p>
+        <p class="mt-1 text-[#64748b]">Ini adalah operasi "memory read → register load": MD=1 mengalihkan data dari input eksternal ke Bus D, kemudian RW=1 menyimpannya ke register.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Q5 -->
+  <div class="card p-5 mb-5" id="q5">
+    <div class="flex items-center gap-2 mb-3">
+      <span class="badge badge-blue">Q5</span>
+      <span class="badge badge-cyan">Analisis</span>
+    </div>
+    <p class="font-semibold text-sm mb-4">Manakah pernyataan yang <strong>BENAR</strong> mengenai perbedaan <em>ISA</em> dan <em>Computer Architecture</em>?</p>
+    <div class="space-y-2" id="q5-opts">
+      <button class="option-btn" onclick="checkAnswer(this,'q5',false)">A. ISA adalah implementasi hardware, Computer Architecture adalah tampilan programmer.</button>
+      <button class="option-btn" onclick="checkAnswer(this,'q5',false)">B. ISA dan Computer Architecture adalah hal yang sama, hanya beda nama.</button>
+      <button class="option-btn" onclick="checkAnswer(this,'q5',true)">C. ISA adalah spesifikasi tampilan komputer dari sudut pandang programmer; Computer Architecture adalah deskripsi high-level hardware yang mengimplementasikan ISA tersebut.</button>
+      <button class="option-btn" onclick="checkAnswer(this,'q5',false)">D. Computer Architecture hanya mencakup ALU dan register, sedangkan ISA mencakup seluruh sistem.</button>
+    </div>
+    <div class="mt-3 text-xs text-[#64748b]" id="q5-feedback"></div>
+    <div class="mt-3">
+      <button class="text-xs text-blue-400 hover:text-blue-300 flex items-center gap-1" onclick="toggleReveal('q5-explain')">
+        <i data-lucide="eye" class="w-3 h-3"></i> Reveal Explanation
+      </button>
+      <div id="q5-explain" class="reveal-content mt-2 callout-info text-xs">
+        <p class="font-bold text-blue-300 mb-1">📐 Metodologi: Memahami Layer Abstraksi</p>
+        <p><strong>ISA (Instruction Set Architecture)</strong>: Seperti "kontrak" antara software dan hardware. Mendefinisikan opcodes, register yang terlihat programmer, mode addressing — pokoknya <em>apa yang bisa dilakukan komputer</em> dari sudut pandang assembly programmer.</p>
+        <p class="mt-1"><strong>Computer Architecture</strong>: Cara hardware <em>mengimplementasikan</em> kontrak ISA tersebut. Termasuk kecepatan, biaya, keandalan, dan pertimbangan desain lainnya.</p>
+        <p class="mt-1">Analogi: ISA = spesifikasi mesin kopi (kopi bisa dibuat dengan tekanan sekian, suhu sekian). Computer Architecture = bagaimana pabrik merancang mesin tersebut agar memenuhi spesifikasi dengan efisien.</p>
+        <p class="mt-1 text-[#64748b]">Dua komputer bisa punya ISA yang sama (misal x86) tapi Computer Architecture yang berbeda (Intel vs AMD). Program yang sama bisa berjalan di keduanya!</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Score Summary -->
+  <div class="card p-5 mt-6" id="score-summary" style="display:none;">
+    <div class="text-center">
+      <div class="text-4xl font-bold mb-2" id="final-score-display" style="font-family:Syne,sans-serif;color:#3b82f6;"></div>
+      <p class="text-sm text-[#94a3b8]" id="score-message"></p>
+      <button onclick="resetQuiz()" class="mt-4 px-4 py-2 rounded-lg text-sm font-bold" style="background:rgba(59,130,246,0.15);border:1px solid rgba(59,130,246,0.4);color:#93c5fd;">
+        🔄 Ulangi Latihan
+      </button>
+    </div>
+  </div>
+
+</div><!-- end sec-practice -->
+
+</div><!-- max-w-6xl -->
+
+<!-- Footer -->
+<footer class="border-t border-[#1e2d45] mt-12 py-6 text-center text-xs text-[#475569]">
+  <p>TOPIK 07 — Computer Design Basics: Datapath & Arsitektur Komputer</p>
+  <p class="mt-1">CSIM601251 (Grafika Jati) & IKS21501 (Erdefi Rakun) — Fasilkom Universitas Indonesia</p>
+</footer>
+
+<script>
+  // Init lucide icons
+  lucide.createIcons();
+
+  // ============ SECTION SWITCHING ============
+  function switchSection(id) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+    document.getElementById('sec-' + id).classList.add('active');
+    document.getElementById('sec-' + id).classList.add('fade-in');
+    event.currentTarget.classList.add('active');
+    // Re-init icons in new section
+    setTimeout(() => lucide.createIcons(), 50);
+  }
+
+  // ============ WALKTHROUGH ============
+  const stepExplanations = [
+    "<strong>Langkah 1 — A select = 01:</strong> MUX A memilih register R1 (kode 01) dan menempatkan isinya pada Bus A. Bus A kini membawa nilai R1.",
+    "<strong>Langkah 2 — B select = 10, MB select = 0:</strong> MUX B (register selector) memilih R2 (kode 10). MB select = 0 berarti MUX B memilih 'B data' (dari register) bukan 'Constant in'. Bus B kini membawa nilai R2.",
+    "<strong>Langkah 3 — G select = 0010:</strong> ALU menggunakan S₂=0 (arithmetic mode), S₁=0, S₀=1, C<sub>in</sub>=0 → mengeksekusi G = A + B (addition). Output G = R1 + R2.",
+    "<strong>Langkah 4 — MF select = 0, MD select = 0:</strong> MF select = 0 memilih output ALU (G) bukan Shifter (H). MD select = 0 berarti Bus D menerima nilai F (output function unit), bukan Data in.",
+    "<strong>Langkah 5 — Destination select = 00:</strong> Decoder mengaktifkan Load input untuk register R0 (kode 00). Load enable memastikan sinyal Load ke R0 aktif.",
+    "<strong>Langkah 6 — Load Enable = 1:</strong> Sinyal Load Enable = 1 memaksa input Load ke R0 menjadi 1. Pada rising edge clock pulse berikutnya, R0 akan di-load dengan nilai dari Bus D. ✅ Total: 1 clock cycle!"
+  ];
+
+  function selectStep(el, idx) {
+    document.querySelectorAll('.walk-step').forEach(s => s.classList.remove('active-step'));
+    el.classList.add('active-step');
+    document.getElementById('step-explanation').innerHTML = stepExplanations[idx];
+  }
+  // Init first step
+  document.getElementById('step-explanation').innerHTML = stepExplanations[0];
+
+  // ============ QUIZ ============
+  let score = 0;
+  let answered = {};
+  const total = 5;
+
+  function checkAnswer(btn, qId, isCorrect) {
+    if (answered[qId]) return;
+    answered[qId] = true;
+
+    const opts = document.getElementById(qId + '-opts').querySelectorAll('.option-btn');
+    opts.forEach(b => {
+      b.style.pointerEvents = 'none';
+      b.style.cursor = 'default';
+    });
+
+    if (isCorrect) {
+      btn.classList.add('option-correct');
+      score++;
+      document.getElementById(qId + '-feedback').innerHTML = '<span class="text-green-400">✅ Benar! Jawaban tepat.</span>';
+    } else {
+      btn.classList.add('option-wrong');
+      document.getElementById(qId + '-feedback').innerHTML = '<span class="text-red-400">❌ Kurang tepat. Coba baca penjelasannya.</span>';
+      // Show correct
+      opts.forEach(b => {
+        if (b.getAttribute('onclick').includes('true')) {
+          b.classList.add('option-correct');
+        }
+      });
+    }
+
+    updateProgress();
+    if (Object.keys(answered).length === total) {
+      showSummary();
+    }
+  }
+
+  function updateProgress() {
+    const pct = (Object.keys(answered).length / total) * 100;
+    document.getElementById('progress-bar').style.width = pct + '%';
+    document.getElementById('score-display').textContent = score;
+  }
+
+  function showSummary() {
+    const summary = document.getElementById('score-summary');
+    summary.style.display = 'block';
+    const pct = Math.round((score / total) * 100);
+    document.getElementById('final-score-display').textContent = score + ' / ' + total + ' (' + pct + '%)';
+    let msg = '';
+    if (pct === 100) msg = '🏆 Sempurna! Kamu menguasai materi ini dengan sangat baik.';
+    else if (pct >= 80) msg = '⭐ Bagus sekali! Pemahaman kamu sudah solid.';
+    else if (pct >= 60) msg = '👍 Cukup baik. Review kembali bagian yang salah ya.';
+    else msg = '📚 Masih perlu belajar lebih lanjut. Baca kembali materi konseptual.';
+    document.getElementById('score-message').textContent = msg;
+    summary.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  function resetQuiz() {
+    score = 0;
+    answered = {};
+    document.getElementById('score-display').textContent = '0';
+    document.getElementById('progress-bar').style.width = '0%';
+    document.getElementById('score-summary').style.display = 'none';
+
+    for (let i = 1; i <= total; i++) {
+      const opts = document.getElementById('q' + i + '-opts').querySelectorAll('.option-btn');
+      opts.forEach(b => {
+        b.classList.remove('option-correct', 'option-wrong');
+        b.style.pointerEvents = '';
+        b.style.cursor = '';
+      });
+      document.getElementById('q' + i + '-feedback').innerHTML = '';
+      // Hide reveals
+      const rev = document.getElementById('q' + i + '-explain');
+      if (rev) rev.classList.remove('open');
+    }
+  }
+
+  // ============ REVEAL ============
+  function toggleReveal(id) {
+    const el = document.getElementById(id);
+    el.classList.toggle('open');
+  }
+</script>
 </body>
 </html>

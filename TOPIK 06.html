@@ -1,15 +1,1208 @@
 <!DOCTYPE html>
 <html lang="id" class="dark">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Module On Working</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>TOPIK 06 – Sequential Logic #2 & Registers</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg: #0a0e1a;
+    --surface: #111827;
+    --surface2: #1a2235;
+    --border: #1e2d47;
+    --accent: #38bdf8;
+    --accent2: #f472b6;
+    --accent3: #a78bfa;
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --green: #34d399;
+    --red: #f87171;
+    --yellow: #fbbf24;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    line-height: 1.7;
+    min-height: 100vh;
+  }
+  h1,h2,h3,h4 { font-family: 'Syne', sans-serif; }
+  code, pre, .mono { font-family: 'JetBrains Mono', monospace; }
+
+  /* Grid background */
+  body::before {
+    content:'';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(56,189,248,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(56,189,248,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .content-wrap { position: relative; z-index: 1; }
+
+  /* Nav */
+  .nav-pill {
+    background: rgba(17,24,39,0.9);
+    border: 1px solid var(--border);
+    backdrop-filter: blur(12px);
+  }
+
+  /* Section headings */
+  .section-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    border: 1px solid rgba(56,189,248,0.3);
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 100px;
+  }
+
+  /* Cards */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .card:hover { border-color: rgba(56,189,248,0.3); box-shadow: 0 0 20px rgba(56,189,248,0.05); }
+
+  /* Callout boxes */
+  .callout-key {
+    background: rgba(56,189,248,0.07);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 8px 8px 0;
+    padding: 14px 18px;
+  }
+  .callout-pitfall {
+    background: rgba(248,113,113,0.07);
+    border-left: 3px solid var(--red);
+    border-radius: 0 8px 8px 0;
+    padding: 14px 18px;
+  }
+  .callout-tip {
+    background: rgba(167,139,250,0.07);
+    border-left: 3px solid var(--accent3);
+    border-radius: 0 8px 8px 0;
+    padding: 14px 18px;
+  }
+
+  /* Tables */
+  table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+  th {
+    background: rgba(56,189,248,0.1);
+    color: var(--accent);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding: 8px 12px;
+    border: 1px solid var(--border);
+    text-align: center;
+  }
+  td {
+    padding: 7px 12px;
+    border: 1px solid var(--border);
+    text-align: center;
+    color: var(--text);
+  }
+  tr:nth-child(even) td { background: rgba(255,255,255,0.02); }
+  .highlight-row td { background: rgba(56,189,248,0.08); color: var(--accent); font-weight: 600; }
+
+  /* Code blocks */
+  .code-block {
+    background: #070c16;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 20px;
+    overflow-x: auto;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.82rem;
+    line-height: 1.8;
+  }
+  .code-block .kw { color: #c792ea; }
+  .code-block .fn { color: #82aaff; }
+  .code-block .val { color: #f78c6c; }
+  .code-block .comment { color: #546e7a; font-style: italic; }
+  .code-block .eq { color: #89ddff; }
+  .code-block .label { color: var(--accent); font-weight: 700; }
+
+  /* Buttons */
+  .btn-primary {
+    background: linear-gradient(135deg, var(--accent), #0ea5e9);
+    color: #0a0e1a;
+    font-weight: 700;
+    font-family: 'Syne', sans-serif;
+    border-radius: 8px;
+    padding: 8px 18px;
+    font-size: 0.85rem;
+    border: none;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.1s;
+    letter-spacing: 0.03em;
+  }
+  .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+  .btn-secondary {
+    background: transparent;
+    color: var(--accent3);
+    font-weight: 600;
+    font-family: 'Syne', sans-serif;
+    border: 1px solid var(--accent3);
+    border-radius: 8px;
+    padding: 8px 18px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .btn-secondary:hover { background: rgba(167,139,250,0.1); }
+  .btn-option {
+    display: block;
+    width: 100%;
+    text-align: left;
+    padding: 10px 16px;
+    border-radius: 8px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.15s;
+    margin-bottom: 8px;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .btn-option:hover { border-color: var(--accent); background: rgba(56,189,248,0.07); }
+  .btn-option.correct { border-color: var(--green); background: rgba(52,211,153,0.1); color: var(--green); }
+  .btn-option.wrong { border-color: var(--red); background: rgba(248,113,113,0.1); color: var(--red); }
+  .btn-option:disabled { cursor: not-allowed; opacity: 0.85; }
+
+  /* Progress bar */
+  .progress-bar {
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: 2px;
+    transition: width 0.4s ease;
+  }
+
+  /* State diagram visual */
+  .state-node {
+    width: 52px; height: 52px;
+    border: 2px solid var(--accent);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: var(--accent);
+    background: rgba(56,189,248,0.08);
+    flex-shrink: 0;
+  }
+  .state-arrow { color: var(--muted); font-size: 1.4rem; margin: 0 6px; }
+
+  /* Walkthrough steps */
+  .step-item {
+    border-left: 2px solid var(--border);
+    padding-left: 16px;
+    margin-left: 8px;
+    position: relative;
+    padding-bottom: 16px;
+  }
+  .step-item::before {
+    content: attr(data-step);
+    position: absolute;
+    left: -13px;
+    top: 0;
+    width: 24px; height: 24px;
+    background: var(--surface2);
+    border: 2px solid var(--border);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--accent);
+    font-weight: 700;
+  }
+  .step-item.active { border-color: var(--accent); }
+  .step-item.active::before { background: var(--accent); color: #0a0e1a; border-color: var(--accent); }
+
+  /* Tab */
+  .tab-btn {
+    padding: 8px 20px;
+    border-radius: 8px 8px 0 0;
+    font-family: 'Syne', sans-serif;
+    font-weight: 600;
+    font-size: 0.85rem;
+    cursor: pointer;
+    border: 1px solid transparent;
+    border-bottom: none;
+    background: transparent;
+    color: var(--muted);
+    transition: all 0.15s;
+  }
+  .tab-btn.active {
+    background: var(--surface);
+    border-color: var(--border);
+    color: var(--accent);
+    border-bottom-color: var(--surface);
+  }
+
+  /* Score badge */
+  .score-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    padding: 3px 10px;
+    border-radius: 100px;
+    background: rgba(56,189,248,0.1);
+    border: 1px solid rgba(56,189,248,0.3);
+    color: var(--accent);
+  }
+
+  /* Reveal */
+  .reveal-panel {
+    display: none;
+    background: rgba(167,139,250,0.05);
+    border: 1px solid rgba(167,139,250,0.2);
+    border-radius: 10px;
+    padding: 16px;
+    margin-top: 12px;
+  }
+  .reveal-panel.show { display: block; animation: fadeIn 0.3s; }
+  @keyframes fadeIn { from { opacity:0; transform:translateY(-6px); } to { opacity:1; transform:translateY(0); } }
+
+  /* Memory diagram */
+  .mem-chip {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px;
+    text-align: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+  }
+
+  /* Sidebar nav dots */
+  .nav-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--border);
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+  }
+  .nav-dot.active { background: var(--accent); transform: scale(1.3); }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+</style>
 </head>
-<body class="bg-[#0a0e1a] text-gray-400 h-screen flex items-center justify-center font-sans">
-    <div class="text-center p-8 bg-white/5 border border-white/10 rounded-2xl shadow-2xl">
-        <h1 class="text-3xl font-bold text-white mb-4 tracking-tight">On Working</h1>
-        <p class="text-gray-500">Materi ini sedang dalam proses pembaharuan. Mohon cek kembali nanti.</p>
+<body>
+
+<!-- TOP NAV -->
+<nav class="nav-pill fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-3">
+  <div class="flex items-center gap-3">
+    <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background:linear-gradient(135deg,#38bdf8,#f472b6)">
+      <i data-lucide="cpu" class="w-4 h-4 text-white"></i>
     </div>
+    <div>
+      <div class="font-bold text-sm" style="font-family:'Syne',sans-serif; color:var(--text)">TOPIK 06</div>
+      <div class="text-xs" style="color:var(--muted)">Sequential Logic & Registers</div>
+    </div>
+  </div>
+  <div class="hidden md:flex items-center gap-1 text-xs">
+    <a href="#conceptual" class="px-3 py-1 rounded hover:text-sky-400 transition-colors" style="color:var(--muted)">Konsep</a>
+    <a href="#visualization" class="px-3 py-1 rounded hover:text-sky-400 transition-colors" style="color:var(--muted)">Visualisasi</a>
+    <a href="#practice" class="px-3 py-1 rounded hover:text-sky-400 transition-colors" style="color:var(--muted)">Latihan</a>
+    <a href="#register" class="px-3 py-1 rounded hover:text-sky-400 transition-colors" style="color:var(--muted)">Register & Memori</a>
+  </div>
+  <div id="score-display" class="score-badge">Skor: 0/5</div>
+</nav>
+
+<!-- HERO -->
+<div class="content-wrap pt-24 pb-12 px-4 max-w-5xl mx-auto">
+  <div class="text-center mb-16">
+    <div class="section-tag mb-4">CSIM601251 · Fasilkom UI</div>
+    <h1 class="text-4xl md:text-6xl font-extrabold mb-4 leading-tight" style="font-family:'Syne',sans-serif; background: linear-gradient(135deg,#38bdf8,#a78bfa,#f472b6); -webkit-background-clip:text; -webkit-text-fill-color:transparent;">Sequential Logic #2<br/>& Registers</h1>
+    <p class="text-base max-w-2xl mx-auto" style="color:var(--muted)">Halaman pembelajaran interaktif mencakup analisis & desain synchronous sequential circuit, flip-flop excitation tables, register, serta memory arrays.</p>
+    <div class="flex flex-wrap justify-center gap-4 mt-6">
+      <div class="flex items-center gap-2 text-sm" style="color:var(--muted)">
+        <i data-lucide="layers" class="w-4 h-4" style="color:var(--accent)"></i> Flip-flops & State Tables
+      </div>
+      <div class="flex items-center gap-2 text-sm" style="color:var(--muted)">
+        <i data-lucide="git-branch" class="w-4 h-4" style="color:var(--accent2)"></i> Circuit Analysis & Design
+      </div>
+      <div class="flex items-center gap-2 text-sm" style="color:var(--muted)">
+        <i data-lucide="database" class="w-4 h-4" style="color:var(--accent3)"></i> Registers & Memory
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== SECTION 1: CONCEPTUAL ===================== -->
+  <section id="conceptual" class="mb-20">
+    <div class="section-tag mb-3">01 · Conceptual Deep Dive</div>
+    <h2 class="text-3xl font-bold mb-8" style="font-family:'Syne',sans-serif">Pemahaman Konsep Mendalam</h2>
+
+    <!-- Synchronous Sequential Circuits -->
+    <div class="card p-6 mb-6">
+      <div class="flex items-center gap-3 mb-4">
+        <div class="w-9 h-9 rounded-lg flex items-center justify-center" style="background:rgba(56,189,248,0.12)">
+          <i data-lucide="zap" class="w-5 h-5" style="color:var(--accent)"></i>
+        </div>
+        <h3 class="text-xl font-bold" style="font-family:'Syne',sans-serif">Synchronous Sequential Circuit</h3>
+      </div>
+      <p class="mb-4 text-sm" style="color:var(--muted)">Circuit sekuensial adalah circuit yang outputnya bergantung pada <strong style="color:var(--text)">present state</strong> dan <strong style="color:var(--text)">input</strong> saat ini. Berbeda dengan combinational circuit yang hanya bergantung pada input.</p>
+
+      <div class="grid md:grid-cols-2 gap-4 mb-4">
+        <div class="callout-key">
+          <div class="flex items-center gap-2 mb-2">
+            <i data-lucide="key" class="w-4 h-4" style="color:var(--accent)"></i>
+            <span class="font-bold text-sm" style="color:var(--accent)">Key Terms</span>
+          </div>
+          <ul class="text-sm space-y-1" style="color:var(--muted)">
+            <li><strong style="color:var(--text)">Flip-flop</strong> – Elemen memori yang menyimpan 1 bit state</li>
+            <li><strong style="color:var(--text)">State Equation</strong> – Persamaan untuk menentukan next state</li>
+            <li><strong style="color:var(--text)">Output Function</strong> – Fungsi output circuit (selain flip-flop)</li>
+            <li><strong style="color:var(--text)">State Table</strong> – Tabel semua kombinasi present state + input</li>
+            <li><strong style="color:var(--text)">State Diagram</strong> – Representasi grafis dari state table</li>
+          </ul>
+        </div>
+        <div class="callout-pitfall">
+          <div class="flex items-center gap-2 mb-2">
+            <i data-lucide="alert-triangle" class="w-4 h-4" style="color:var(--red)"></i>
+            <span class="font-bold text-sm" style="color:var(--red)">Common Pitfalls</span>
+          </div>
+          <ul class="text-sm space-y-1" style="color:var(--muted)">
+            <li>❌ Salah membaca urutan bit pada state (A adalah MSB)</li>
+            <li>❌ Bingung antara characteristic table (analysis) vs excitation table (design)</li>
+            <li>❌ Lupa bahwa m flip-flops → hingga 2ᵐ state</li>
+            <li>❌ Mengisi don't care (X) di kolom yang salah pada excitation table</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="callout-tip">
+        <div class="flex items-center gap-2 mb-1">
+          <i data-lucide="lightbulb" class="w-4 h-4" style="color:var(--accent3)"></i>
+          <span class="font-bold text-sm" style="color:var(--accent3)">Mental Model: Analysis vs Design</span>
+        </div>
+        <div class="flex flex-wrap gap-6 text-sm mt-2">
+          <div>
+            <div class="font-bold mb-1" style="color:var(--text)">🔍 Analysis (Circuit → Perilaku)</div>
+            <div style="color:var(--muted)">Circuit diagram → State equations → State table → State diagram</div>
+          </div>
+          <div>
+            <div class="font-bold mb-1" style="color:var(--text)">🔨 Design (Spesifikasi → Circuit)</div>
+            <div style="color:var(--muted)">State diagram → State table → Excitation table → Logic diagram</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Flip-flop Characteristic Tables -->
+    <div class="card p-6 mb-6">
+      <div class="flex items-center gap-3 mb-4">
+        <div class="w-9 h-9 rounded-lg flex items-center justify-center" style="background:rgba(167,139,250,0.12)">
+          <i data-lucide="table" class="w-5 h-5" style="color:var(--accent3)"></i>
+        </div>
+        <h3 class="text-xl font-bold" style="font-family:'Syne',sans-serif">Characteristic Tables — Digunakan saat Analysis</h3>
+      </div>
+      <div class="overflow-x-auto">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <!-- SR -->
+          <div>
+            <div class="text-center font-bold mb-2 text-sm" style="color:var(--accent3)">SR Flip-flop</div>
+            <table>
+              <thead><tr><th>S</th><th>R</th><th>Q(t+1)</th></tr></thead>
+              <tbody>
+                <tr><td>0</td><td>0</td><td>Q(t) <span class="text-xs" style="color:var(--muted)">NC</span></td></tr>
+                <tr><td>0</td><td>1</td><td>0 <span class="text-xs" style="color:var(--muted)">Reset</span></td></tr>
+                <tr><td>1</td><td>0</td><td>1 <span class="text-xs" style="color:var(--muted)">Set</span></td></tr>
+                <tr><td>1</td><td>1</td><td>? <span class="text-xs" style="color:var(--red)">!</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <!-- JK -->
+          <div>
+            <div class="text-center font-bold mb-2 text-sm" style="color:var(--accent)">JK Flip-flop</div>
+            <table>
+              <thead><tr><th>J</th><th>K</th><th>Q(t+1)</th></tr></thead>
+              <tbody>
+                <tr><td>0</td><td>0</td><td>Q(t)</td></tr>
+                <tr><td>0</td><td>1</td><td>0</td></tr>
+                <tr><td>1</td><td>0</td><td>1</td></tr>
+                <tr><td>1</td><td>1</td><td>Q(t)'</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <!-- D -->
+          <div>
+            <div class="text-center font-bold mb-2 text-sm" style="color:var(--green)">D Flip-flop</div>
+            <table>
+              <thead><tr><th>D</th><th>Q(t+1)</th></tr></thead>
+              <tbody>
+                <tr><td>0</td><td>0</td></tr>
+                <tr><td>1</td><td>1</td></tr>
+              </tbody>
+            </table>
+            <div class="mt-2 text-xs text-center" style="color:var(--muted)">Q⁺ = D</div>
+          </div>
+          <!-- T -->
+          <div>
+            <div class="text-center font-bold mb-2 text-sm" style="color:var(--yellow)">T Flip-flop</div>
+            <table>
+              <thead><tr><th>T</th><th>Q(t+1)</th></tr></thead>
+              <tbody>
+                <tr><td>0</td><td>Q(t) NC</td></tr>
+                <tr><td>1</td><td>Q(t)' Toggle</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Excitation Tables -->
+    <div class="card p-6 mb-6">
+      <div class="flex items-center gap-3 mb-4">
+        <div class="w-9 h-9 rounded-lg flex items-center justify-center" style="background:rgba(244,114,182,0.12)">
+          <i data-lucide="settings" class="w-5 h-5" style="color:var(--accent2)"></i>
+        </div>
+        <h3 class="text-xl font-bold" style="font-family:'Syne',sans-serif">Excitation Tables — Digunakan saat Design</h3>
+      </div>
+      <p class="text-sm mb-4" style="color:var(--muted)">Berbeda dengan characteristic table, excitation table menjawab: <em>"Agar Q berubah dari kondisi ini ke kondisi itu, input flip-flop harus berapa?"</em></p>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <!-- JK excitation -->
+        <div>
+          <div class="text-center font-bold mb-2 text-sm" style="color:var(--accent)">JK Excitation</div>
+          <table>
+            <thead><tr><th>Q</th><th>Q⁺</th><th>J</th><th>K</th></tr></thead>
+            <tbody>
+              <tr><td>0</td><td>0</td><td>0</td><td>X</td></tr>
+              <tr><td>0</td><td>1</td><td>1</td><td>X</td></tr>
+              <tr><td>1</td><td>0</td><td>X</td><td>1</td></tr>
+              <tr><td>1</td><td>1</td><td>X</td><td>0</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <!-- SR excitation -->
+        <div>
+          <div class="text-center font-bold mb-2 text-sm" style="color:var(--accent3)">SR Excitation</div>
+          <table>
+            <thead><tr><th>Q</th><th>Q⁺</th><th>S</th><th>R</th></tr></thead>
+            <tbody>
+              <tr><td>0</td><td>0</td><td>0</td><td>X</td></tr>
+              <tr><td>0</td><td>1</td><td>1</td><td>0</td></tr>
+              <tr><td>1</td><td>0</td><td>0</td><td>1</td></tr>
+              <tr><td>1</td><td>1</td><td>X</td><td>0</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <!-- D excitation -->
+        <div>
+          <div class="text-center font-bold mb-2 text-sm" style="color:var(--green)">D Excitation</div>
+          <table>
+            <thead><tr><th>Q</th><th>Q⁺</th><th>D</th></tr></thead>
+            <tbody>
+              <tr><td>0</td><td>0</td><td>0</td></tr>
+              <tr><td>0</td><td>1</td><td>1</td></tr>
+              <tr><td>1</td><td>0</td><td>0</td></tr>
+              <tr><td>1</td><td>1</td><td>1</td></tr>
+            </tbody>
+          </table>
+          <div class="mt-2 text-xs text-center" style="color:var(--muted)">D = Q⁺ selalu</div>
+        </div>
+        <!-- T excitation -->
+        <div>
+          <div class="text-center font-bold mb-2 text-sm" style="color:var(--yellow)">T Excitation</div>
+          <table>
+            <thead><tr><th>Q</th><th>Q⁺</th><th>T</th></tr></thead>
+            <tbody>
+              <tr><td>0</td><td>0</td><td>0</td></tr>
+              <tr><td>0</td><td>1</td><td>1</td></tr>
+              <tr><td>1</td><td>0</td><td>1</td></tr>
+              <tr><td>1</td><td>1</td><td>0</td></tr>
+            </tbody>
+          </table>
+          <div class="mt-2 text-xs text-center" style="color:var(--muted)">T = Q ⊕ Q⁺</div>
+        </div>
+      </div>
+      <div class="callout-key mt-4">
+        <span class="font-bold text-sm" style="color:var(--accent)">💡 Kunci:</span>
+        <span class="text-sm" style="color:var(--muted)"> X (don't care) pada JK excitation table artinya nilai tersebut boleh 0 atau 1 – ini yang membuat JK flip-flop sangat fleksibel dalam perancangan. Gunakan X sebagai 1 atau 0 saat menyederhanakan K-map!</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== SECTION 2: VISUALIZATION ===================== -->
+  <section id="visualization" class="mb-20">
+    <div class="section-tag mb-3">02 · Algorithm & Logic Visualization</div>
+    <h2 class="text-3xl font-bold mb-8" style="font-family:'Syne',sans-serif">Visualisasi Alur & Algoritma</h2>
+
+    <!-- Analysis Procedure -->
+    <div class="card p-6 mb-6">
+      <h3 class="text-lg font-bold mb-4" style="font-family:'Syne',sans-serif">
+        <i data-lucide="search" class="w-4 h-4 inline mr-2" style="color:var(--accent)"></i>Prosedur Sequential Circuit Analysis
+      </h3>
+
+      <div id="walkthrough-analysis" class="mb-4">
+        <div class="step-item active" data-step="1">
+          <div class="font-bold text-sm mb-1" style="color:var(--text)">Dapatkan circuit diagram</div>
+          <p class="text-sm" style="color:var(--muted)">Identifikasi jenis flip-flop (JK/D/T/SR), jumlah flip-flop, input eksternal, dan output.</p>
+        </div>
+        <div class="step-item" data-step="2">
+          <div class="font-bold text-sm mb-1" style="color:var(--text)">Tulis flip-flop input functions</div>
+          <p class="text-sm" style="color:var(--muted)">Baca gate-gate combinational yang terhubung ke input flip-flop. Contoh: DA = A·x + B·x</p>
+        </div>
+        <div class="step-item" data-step="3">
+          <div class="font-bold text-sm mb-1" style="color:var(--text)">Tulis output functions</div>
+          <p class="text-sm" style="color:var(--muted)">Baca persamaan output eksternal. Contoh: y = (A + B)·x'</p>
+        </div>
+        <div class="step-item" data-step="4">
+          <div class="font-bold text-sm mb-1" style="color:var(--text)">Bangun state table</div>
+          <p class="text-sm" style="color:var(--muted)">m flip-flop + n input → 2^(m+n) baris. Kolom: Present State | Input | Next State | Output</p>
+        </div>
+        <div class="step-item" data-step="5">
+          <div class="font-bold text-sm mb-1" style="color:var(--text)">Gambar state diagram</div>
+          <p class="text-sm" style="color:var(--muted)">Setiap state = lingkaran. Setiap transisi = panah berlabel input/output.</p>
+        </div>
+      </div>
+
+      <!-- Example: Figure 1 with D flip-flops -->
+      <div class="code-block mb-4">
+        <div class="text-xs mb-2" style="color:var(--muted)">// Contoh: Circuit Figure 1 (2 D flip-flop, input x)</div>
+        <div><span class="comment">// State equations (dari DA dan DB):</span></div>
+        <div><span class="label">A⁺</span> <span class="eq">=</span> <span class="fn">A</span>·<span class="val">x</span> + <span class="fn">B</span>·<span class="val">x</span>   <span class="comment">// karena DA = A·x + B·x</span></div>
+        <div><span class="label">B⁺</span> <span class="eq">=</span> <span class="fn">A'</span>·<span class="val">x</span>           <span class="comment">// karena DB = A'·x</span></div>
+        <div class="mt-2"><span class="comment">// Output function:</span></div>
+        <div><span class="label">y</span>  <span class="eq">=</span> (<span class="fn">A</span> + <span class="fn">B</span>)·<span class="val">x'</span></div>
+      </div>
+
+      <!-- State Table Figure 1 -->
+      <div class="overflow-x-auto mb-4">
+        <div class="text-sm font-bold mb-2" style="color:var(--accent3)">State Table (Figure 1):</div>
+        <table>
+          <thead>
+            <tr><th colspan="2">Present State</th><th>Input</th><th colspan="2">Next State</th><th>Output</th></tr>
+            <tr><th>A</th><th>B</th><th>x</th><th>A⁺</th><th>B⁺</th><th>y</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+            <tr><td>0</td><td>0</td><td>1</td><td>0</td><td>1</td><td>0</td></tr>
+            <tr><td>0</td><td>1</td><td>0</td><td>0</td><td>0</td><td>1</td></tr>
+            <tr><td>0</td><td>1</td><td>1</td><td>1</td><td>1</td><td>0</td></tr>
+            <tr><td>1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>1</td></tr>
+            <tr><td>1</td><td>0</td><td>1</td><td>1</td><td>0</td><td>0</td></tr>
+            <tr><td>1</td><td>1</td><td>0</td><td>0</td><td>0</td><td>1</td></tr>
+            <tr><td>1</td><td>1</td><td>1</td><td>1</td><td>0</td><td>0</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Design Procedure -->
+    <div class="card p-6 mb-6">
+      <h3 class="text-lg font-bold mb-4" style="font-family:'Syne',sans-serif">
+        <i data-lucide="pencil-ruler" class="w-4 h-4 inline mr-2" style="color:var(--accent2)"></i>Prosedur Sequential Circuit Design
+      </h3>
+      <div class="code-block mb-4">
+        <div class="comment">/* Langkah desain sequential circuit */</div>
+        <div class="mt-1"><span class="val">1.</span> <span class="kw">Mulai</span> dari spesifikasi: state diagram atau state table</div>
+        <div><span class="val">2.</span> <span class="kw">Tentukan</span> jumlah flip-flop (m = ⌈log₂(jumlah_state)⌉)</div>
+        <div><span class="val">3.</span> <span class="kw">Pilih</span> jenis flip-flop (JK / D / T / SR)</div>
+        <div><span class="val">4.</span> <span class="kw">Buat</span> circuit excitation table (gunakan excitation table)</div>
+        <div><span class="val">5.</span> <span class="kw">Derivasi</span> flip-flop input functions (sederhanakan dengan K-map)</div>
+        <div><span class="val">6.</span> <span class="kw">Gambar</span> logic diagram</div>
+      </div>
+
+      <!-- Counter Example -->
+      <div class="callout-tip mb-4">
+        <div class="font-bold text-sm mb-2" style="color:var(--accent3)">Contoh Counter: 00 → 01 → 11 → 10 → 00 (JK Flip-flop)</div>
+        <div class="overflow-x-auto">
+          <table>
+            <thead>
+              <tr><th colspan="2">Present</th><th colspan="2">Next</th><th>JA</th><th>KA</th><th>JB</th><th>KB</th></tr>
+              <tr><th>A</th><th>B</th><th>A⁺</th><th>B⁺</th><th></th><th></th><th></th><th></th></tr>
+            </thead>
+            <tbody>
+              <tr><td>0</td><td>0</td><td>0</td><td>1</td><td>0</td><td>X</td><td>1</td><td>X</td></tr>
+              <tr><td>0</td><td>1</td><td>1</td><td>1</td><td>1</td><td>X</td><td>X</td><td>0</td></tr>
+              <tr><td>1</td><td>0</td><td>0</td><td>0</td><td>X</td><td>1</td><td>0</td><td>X</td></tr>
+              <tr><td>1</td><td>1</td><td>1</td><td>0</td><td>X</td><td>0</td><td>X</td><td>1</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="code-block mt-3" style="font-size:0.78rem">
+          <span class="label">JA</span> = B &nbsp;&nbsp;<span class="label">KA</span> = B' &nbsp;&nbsp;<span class="label">JB</span> = A' &nbsp;&nbsp;<span class="label">KB</span> = A
+        </div>
+      </div>
+    </div>
+
+    <!-- State Diagram Interactive Visual -->
+    <div class="card p-6 mb-6">
+      <h3 class="text-lg font-bold mb-4" style="font-family:'Syne',sans-serif">
+        <i data-lucide="git-merge" class="w-4 h-4 inline mr-2" style="color:var(--green)"></i>State Diagram: Compact Form (Figure 1)
+      </h3>
+      <div class="overflow-x-auto">
+        <table class="mb-4">
+          <thead>
+            <tr><th>Present State AB</th><th>Next State (x=0)</th><th>Next State (x=1)</th><th>Output (x=0)</th><th>Output (x=1)</th></tr>
+          </thead>
+          <tbody>
+            <tr><td class="mono">00</td><td class="mono">00</td><td class="mono">01</td><td>0</td><td>0</td></tr>
+            <tr><td class="mono">01</td><td class="mono">00</td><td class="mono">11</td><td>1</td><td>0</td></tr>
+            <tr><td class="mono">10</td><td class="mono">00</td><td class="mono">10</td><td>1</td><td>0</td></tr>
+            <tr><td class="mono">11</td><td class="mono">00</td><td class="mono">10</td><td>1</td><td>0</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="callout-key">
+        <span class="font-bold text-sm" style="color:var(--accent)">💡 Cara Baca State Diagram:</span>
+        <span class="text-sm ml-2" style="color:var(--muted)">Label pada panah berbentuk <strong style="color:var(--text)">input/output</strong>. Contoh: dari state 01, jika x=1 → pergi ke state 11, output y=0, label: <span class="mono font-bold" style="color:var(--accent)">1/0</span></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== SECTION 3: PRACTICE ===================== -->
+  <section id="practice" class="mb-20">
+    <div class="section-tag mb-3">03 · Interactive Practice Suite</div>
+    <h2 class="text-3xl font-bold mb-2" style="font-family:'Syne',sans-serif">Latihan Interaktif</h2>
+    <p class="text-sm mb-8" style="color:var(--muted)">5 soal pilihan ganda yang menguji pemahaman konsep dari materi Sequential Logic & Registers.</p>
+
+    <div class="w-full mb-6" style="background:var(--border); border-radius:4px; height:4px;">
+      <div id="progress-bar" class="progress-bar" style="width:0%"></div>
+    </div>
+    <div id="score-counter" class="text-sm mb-6" style="color:var(--muted)">Pertanyaan terjawab: <span id="answered-count" class="font-bold" style="color:var(--accent)">0</span>/5</div>
+
+    <!-- Q1 -->
+    <div class="card p-6 mb-5" id="q1">
+      <div class="flex items-start justify-between mb-3">
+        <div class="section-tag" style="font-size:0.65rem">Soal 1 · Excitation Table</div>
+        <div class="score-badge" id="q1-badge">–</div>
+      </div>
+      <p class="font-semibold mb-4">Sebuah JK flip-flop memiliki present state Q = 1 dan kita ingin next state Q⁺ = 0. Berdasarkan excitation table JK, nilai J dan K yang diperlukan adalah...</p>
+      <div id="q1-opts">
+        <button class="btn-option" onclick="checkAnswer(1, 'a', false)">A. J = 0, K = 0</button>
+        <button class="btn-option" onclick="checkAnswer(1, 'b', false)">B. J = 1, K = 0</button>
+        <button class="btn-option" onclick="checkAnswer(1, 'c', true)">C. J = X, K = 1</button>
+        <button class="btn-option" onclick="checkAnswer(1, 'd', false)">D. J = 1, K = X</button>
+      </div>
+      <div id="q1-reveal" class="reveal-panel">
+        <div class="font-bold text-sm mb-2" style="color:var(--accent3)">📖 Penjelasan Metodologi:</div>
+        <p class="text-sm mb-2" style="color:var(--muted)">Kita lihat baris Q=1 → Q⁺=0 pada excitation table JK:</p>
+        <div class="code-block mb-2" style="font-size:0.8rem">
+          Q=1, Q⁺=0  →  J = X, K = 1
+        </div>
+        <p class="text-sm" style="color:var(--muted)">K=1 diperlukan untuk <strong style="color:var(--text)">Reset</strong> (mengubah Q dari 1 ke 0). Nilai J tidak peduli (X) karena J hanya relevan saat Q=0 (untuk Set). Inilah keunggulan JK: fleksibilitas dengan don't care!</p>
+      </div>
+      <button class="btn-secondary mt-3 text-xs" onclick="toggleReveal('q1-reveal')">💡 Reveal Explanation</button>
+    </div>
+
+    <!-- Q2 -->
+    <div class="card p-6 mb-5" id="q2">
+      <div class="flex items-start justify-between mb-3">
+        <div class="section-tag" style="font-size:0.65rem">Soal 2 · State Table</div>
+        <div class="score-badge" id="q2-badge">–</div>
+      </div>
+      <p class="font-semibold mb-4">Sebuah synchronous sequential circuit memiliki 3 flip-flop dan 2 input. Berapa baris yang ada pada state table-nya?</p>
+      <div id="q2-opts">
+        <button class="btn-option" onclick="checkAnswer(2, 'a', false)">A. 8 baris</button>
+        <button class="btn-option" onclick="checkAnswer(2, 'b', false)">B. 16 baris</button>
+        <button class="btn-option" onclick="checkAnswer(2, 'c', false)">C. 6 baris</button>
+        <button class="btn-option" onclick="checkAnswer(2, 'd', true)">D. 32 baris</button>
+      </div>
+      <div id="q2-reveal" class="reveal-panel">
+        <div class="font-bold text-sm mb-2" style="color:var(--accent3)">📖 Penjelasan Metodologi:</div>
+        <p class="text-sm mb-2" style="color:var(--muted)">Rumus state table: jumlah baris = <strong style="color:var(--text)">2^(m+n)</strong>, di mana m = jumlah flip-flop, n = jumlah input.</p>
+        <div class="code-block mb-2" style="font-size:0.8rem">
+          m = 3 flip-flop, n = 2 input
+          Baris = 2^(3+2) = 2^5 = <span class="label">32 baris</span>
+        </div>
+        <p class="text-sm" style="color:var(--muted)">Setiap kombinasi (A, B, C, x1, x2) merupakan satu baris unik dalam state table.</p>
+      </div>
+      <button class="btn-secondary mt-3 text-xs" onclick="toggleReveal('q2-reveal')">💡 Reveal Explanation</button>
+    </div>
+
+    <!-- Q3 -->
+    <div class="card p-6 mb-5" id="q3">
+      <div class="flex items-start justify-between mb-3">
+        <div class="section-tag" style="font-size:0.65rem">Soal 3 · D Flip-flop Design</div>
+        <div class="score-badge" id="q3-badge">–</div>
+      </div>
+      <p class="font-semibold mb-4">Pada desain dengan D flip-flop, jika kita ingin flip-flop A memiliki next state A⁺ = A·B' + B·x', maka nilai DA adalah...</p>
+      <div id="q3-opts">
+        <button class="btn-option" onclick="checkAnswer(3, 'a', true)">A. DA = A·B' + B·x'</button>
+        <button class="btn-option" onclick="checkAnswer(3, 'b', false)">B. DA = A + B</button>
+        <button class="btn-option" onclick="checkAnswer(3, 'c', false)">C. DA = A ⊕ B</button>
+        <button class="btn-option" onclick="checkAnswer(3, 'd', false)">D. DA = B·x' saja</button>
+      </div>
+      <div id="q3-reveal" class="reveal-panel">
+        <div class="font-bold text-sm mb-2" style="color:var(--accent3)">📖 Penjelasan Metodologi:</div>
+        <p class="text-sm mb-2" style="color:var(--muted)">D flip-flop adalah flip-flop paling sederhana untuk desain. Dari excitation table-nya:</p>
+        <div class="code-block mb-2" style="font-size:0.8rem">
+          Q⁺ = D  (selalu!)
+          Artinya: DA = A⁺ secara langsung
+          <span class="comment">// Jika A⁺ = A·B' + B·x', maka DA = A·B' + B·x'</span>
+        </div>
+        <p class="text-sm" style="color:var(--muted)">Itulah mengapa D flip-flop paling mudah digunakan dalam design — DA langsung sama dengan next state yang diinginkan.</p>
+      </div>
+      <button class="btn-secondary mt-3 text-xs" onclick="toggleReveal('q3-reveal')">💡 Reveal Explanation</button>
+    </div>
+
+    <!-- Q4 -->
+    <div class="card p-6 mb-5" id="q4">
+      <div class="flex items-start justify-between mb-3">
+        <div class="section-tag" style="font-size:0.65rem">Soal 4 · Register & Memory</div>
+        <div class="score-badge" id="q4-badge">–</div>
+      </div>
+      <p class="font-semibold mb-4">Berapa jumlah chip memori 32K × 8-bit yang dibutuhkan untuk membangun modul memori 1M × 16-bit?</p>
+      <div id="q4-opts">
+        <button class="btn-option" onclick="checkAnswer(4, 'a', false)">A. 16 chip</button>
+        <button class="btn-option" onclick="checkAnswer(4, 'b', false)">B. 32 chip</button>
+        <button class="btn-option" onclick="checkAnswer(4, 'c', true)">C. 64 chip</button>
+        <button class="btn-option" onclick="checkAnswer(4, 'd', false)">D. 128 chip</button>
+      </div>
+      <div id="q4-reveal" class="reveal-panel">
+        <div class="font-bold text-sm mb-2" style="color:var(--accent3)">📖 Penjelasan Metodologi:</div>
+        <p class="text-sm mb-2" style="color:var(--muted)">Konversikan ke bentuk pangkat 2, lalu hitung rasio:</p>
+        <div class="code-block mb-2" style="font-size:0.8rem">
+          Modul target : 1M × 16-bit = 2²⁰ × 2⁴ bit
+          Chip tersedia: 32K × 8-bit  = 2¹⁵ × 2³ bit
+
+          Jumlah chip = (2²⁰ × 2⁴) / (2¹⁵ × 2³)
+                      = 2^(20+4) / 2^(15+3)
+                      = 2²⁴ / 2¹⁸
+                      = 2⁶ = <span class="label">64 chip</span>
+        </div>
+        <p class="text-sm" style="color:var(--muted)">Secara array: kolom = 16/8 = 2 chip, baris = 1M/32K = 32 chip. Total = 2 × 32 = 64 chip ✓</p>
+      </div>
+      <button class="btn-secondary mt-3 text-xs" onclick="toggleReveal('q4-reveal')">💡 Reveal Explanation</button>
+    </div>
+
+    <!-- Q5 -->
+    <div class="card p-6 mb-5" id="q5">
+      <div class="flex items-start justify-between mb-3">
+        <div class="section-tag" style="font-size:0.65rem">Soal 5 · Flip-flop Count</div>
+        <div class="score-badge" id="q5-badge">–</div>
+      </div>
+      <p class="font-semibold mb-4">Berapa jumlah flip-flop minimum yang dibutuhkan untuk membangun sebuah sequential circuit dengan 20 state?</p>
+      <div id="q5-opts">
+        <button class="btn-option" onclick="checkAnswer(5, 'a', false)">A. 4 flip-flop</button>
+        <button class="btn-option" onclick="checkAnswer(5, 'b', true)">B. 5 flip-flop</button>
+        <button class="btn-option" onclick="checkAnswer(5, 'c', false)">C. 10 flip-flop</button>
+        <button class="btn-option" onclick="checkAnswer(5, 'd', false)">D. 20 flip-flop</button>
+      </div>
+      <div id="q5-reveal" class="reveal-panel">
+        <div class="font-bold text-sm mb-2" style="color:var(--accent3)">📖 Penjelasan Metodologi:</div>
+        <p class="text-sm mb-2" style="color:var(--muted)">m flip-flop dapat merepresentasikan hingga 2ᵐ state. Kita cari m terkecil sehingga 2ᵐ ≥ 20:</p>
+        <div class="code-block mb-2" style="font-size:0.8rem">
+          2⁴ = 16  < 20  ❌ (tidak cukup)
+          2⁵ = 32  ≥ 20  ✓
+
+          Minimum flip-flop = <span class="label">5</span>
+          <span class="comment">// (ada 12 unused state dari 32 total)</span>
+        </div>
+        <p class="text-sm" style="color:var(--muted)">Rumus umum: m = ⌈log₂(jumlah_state)⌉ (ceiling dari logaritma basis 2)</p>
+      </div>
+      <button class="btn-secondary mt-3 text-xs" onclick="toggleReveal('q5-reveal')">💡 Reveal Explanation</button>
+    </div>
+
+    <!-- Final Score -->
+    <div id="final-result" class="card p-6 text-center" style="display:none; border-color:rgba(56,189,248,0.4)">
+      <div class="text-5xl mb-3">🎓</div>
+      <h3 class="text-2xl font-bold mb-2" style="font-family:'Syne',sans-serif; color:var(--accent)">Latihan Selesai!</h3>
+      <p class="text-xl font-bold mb-1" id="final-score-text"></p>
+      <p class="text-sm" style="color:var(--muted)" id="final-feedback"></p>
+      <button class="btn-primary mt-4" onclick="resetQuiz()">🔄 Ulangi Latihan</button>
+    </div>
+  </section>
+
+  <!-- ===================== SECTION 4: REGISTER & MEMORY ===================== -->
+  <section id="register" class="mb-20">
+    <div class="section-tag mb-3">04 · Registers & Memory</div>
+    <h2 class="text-3xl font-bold mb-8" style="font-family:'Syne',sans-serif">Register dan Memori</h2>
+
+    <!-- Register -->
+    <div class="card p-6 mb-6">
+      <h3 class="text-lg font-bold mb-4" style="font-family:'Syne',sans-serif">
+        <i data-lucide="hard-drive" class="w-4 h-4 inline mr-2" style="color:var(--accent)"></i>Register
+      </h3>
+      <div class="grid md:grid-cols-2 gap-4 mb-4">
+        <div>
+          <div class="callout-key mb-3">
+            <div class="font-bold text-sm mb-1" style="color:var(--accent)">N-bit Register</div>
+            <ul class="text-sm space-y-1" style="color:var(--muted)">
+              <li>• N flip-flop untuk menyimpan N bit data</li>
+              <li>• Bisa ditambah combinational gates</li>
+              <li>• 16-bit register = 16 flip-flop</li>
+            </ul>
+          </div>
+          <div class="callout-tip">
+            <div class="font-bold text-sm mb-1" style="color:var(--accent3)">Counter</div>
+            <p class="text-sm" style="color:var(--muted)">Register yang melewati urutan state tertentu saat clock pulse. Diimplementasikan dengan flip-flop (biasanya JK).</p>
+          </div>
+        </div>
+        <div>
+          <div class="text-sm font-bold mb-2" style="color:var(--text)">Binary Counter (4-bit):</div>
+          <div class="code-block" style="font-size:0.8rem">
+            <div class="comment">// Pola bit 4-bit counter:</div>
+            <div><span class="label">B3</span> <span class="label">B2</span> <span class="label">B1</span> <span class="label">B0</span></div>
+            <div> 0   0   0   0  → 0</div>
+            <div> 0   0   0   1  → 1</div>
+            <div> 0   0   1   0  → 2</div>
+            <div> ...</div>
+            <div> 1   1   1   1  → 15</div>
+            <div class="comment mt-1">// B0 toggle tiap clock
+// B1 toggle saat B0: 1→0
+// dst...</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Memory Hierarchy -->
+    <div class="card p-6 mb-6">
+      <h3 class="text-lg font-bold mb-4" style="font-family:'Syne',sans-serif">
+        <i data-lucide="database" class="w-4 h-4 inline mr-2" style="color:var(--accent2)"></i>Memory Hierarchy
+      </h3>
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-2 mb-4">
+        <div class="mem-chip" style="border-color:rgba(56,189,248,0.5); background:rgba(56,189,248,0.08)">
+          <div class="font-bold text-xs mb-1" style="color:var(--accent)">Registers</div>
+          <div style="color:var(--muted); font-size:0.7rem">Sangat cepat, mahal, volatile</div>
+        </div>
+        <div class="mem-chip">
+          <div class="font-bold text-xs mb-1" style="color:var(--accent3)">Main Memory</div>
+          <div style="color:var(--muted); font-size:0.7rem">Cepat, sedang, volatile</div>
+        </div>
+        <div class="mem-chip">
+          <div class="font-bold text-xs mb-1" style="color:var(--yellow)">Disk Storage</div>
+          <div style="color:var(--muted); font-size:0.7rem">Lambat, murah, non-volatile</div>
+        </div>
+        <div class="mem-chip">
+          <div class="font-bold text-xs mb-1" style="color:var(--muted)">Magnetic Tapes</div>
+          <div style="color:var(--muted); font-size:0.7rem">Paling lambat, paling murah</div>
+        </div>
+      </div>
+      <div class="callout-key mb-4">
+        <div class="font-bold text-sm mb-2" style="color:var(--accent)">Konversi Ukuran Memori:</div>
+        <div class="code-block" style="font-size:0.8rem">
+          1 KB = 2¹⁰ bytes  |  1 MB = 2²⁰ bytes
+          1 GB = 2³⁰ bytes  |  1 TB = 2⁴⁰ bytes
+          1 word = kelipatan bytes (biasanya = ukuran register)
+        </div>
+      </div>
+    </div>
+
+    <!-- Memory Unit Block Diagram -->
+    <div class="card p-6 mb-6">
+      <h3 class="text-lg font-bold mb-4" style="font-family:'Syne',sans-serif">
+        <i data-lucide="layout-grid" class="w-4 h-4 inline mr-2" style="color:var(--green)"></i>Memory Unit & Read/Write Operations
+      </h3>
+      <div class="grid md:grid-cols-2 gap-6">
+        <div>
+          <div class="text-sm font-bold mb-3" style="color:var(--text)">Block Diagram Memory Unit:</div>
+          <div class="border rounded-lg p-4 text-center text-sm" style="border-color:var(--border)">
+            <div class="mb-2" style="color:var(--accent)">↓ n data input lines</div>
+            <div class="border rounded-lg p-4 my-2" style="border-color:rgba(56,189,248,0.5); background:rgba(56,189,248,0.05)">
+              <div class="font-bold" style="color:var(--accent)">Memory Unit</div>
+              <div class="text-xs mt-1" style="color:var(--muted)">2ᵏ words × n bits/word</div>
+            </div>
+            <div class="flex justify-between text-xs" style="color:var(--muted)">
+              <span>← k address lines</span>
+              <span>Read/Write →</span>
+            </div>
+            <div class="mt-2" style="color:var(--accent2)">↓ n data output lines</div>
+          </div>
+        </div>
+        <div>
+          <div class="text-sm font-bold mb-3" style="color:var(--text)">Operasi Read/Write:</div>
+          <table>
+            <thead><tr><th>Memory Enable</th><th>Read/Write</th><th>Operasi</th></tr></thead>
+            <tbody>
+              <tr><td>0</td><td>X</td><td style="color:var(--muted)">None</td></tr>
+              <tr><td>1</td><td>0</td><td style="color:var(--red)">Write</td></tr>
+              <tr><td>1</td><td>1</td><td style="color:var(--green)">Read</td></tr>
+            </tbody>
+          </table>
+          <div class="callout-tip mt-3">
+            <div class="text-xs" style="color:var(--accent3)">
+              <strong>MAR</strong> = Memory Address Register (simpan alamat)<br/>
+              <strong>MDR</strong> = Memory Data Register (simpan data R/W)
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Memory Array -->
+    <div class="card p-6 mb-6">
+      <h3 class="text-lg font-bold mb-4" style="font-family:'Syne',sans-serif">
+        <i data-lucide="grid" class="w-4 h-4 inline mr-2" style="color:var(--accent3)"></i>Memory Arrays — Menggabungkan Chip
+      </h3>
+      <div class="grid md:grid-cols-2 gap-4 mb-4">
+        <div>
+          <div class="callout-key mb-3">
+            <div class="font-bold text-sm mb-2" style="color:var(--accent)">Rumus Jumlah Chip</div>
+            <div class="code-block" style="font-size:0.78rem">
+              Chip target  / Chip tersedia
+              = (Words_target × Bits_target)
+              / (Words_chip × Bits_chip)
+
+              <span class="comment">// Contoh: 1M×16 dari 32K×8:</span>
+              = (2²⁰ × 2⁴) / (2¹⁵ × 2³)
+              = 2²⁴ / 2¹⁸ = 2⁶ = <span class="label">64 chip</span>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="callout-tip">
+            <div class="font-bold text-sm mb-2" style="color:var(--accent3)">Jumlah Kolom & Baris dalam Array</div>
+            <div class="code-block" style="font-size:0.78rem">
+              <span class="comment">// Kolom = ekspansi lebar bit:</span>
+              Kolom = Bits_target / Bits_chip
+
+              <span class="comment">// Baris = ekspansi jumlah words:</span>
+              Baris = Words_target / Words_chip
+
+              <span class="comment">// Untuk 1M×16 dari 32K×8:</span>
+              Kolom = 16/8 = <span class="label">2</span>
+              Baris  = 1M/32K = 2²⁰/2¹⁵ = <span class="label">32</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Interactive Memory Calculator -->
+      <div class="border rounded-lg p-4" style="border-color:rgba(244,114,182,0.3); background:rgba(244,114,182,0.04)">
+        <div class="font-bold text-sm mb-3" style="color:var(--accent2)">🧮 Kalkulator Memory Array</div>
+        <div class="grid md:grid-cols-2 gap-4 mb-4">
+          <div>
+            <div class="text-xs mb-2" style="color:var(--muted)">Modul Target</div>
+            <div class="flex gap-2 mb-2">
+              <div class="flex-1">
+                <label class="text-xs" style="color:var(--muted)">Words (xK/xM)</label>
+                <select id="target-words" class="w-full mt-1 px-2 py-1 rounded text-sm" style="background:var(--surface2); border:1px solid var(--border); color:var(--text)">
+                  <option value="17">128K = 2¹⁷</option>
+                  <option value="18">256K = 2¹⁸</option>
+                  <option value="19">512K = 2¹⁹</option>
+                  <option value="20" selected>1M = 2²⁰</option>
+                  <option value="21">2M = 2²¹</option>
+                </select>
+              </div>
+              <div class="flex-1">
+                <label class="text-xs" style="color:var(--muted)">Bits per word</label>
+                <select id="target-bits" class="w-full mt-1 px-2 py-1 rounded text-sm" style="background:var(--surface2); border:1px solid var(--border); color:var(--text)">
+                  <option value="8">8-bit</option>
+                  <option value="16" selected>16-bit</option>
+                  <option value="32">32-bit</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="text-xs mb-2" style="color:var(--muted)">Chip Tersedia</div>
+            <div class="flex gap-2 mb-2">
+              <div class="flex-1">
+                <label class="text-xs" style="color:var(--muted)">Words chip</label>
+                <select id="chip-words" class="w-full mt-1 px-2 py-1 rounded text-sm" style="background:var(--surface2); border:1px solid var(--border); color:var(--text)">
+                  <option value="10">1K = 2¹⁰</option>
+                  <option value="13">8K = 2¹³</option>
+                  <option value="14">16K = 2¹⁴</option>
+                  <option value="15" selected>32K = 2¹⁵</option>
+                  <option value="17">128K = 2¹⁷</option>
+                </select>
+              </div>
+              <div class="flex-1">
+                <label class="text-xs" style="color:var(--muted)">Bits chip</label>
+                <select id="chip-bits" class="w-full mt-1 px-2 py-1 rounded text-sm" style="background:var(--surface2); border:1px solid var(--border); color:var(--text)">
+                  <option value="8" selected>8-bit</option>
+                  <option value="16">16-bit</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+        <button class="btn-primary" onclick="calcMemory()">Hitung</button>
+        <div id="mem-result" class="mt-4 p-3 rounded-lg hidden" style="background:rgba(56,189,248,0.08); border:1px solid rgba(56,189,248,0.2)">
+          <div class="text-sm font-bold" style="color:var(--accent)" id="mem-result-text"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RAM Types -->
+    <div class="card p-6">
+      <h3 class="text-lg font-bold mb-4" style="font-family:'Syne',sans-serif">
+        <i data-lucide="chip" class="w-4 h-4 inline mr-2" style="color:var(--yellow)"></i>Jenis RAM
+      </h3>
+      <div class="grid md:grid-cols-2 gap-4">
+        <div class="callout-key">
+          <div class="font-bold text-sm mb-1" style="color:var(--accent)">Static RAM (SRAM)</div>
+          <ul class="text-sm space-y-1" style="color:var(--muted)">
+            <li>• Menggunakan <strong style="color:var(--text)">flip-flop</strong> sebagai memory cell</li>
+            <li>• Tidak perlu refresh</li>
+            <li>• Lebih cepat, lebih mahal</li>
+            <li>• Digunakan untuk cache memory</li>
+          </ul>
+        </div>
+        <div style="background:rgba(251,191,36,0.07); border-left:3px solid var(--yellow); border-radius:0 8px 8px 0; padding:14px 18px;">
+          <div class="font-bold text-sm mb-1" style="color:var(--yellow)">Dynamic RAM (DRAM)</div>
+          <ul class="text-sm space-y-1" style="color:var(--muted)">
+            <li>• Menggunakan <strong style="color:var(--text)">kapasitor</strong> untuk menyimpan data</li>
+            <li>• Perlu di-refresh terus-menerus</li>
+            <li>• Lebih lambat, lebih murah, lebih padat</li>
+            <li>• Digunakan untuk main memory (RAM komputer)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="text-center py-8 border-t" style="border-color:var(--border)">
+    <div class="text-sm mb-2" style="color:var(--muted)">CSIM601251 · Sequential Logic #2 & Registers</div>
+    <div class="text-xs" style="color:var(--muted)">Fasilkom UI · Slide by Erdefi Rakun · Interactive Page</div>
+    <div class="flex justify-center gap-4 mt-4 text-xs" style="color:var(--muted)">
+      <span>Flip-flops</span><span>·</span>
+      <span>State Tables</span><span>·</span>
+      <span>Registers</span><span>·</span>
+      <span>Memory Arrays</span>
+    </div>
+  </footer>
+</div>
+
+<script>
+  // Init Lucide icons
+  lucide.createIcons();
+
+  // Quiz state
+  let score = 0;
+  let answered = 0;
+  const totalQ = 5;
+  const answers = {};
+
+  function checkAnswer(qNum, option, isCorrect) {
+    if (answers[qNum] !== undefined) return;
+    answers[qNum] = isCorrect;
+
+    const optsDiv = document.getElementById('q' + qNum + '-opts');
+    const btns = optsDiv.querySelectorAll('.btn-option');
+    btns.forEach(btn => {
+      btn.disabled = true;
+      const btnText = btn.textContent.trim().charAt(0);
+      if (btnText === option.toUpperCase()) {
+        btn.classList.add(isCorrect ? 'correct' : 'wrong');
+        if (!isCorrect) {
+          btn.textContent = '❌ ' + btn.textContent;
+        } else {
+          btn.textContent = '✅ ' + btn.textContent;
+        }
+      }
+      if (!isCorrect) {
+        // Find correct answer and highlight it
+        const onclick = btn.getAttribute('onclick') || '';
+        if (onclick.includes('true')) {
+          btn.classList.add('correct');
+          btn.textContent = '✅ ' + btn.textContent;
+        }
+      }
+    });
+
+    if (isCorrect) score++;
+    answered++;
+
+    const badge = document.getElementById('q' + qNum + '-badge');
+    badge.textContent = isCorrect ? '✓ Benar' : '✗ Salah';
+    badge.style.background = isCorrect ? 'rgba(52,211,153,0.15)' : 'rgba(248,113,113,0.15)';
+    badge.style.color = isCorrect ? '#34d399' : '#f87171';
+    badge.style.borderColor = isCorrect ? 'rgba(52,211,153,0.4)' : 'rgba(248,113,113,0.4)';
+
+    // Update score
+    document.getElementById('score-display').textContent = 'Skor: ' + score + '/' + totalQ;
+    document.getElementById('answered-count').textContent = answered;
+
+    // Update progress bar
+    const pct = (answered / totalQ) * 100;
+    document.getElementById('progress-bar').style.width = pct + '%';
+
+    // Show final result
+    if (answered === totalQ) {
+      setTimeout(showFinalResult, 600);
+    }
+  }
+
+  function showFinalResult() {
+    const el = document.getElementById('final-result');
+    el.style.display = 'block';
+    document.getElementById('final-score-text').textContent = 'Skor Akhir: ' + score + ' / ' + totalQ;
+    const fb = document.getElementById('final-feedback');
+    if (score === 5) fb.textContent = '🎉 Sempurna! Kamu menguasai Sequential Logic & Registers dengan sangat baik!';
+    else if (score >= 3) fb.textContent = '👍 Bagus! Masih ada beberapa konsep yang perlu diperkuat.';
+    else fb.textContent = '📚 Coba baca ulang materi dan pelajari penjelasan setiap soal.';
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  function resetQuiz() {
+    score = 0;
+    answered = 0;
+    Object.keys(answers).forEach(k => delete answers[k]);
+
+    for (let i = 1; i <= totalQ; i++) {
+      const optsDiv = document.getElementById('q' + i + '-opts');
+      const btns = optsDiv.querySelectorAll('.btn-option');
+      btns.forEach(btn => {
+        btn.disabled = false;
+        btn.classList.remove('correct','wrong');
+        btn.textContent = btn.textContent.replace('✅ ','').replace('❌ ','');
+      });
+      const badge = document.getElementById('q' + i + '-badge');
+      badge.textContent = '–';
+      badge.style.background = '';
+      badge.style.color = '';
+      badge.style.borderColor = '';
+
+      const reveal = document.getElementById('q' + i + '-reveal');
+      if (reveal) reveal.classList.remove('show');
+    }
+
+    document.getElementById('score-display').textContent = 'Skor: 0/' + totalQ;
+    document.getElementById('answered-count').textContent = '0';
+    document.getElementById('progress-bar').style.width = '0%';
+    document.getElementById('final-result').style.display = 'none';
+  }
+
+  function toggleReveal(id) {
+    const el = document.getElementById(id);
+    el.classList.toggle('show');
+  }
+
+  function calcMemory() {
+    const tw = parseInt(document.getElementById('target-words').value);
+    const tb = parseInt(document.getElementById('target-bits').value);
+    const cw = parseInt(document.getElementById('chip-words').value);
+    const cb = parseInt(document.getElementById('chip-bits').value);
+
+    const totalChip = Math.pow(2, (tw - cw)) * (tb / cb);
+    const cols = tb / cb;
+    const rows = Math.pow(2, tw - cw);
+
+    const res = document.getElementById('mem-result');
+    const resText = document.getElementById('mem-result-text');
+    resText.innerHTML = `
+      Total chip: <strong>${totalChip} chip</strong> (2^${tw - cw + Math.log2(tb/cb)} = ${totalChip})<br/>
+      Kolom dalam array: <strong>${cols} kolom</strong> (${tb}/${cb})<br/>
+      Baris dalam array: <strong>${rows} baris</strong> (2^${tw - cw})
+    `;
+    res.classList.remove('hidden');
+  }
+</script>
 </body>
 </html>
