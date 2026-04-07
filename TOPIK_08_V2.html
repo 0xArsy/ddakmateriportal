@@ -157,19 +157,20 @@
   .explanation.show { display:block; }
 
   /* Opcode viz */
-  .opcode-row { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; }
+  .opcode-row { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; position: relative; }
   .opcode-group { display: flex; gap: 2px; align-items: center; }
-  .opcode-bit {
+  .viz-bit-box {
     display: flex; align-items: center; justify-content: center;
     width: 26px; height: 26px;
     font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; font-weight: 700;
     border: 1px solid var(--border); border-radius: 4px;
     transition: all 0.2s;
+    position: relative; overflow: hidden; /* Prevent leakage */
   }
-  .opcode-bit.fixed { background: rgba(34, 211, 238, 0.1); color: #22d3ee; border-color: rgba(34, 211, 238, 0.3); }
-  .opcode-bit.dest { background: rgba(52, 211, 153, 0.15); color: #34d399; border-color: rgba(52, 211, 153, 0.4); }
-  .opcode-bit.src { background: rgba(251, 191, 36, 0.15); color: #fbbf24; border-color: rgba(251, 191, 36, 0.4); }
-  .opcode-bit.imm-b { background: rgba(168, 85, 247, 0.15); color: #a855f7; border-color: rgba(168, 85, 247, 0.4); }
+  .viz-bit-box.fixed { background: rgba(34, 211, 238, 0.1); color: #67e8f9; border-color: rgba(34, 211, 238, 0.3); }
+  .viz-bit-box.dest { background: rgba(52, 211, 153, 0.15); color: #4ade80; border-color: rgba(52, 211, 153, 0.4); }
+  .viz-bit-box.src { background: rgba(251, 191, 36, 0.15); color: #fbbf24; border-color: rgba(251, 191, 36, 0.4); }
+  .viz-bit-box.imm-b { background: rgba(168, 85, 247, 0.15); color: #c084fc; border-color: rgba(168, 85, 247, 0.4); }
   .opcode-separator { color: #334155; font-size: 0.8rem; margin: 0 2px; font-weight: 300; }
 
   /* Progress */
@@ -580,26 +581,26 @@
           <div class="space-y-3">
             <p class="text-[10px] uppercase tracking-wider text-slate-500 font-bold">1. Opcode Format (Generic)</p>
             <div class="opcode-row">
-              <div class="opcode-group"><div class="opcode-bit fixed">0</div><div class="opcode-bit fixed">0</div><div class="opcode-bit fixed">0</div><div class="opcode-bit fixed">0</div></div>
+              <div class="opcode-group"><div class="viz-bit-box fixed">0</div><div class="viz-bit-box fixed">0</div><div class="viz-bit-box fixed">0</div><div class="viz-bit-box fixed">0</div></div>
               <div class="opcode-separator">|</div>
-              <div class="opcode-group"><div class="opcode-bit fixed">1</div><div class="opcode-bit fixed">1</div><div class="opcode-bit src">r</div><div class="opcode-bit dest">d</div></div>
+              <div class="opcode-group"><div class="viz-bit-box fixed">1</div><div class="viz-bit-box fixed">1</div><div class="viz-bit-box src">r</div><div class="viz-bit-box dest">d</div></div>
               <div class="opcode-separator">|</div>
-              <div class="opcode-group"><div class="opcode-bit dest">d</div><div class="opcode-bit dest">d</div><div class="opcode-bit dest">d</div><div class="opcode-bit dest">d</div></div>
+              <div class="opcode-group"><div class="viz-bit-box dest">d</div><div class="viz-bit-box dest">d</div><div class="viz-bit-box dest">d</div><div class="viz-bit-box dest">d</div></div>
               <div class="opcode-separator">|</div>
-              <div class="opcode-group"><div class="opcode-bit src">r</div><div class="opcode-bit src">r</div><div class="opcode-bit src">r</div><div class="opcode-bit src">r</div></div>
+              <div class="opcode-group"><div class="viz-bit-box src">r</div><div class="viz-bit-box src">r</div><div class="viz-bit-box src">r</div><div class="viz-bit-box src">r</div></div>
             </div>
           </div>
 
           <div class="space-y-3">
             <p class="text-[10px] uppercase tracking-wider text-slate-500 font-bold">2. Binary Encoding (R1, R5)</p>
             <div class="opcode-row">
-              <div class="opcode-group"><div class="opcode-bit fixed">0</div><div class="opcode-bit fixed">0</div><div class="opcode-bit fixed">0</div><div class="opcode-bit fixed">0</div></div>
+              <div class="opcode-group"><div class="viz-bit-box fixed">0</div><div class="viz-bit-box fixed">0</div><div class="viz-bit-box fixed">0</div><div class="viz-bit-box fixed">0</div></div>
               <div class="opcode-separator">|</div>
-              <div class="opcode-group"><div class="opcode-bit fixed">1</div><div class="opcode-bit fixed">1</div><div class="opcode-bit src">0</div><div class="opcode-bit dest">0</div></div>
+              <div class="opcode-group"><div class="viz-bit-box fixed">1</div><div class="viz-bit-box fixed">1</div><div class="viz-bit-box src">0</div><div class="viz-bit-box dest">0</div></div>
               <div class="opcode-separator">|</div>
-              <div class="opcode-group"><div class="opcode-bit dest">0</div><div class="opcode-bit dest">0</div><div class="opcode-bit dest">0</div><div class="opcode-bit dest">1</div></div>
+              <div class="opcode-group"><div class="viz-bit-box dest">0</div><div class="viz-bit-box dest">0</div><div class="viz-bit-box dest">0</div><div class="viz-bit-box dest">1</div></div>
               <div class="opcode-separator">|</div>
-              <div class="opcode-group"><div class="opcode-bit src">0</div><div class="opcode-bit src">1</div><div class="opcode-bit src">0</div><div class="opcode-bit src">1</div></div>
+              <div class="opcode-group"><div class="viz-bit-box src">0</div><div class="viz-bit-box src">1</div><div class="viz-bit-box src">0</div><div class="viz-bit-box src">1</div></div>
             </div>
           </div>
 
@@ -625,26 +626,26 @@
           <div class="space-y-3">
             <p class="text-[10px] uppercase tracking-wider text-slate-500 font-bold">1. Opcode Format (Generic)</p>
             <div class="opcode-row">
-              <div class="opcode-group"><div class="opcode-bit fixed">0</div><div class="opcode-bit fixed">1</div><div class="opcode-bit fixed">1</div><div class="opcode-bit fixed">1</div></div>
+              <div class="opcode-group"><div class="viz-bit-box fixed">0</div><div class="viz-bit-box fixed">1</div><div class="viz-bit-box fixed">1</div><div class="viz-bit-box fixed">1</div></div>
               <div class="opcode-separator">|</div>
-              <div class="opcode-group"><div class="opcode-bit imm-b">K</div><div class="opcode-bit imm-b">K</div><div class="opcode-bit imm-b">K</div><div class="opcode-bit imm-b">K</div></div>
+              <div class="opcode-group"><div class="viz-bit-box imm-b">K</div><div class="viz-bit-box imm-b">K</div><div class="viz-bit-box imm-b">K</div><div class="viz-bit-box imm-b">K</div></div>
               <div class="opcode-separator">|</div>
-              <div class="opcode-group"><div class="opcode-bit dest">d</div><div class="opcode-bit dest">d</div><div class="opcode-bit dest">d</div><div class="opcode-bit dest">d</div></div>
+              <div class="opcode-group"><div class="viz-bit-box dest">d</div><div class="viz-bit-box dest">d</div><div class="viz-bit-box dest">d</div><div class="viz-bit-box dest">d</div></div>
               <div class="opcode-separator">|</div>
-              <div class="opcode-group"><div class="opcode-bit imm-b">K</div><div class="opcode-bit imm-b">K</div><div class="opcode-bit imm-b">K</div><div class="opcode-bit imm-b">K</div></div>
+              <div class="opcode-group"><div class="viz-bit-box imm-b">K</div><div class="viz-bit-box imm-b">K</div><div class="viz-bit-box imm-b">K</div><div class="viz-bit-box imm-b">K</div></div>
             </div>
           </div>
 
           <div class="space-y-3">
             <p class="text-[10px] uppercase tracking-wider text-slate-500 font-bold">2. Binary Encoding (R20, 85)</p>
             <div class="opcode-row">
-              <div class="opcode-group"><div class="opcode-bit fixed">0</div><div class="opcode-bit fixed">1</div><div class="opcode-bit fixed">1</div><div class="opcode-bit fixed">1</div></div>
+              <div class="opcode-group"><div class="viz-bit-box fixed">0</div><div class="viz-bit-box fixed">1</div><div class="viz-bit-box fixed">1</div><div class="viz-bit-box fixed">1</div></div>
               <div class="opcode-separator">|</div>
-              <div class="opcode-group"><div class="opcode-bit imm-b">0</div><div class="opcode-bit imm-b">1</div><div class="opcode-bit imm-b">0</div><div class="opcode-bit imm-b">1</div></div>
+              <div class="opcode-group"><div class="viz-bit-box imm-b">0</div><div class="viz-bit-box imm-b">1</div><div class="viz-bit-box imm-b">0</div><div class="viz-bit-box imm-b">1</div></div>
               <div class="opcode-separator">|</div>
-              <div class="opcode-group"><div class="opcode-bit dest">0</div><div class="opcode-bit dest">1</div><div class="opcode-bit dest">0</div><div class="opcode-bit dest">0</div></div>
+              <div class="opcode-group"><div class="viz-bit-box dest">0</div><div class="viz-bit-box dest">1</div><div class="viz-bit-box dest">0</div><div class="viz-bit-box dest">0</div></div>
               <div class="opcode-separator">|</div>
-              <div class="opcode-group"><div class="opcode-bit imm-b">0</div><div class="opcode-bit imm-b">1</div><div class="opcode-bit imm-b">0</div><div class="opcode-bit imm-b">1</div></div>
+              <div class="opcode-group"><div class="viz-bit-box imm-b">0</div><div class="viz-bit-box imm-b">1</div><div class="viz-bit-box imm-b">0</div><div class="viz-bit-box imm-b">1</div></div>
             </div>
           </div>
 
