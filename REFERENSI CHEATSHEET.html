@@ -1,15 +1,813 @@
 <!DOCTYPE html>
 <html lang="id" class="dark">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Module On Working</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DDAK UTS Cheatsheet – Referensi Lengkap Topik 01–08</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Sora:wght@300;400;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --accent: #22d3ee;
+    --accent2: #f472b6;
+    --bg-deep: #060b14;
+    --bg-card: #0d1829;
+    --bg-card2: #111f35;
+    --border: #1e3a5f;
+    --text-dim: #7ca3c8;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: 'Sora', sans-serif;
+    background: var(--bg-deep);
+    color: #e2eaf4;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  code, pre, .mono { font-family: 'JetBrains Mono', monospace; }
+
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image:
+      linear-gradient(rgba(34,211,238,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(34,211,238,0.04) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none; z-index: 0;
+  }
+
+  .container { position: relative; z-index: 1; }
+  nav { background: rgba(6,11,20,0.85); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); position: sticky; top:0; z-index:100; }
+
+  .section-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(34,211,238,0.1); border: 1px solid rgba(34,211,238,0.3);
+    color: var(--accent); border-radius: 99px; padding: 4px 14px; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+  }
+
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    transition: border-color 0.2s;
+  }
+  .card:hover { border-color: rgba(34,211,238,0.3); }
+
+  .topik-header {
+    background: linear-gradient(135deg, rgba(34,211,238,0.12), rgba(244,114,182,0.08));
+    border: 1px solid rgba(34,211,238,0.25);
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-bottom: 16px;
+  }
+  .topik-header h2 {
+    font-size: 1.15rem; font-weight: 800; margin: 0;
+    background: linear-gradient(135deg, #22d3ee, #f472b6);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  }
+  .topik-header .subtitle { font-size: 0.78rem; color: var(--text-dim); margin-top: 2px; }
+
+  .cheat-section {
+    margin-bottom: 12px;
+  }
+  .cheat-section h3 {
+    font-size: 0.85rem; font-weight: 700; color: var(--accent);
+    margin-bottom: 6px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .cheat-section h3::before {
+    content: '▸'; color: var(--accent2);
+  }
+
+  .cheat-list {
+    list-style: none; padding: 0; margin: 0;
+    font-size: 0.78rem; color: #c4d5e8;
+    display: flex; flex-direction: column; gap: 4px;
+  }
+  .cheat-list li::before {
+    content: '•'; color: var(--accent); margin-right: 6px; font-weight: 700;
+  }
+
+  .formula-box {
+    background: rgba(34,211,238,0.06);
+    border: 1px solid rgba(34,211,238,0.2);
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    color: #bae6fd;
+    margin: 4px 0;
+  }
+
+  .mini-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    margin: 6px 0;
+  }
+  .mini-table th {
+    background: rgba(34,211,238,0.12);
+    color: var(--accent);
+    padding: 4px 8px;
+    text-align: center;
+    border: 1px solid var(--border);
+    font-weight: 700;
+    font-size: 0.7rem;
+  }
+  .mini-table td {
+    padding: 3px 8px;
+    text-align: center;
+    border: 1px solid rgba(30,58,95,0.5);
+    color: #94a3b8;
+  }
+  .mini-table .hl { color: #4ade80; font-weight: 700; }
+
+  .warn-box {
+    background: rgba(251,191,36,0.07);
+    border-left: 3px solid #fbbf24;
+    border-radius: 0 8px 8px 0;
+    padding: 8px 12px;
+    font-size: 0.75rem;
+    color: #fde68a;
+    margin: 6px 0;
+  }
+  .tip-box {
+    background: rgba(52,211,153,0.07);
+    border-left: 3px solid #34d399;
+    border-radius: 0 8px 8px 0;
+    padding: 8px 12px;
+    font-size: 0.75rem;
+    color: #a7f3d0;
+    margin: 6px 0;
+  }
+
+  .toc-link {
+    display: block;
+    padding: 4px 10px;
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    border-left: 2px solid transparent;
+    transition: all 0.15s;
+    text-decoration: none;
+  }
+  .toc-link:hover {
+    color: var(--accent);
+    border-left-color: var(--accent);
+    background: rgba(34,211,238,0.06);
+  }
+
+  @media print {
+    body { background: white; color: #111; }
+    body::before { display: none; }
+    nav { display: none; }
+    .card { border: 1px solid #ccc; background: #fafafa; page-break-inside: avoid; }
+    .topik-header { background: #f0f0f0; border-color: #ccc; }
+    .topik-header h2 { -webkit-text-fill-color: #0891b2; color: #0891b2; }
+    .formula-box { background: #f5f5f5; border-color: #ddd; color: #333; }
+    .warn-box { background: #fffde7; border-color: #f59e0b; color: #92400e; }
+    .tip-box { background: #ecfdf5; border-color: #10b981; color: #065f46; }
+    .cheat-list li { color: #333; }
+    .cheat-section h3 { color: #0891b2; }
+    .mini-table th { background: #e0f2fe; color: #0891b2; }
+    .mini-table td { color: #333; border-color: #ddd; }
+    .mini-table .hl { color: #16a34a; }
+    .toc-sidebar { display: none !important; }
+    .main-content { margin-left: 0 !important; }
+  }
+</style>
 </head>
-<body class="bg-[#0a0e1a] text-gray-400 h-screen flex items-center justify-center font-sans">
-    <div class="text-center p-8 bg-white/5 border border-white/10 rounded-2xl shadow-2xl">
-        <h1 class="text-3xl font-bold text-white mb-4 tracking-tight">On Working</h1>
-        <p class="text-gray-500">Materi ini sedang dalam proses pembaharuan. Mohon cek kembali nanti.</p>
+<body>
+<nav>
+  <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <div style="width:32px;height:32px;background:rgba(34,211,238,0.2);border:1px solid rgba(34,211,238,0.4);border-radius:8px;display:flex;align-items:center;justify-content:center;color:#22d3ee;font-weight:900;font-size:12px;">CS</div>
+      <div>
+        <div class="text-sm font-bold text-white leading-tight">DDAK UTS Cheatsheet</div>
+        <div class="text-xs" style="color:var(--text-dim);">Topik 01–08 · Referensi Lengkap</div>
+      </div>
     </div>
+    <a href="index.html" class="section-badge text-xs">← Kembali ke Portal</a>
+  </div>
+</nav>
+
+<div class="container max-w-7xl mx-auto px-4 py-6 flex gap-6">
+
+  <!-- TOC SIDEBAR -->
+  <aside class="toc-sidebar hidden lg:block w-48 shrink-0">
+    <div style="position:sticky;top:80px;">
+      <div class="text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-3 px-2">Daftar Isi</div>
+      <nav class="flex flex-col gap-0.5">
+        <a href="#topik1" class="toc-link rounded">01 · Info Representation</a>
+        <a href="#topik2" class="toc-link rounded">02 · Boolean Algebra</a>
+        <a href="#topik3" class="toc-link rounded">03 · K-Maps</a>
+        <a href="#topik4" class="toc-link rounded">04 · Logic Gates</a>
+        <a href="#topik5" class="toc-link rounded">05 · MSI & Sequential</a>
+        <a href="#topik6" class="toc-link rounded">06 · Registers & Counters</a>
+        <a href="#topik7" class="toc-link rounded">07 · Memory & PLDs</a>
+        <a href="#topik8" class="toc-link rounded">08 · AVR Architecture</a>
+      </nav>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="main-content flex-1 min-w-0 flex flex-col gap-6">
+
+    <!-- HERO -->
+    <div class="text-center mb-2">
+      <h1 class="text-3xl font-extrabold mb-2" style="background:linear-gradient(135deg,#22d3ee,#f472b6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">DDAK UTS Cheatsheet</h1>
+      <p class="text-sm" style="color:var(--text-dim);">Rangkuman lengkap Topik 01–08 · Desain Digital dan Arsitektur Komputer · Fasilkom UI</p>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════ -->
+    <!-- TOPIK 01 -->
+    <!-- ═══════════════════════════════════════════════ -->
+    <section id="topik1">
+      <div class="topik-header">
+        <div class="section-badge mb-2">Topik 01</div>
+        <h2>Information Representation</h2>
+        <div class="subtitle">Bit, Byte, Konversi Basis, Aritmatika Biner, Bilangan Negatif</div>
+      </div>
+      <div class="card p-5 space-y-4">
+
+        <div class="cheat-section">
+          <h3>Satuan Informasi</h3>
+          <ul class="cheat-list">
+            <li><strong>Bit</strong> = Binary digit (0/1), <strong>Nibble</strong> = 4 bit, <strong>Byte</strong> = 8 bit</li>
+            <li><strong>Word</strong> = kelipatan byte (1/2/4/8 byte), tergantung arsitektur</li>
+            <li>N bit → <strong>2ᴺ</strong> kemungkinan nilai. Butuh M nilai → ⌈log₂M⌉ bit</li>
+          </ul>
+        </div>
+
+        <div class="cheat-section">
+          <h3>Konversi Basis</h3>
+          <ul class="cheat-list">
+            <li><strong>Base-R → Desimal:</strong> Kalikan tiap digit × pangkat basis, jumlahkan</li>
+            <li><strong>Desimal → Biner (integer):</strong> Bagi berulang dgn 2, baca sisa dari bawah (LSB pertama)</li>
+            <li><strong>Desimal → Biner (fraksional):</strong> Kalikan berulang × 2, ambil integer part (MSB pertama)</li>
+            <li><strong>Biner → Oktal:</strong> Kelompokkan 3 bit dari titik desimal</li>
+            <li><strong>Biner → Hex:</strong> Kelompokkan 4 bit dari titik desimal</li>
+            <li><strong>Prefix C:</strong> <code class="mono">0</code> = oktal, <code class="mono">0x</code> = hex, <code class="mono">0b</code> = biner</li>
+          </ul>
+        </div>
+
+        <div class="cheat-section">
+          <h3>Aritmatika Biner</h3>
+          <div class="formula-box">Penjumlahan: 0+0=0, 0+1=1, 1+0=1, 1+1=10 (carry 1)
+Pengurangan: 0-0=0, 1-0=1, 1-1=0, 0-1=1 (borrow 1)
+Perkalian: Sama seperti desimal (partial products + shift)
+Pembagian: Dividend = Quotient × Divisor + Remainder</div>
+        </div>
+
+        <div class="cheat-section">
+          <h3>Bilangan Negatif (MSB = Sign Bit)</h3>
+          <table class="mini-table">
+            <thead><tr><th>Metode</th><th>Cara Negasi</th><th>Range 8-bit</th><th>Kelemahan</th></tr></thead>
+            <tbody>
+              <tr><td>Sign-Magnitude</td><td>Balik bit sign saja</td><td>-127 s.d. +127</td><td>Dua nol (+0, -0)</td></tr>
+              <tr><td>1s Complement</td><td>Balik semua bit</td><td>-127 s.d. +127</td><td>Dua nol, perlu end-around carry</td></tr>
+              <tr><td class="hl">2s Complement ⭐</td><td class="hl">Balik semua bit + 1</td><td class="hl">-128 s.d. +127</td><td class="hl">Satu nol, paling umum</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="cheat-section">
+          <h3>Overflow (2s Complement)</h3>
+          <ul class="cheat-list">
+            <li>Positif + Positif → Negatif = <strong style="color:#fca5a5">OVERFLOW</strong></li>
+            <li>Negatif + Negatif → Positif = <strong style="color:#fca5a5">OVERFLOW</strong></li>
+            <li>Carry-in MSB ≠ Carry-out MSB = <strong style="color:#fca5a5">OVERFLOW</strong></li>
+            <li>Positif + Negatif → <strong style="color:#4ade80">TIDAK PERNAH OVERFLOW</strong></li>
+          </ul>
+          <div class="warn-box">⚠ 2s complement: carry-out MSB DIABAIKAN. 1s complement: carry-out MSB DITAMBAHKAN ke hasil (end-around carry).</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════ -->
+    <!-- TOPIK 02 -->
+    <!-- ═══════════════════════════════════════════════ -->
+    <section id="topik2">
+      <div class="topik-header">
+        <div class="section-badge mb-2">Topik 02</div>
+        <h2>Boolean Algebra & Canonical/Standard Forms</h2>
+        <div class="subtitle">Hukum Boolean, DeMorgan, Minterm/Maxterm, SOM/POM, SOP/POS</div>
+      </div>
+      <div class="card p-5 space-y-4">
+
+        <div class="cheat-section">
+          <h3>Operator Dasar</h3>
+          <div class="formula-box">AND (·): 1·1=1, sisanya 0 | OR (+): 0+0=0, sisanya 1 | NOT ('): 0'=1, 1'=0
+Prioritas: ( ) → NOT → AND → OR
+⚠ Boolean: 1+1=1 (bukan 2!), tanda + = OR bukan penjumlahan biasa</div>
+        </div>
+
+        <div class="cheat-section">
+          <h3>Hukum-Hukum Boolean</h3>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <div class="formula-box">Identity: A+0=A, A·1=A
+Null/Dominance: A+1=1, A·0=0
+Inverse: A+A'=1, A·A'=0
+Idempotent: A+A=A, A·A=A</div>
+            <div class="formula-box">Commutative: A+B=B+A, A·B=B·A
+Associative: A+(B+C)=(A+B)+C
+Distributive: A·(B+C)=A·B+A·C
+              A+(B·C)=(A+B)·(A+C)
+Absorption: X+X·Y=X, X·(X+Y)=X</div>
+          </div>
+        </div>
+
+        <div class="cheat-section">
+          <h3>DeMorgan, Duality, Consensus</h3>
+          <div class="formula-box">DeMorgan: (X+Y)' = X'·Y'  |  (X·Y)' = X'+Y'
+Duality: Tukar AND↔OR, tukar 0↔1 (variabel tetap)
+Consensus: XY + X'Z + YZ = XY + X'Z (YZ redundan)</div>
+        </div>
+
+        <div class="cheat-section">
+          <h3>Minterm & Maxterm</h3>
+          <ul class="cheat-list">
+            <li><strong>Minterm (mᵢ):</strong> Product term, semua variabel. Bit 1 → normal, bit 0 → komplemen</li>
+            <li><strong>Maxterm (Mᵢ):</strong> Sum term, semua variabel. Bit 0 → normal, bit 1 → komplemen</li>
+            <li>Hubungan: Mᵢ = mᵢ' (komplemen satu sama lain)</li>
+          </ul>
+          <div class="warn-box">⚠ Aturan minterm vs maxterm BERLAWANAN! Minterm: 1=normal, 0=komplemen. Maxterm: 0=normal, 1=komplemen.</div>
+        </div>
+
+        <div class="cheat-section">
+          <h3>Canonical & Standard Forms</h3>
+          <div class="formula-box">SOM (Σm): OR-kan minterm di mana F=1 → F = Σm(1,4,5,6,7)
+POM (ΠM): AND-kan maxterm di mana F=0 → F = ΠM(0,2,3)
+
+Konversi SOM↔POM: Ambil indeks yang TIDAK ada di daftar asal
+SOP: Jumlah product term (boleh < n variabel)
+POS: Produk sum term (boleh < n variabel)
+Canonical SOM ⊂ SOP (SOM selalu SOP, tidak sebaliknya)</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════ -->
+    <!-- TOPIK 03 -->
+    <!-- ═══════════════════════════════════════════════ -->
+    <section id="topik3">
+      <div class="topik-header">
+        <div class="section-badge mb-2">Topik 03</div>
+        <h2>Karnaugh Maps (K-Maps)</h2>
+        <div class="subtitle">Simplifikasi SOP/POS, Prime Implicant, Don't Care</div>
+      </div>
+      <div class="card p-5 space-y-4">
+
+        <div class="cheat-section">
+          <h3>Cost Criteria</h3>
+          <div class="formula-box">L (Literal Cost) = jumlah kemunculan variabel
+G (Gate Input Cost) = L + jumlah term (excl. single literal)
+GN = G + jumlah distinct complemented single literals</div>
+        </div>
+
+        <div class="cheat-section">
+          <h3>Aturan K-Map</h3>
+          <ul class="cheat-list">
+            <li>K-Map = reorganisasi truth table dalam grid 2D (kode Gray)</li>
+            <li>Sel adjacent: berbeda hanya 1 bit. Tepi melingkar (silinder)</li>
+            <li>Ukuran grup: HARUS pangkat 2 (1, 2, 4, 8, 16)</li>
+            <li>n-var K-Map: grup 2ᵏ sel → product term (n−k) variabel</li>
+            <li>K-Map 3-var: 8 sel (2×4). K-Map 4-var: 16 sel (4×4)</li>
+            <li>K-Map 5-var: 2 K-Map 4-var bertumpuk (sel posisi sama = adjacent)</li>
+          </ul>
+        </div>
+
+        <div class="cheat-section">
+          <h3>Prime Implicant & Algoritma</h3>
+          <ul class="cheat-list">
+            <li><strong>Prime Implicant (PI):</strong> Grup terbesar yang tidak bisa diperbesar lagi</li>
+            <li><strong>Essential PI (EPI):</strong> PI yang merupakan satu-satunya PI mencakup minterm tertentu → WAJIB masuk solusi</li>
+          </ul>
+          <div class="formula-box">Langkah SOP Minimal:
+1. Isi K-Map (1, 0, X)
+2. Temukan SEMUA Prime Implicants
+3. Masukkan SEMUA Essential PIs
+4. Tutup sisa minterm dengan PI non-esensial termurah
+5. OR-kan semua product term → SOP minimal
+
+Membaca PI: variabel konstan → tulis (1=normal, 0=komplemen)
+            variabel berubah → hilangkan</div>
+        </div>
+
+        <div class="cheat-section">
+          <h3>Don't Care (X / d)</h3>
+          <ul class="cheat-list">
+            <li>Input yang tidak pernah terjadi ATAU output yang tidak digunakan</li>
+            <li>BOLEH dimasukkan dalam grup untuk memperbesar → lebih sederhana</li>
+            <li>TIDAK WAJIB dicakup (beda dengan minterm biasa)</li>
+            <li>SOP vs POS dari fungsi dengan don't care BISA menghasilkan jawaban berbeda</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════ -->
+    <!-- TOPIK 04 -->
+    <!-- ═══════════════════════════════════════════════ -->
+    <section id="topik4">
+      <div class="topik-header">
+        <div class="section-badge mb-2">Topik 04</div>
+        <h2>Logic Gates & Combinational Circuits</h2>
+        <div class="subtitle">NAND/NOR/XOR/XNOR, Universal Gates, Half/Full Adder</div>
+      </div>
+      <div class="card p-5 space-y-4">
+
+        <div class="cheat-section">
+          <h3>Gate Reference</h3>
+          <table class="mini-table">
+            <thead><tr><th>Gate</th><th>Ekspresi</th><th>Output = 1 ketika</th></tr></thead>
+            <tbody>
+              <tr><td>AND</td><td>A·B</td><td>Semua input = 1</td></tr>
+              <tr><td>OR</td><td>A+B</td><td>Minimal satu input = 1</td></tr>
+              <tr><td>NOT</td><td>A'</td><td>Input = 0</td></tr>
+              <tr><td>NAND</td><td>(A·B)'</td><td>Minimal satu input = 0</td></tr>
+              <tr><td>NOR</td><td>(A+B)'</td><td>Semua input = 0</td></tr>
+              <tr><td>XOR</td><td>A⊕B</td><td>Input berbeda (ganjil 1s)</td></tr>
+              <tr><td>XNOR</td><td>(A⊕B)'</td><td>Input sama (genap 1s)</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="cheat-section">
+          <h3>Universal Gates & DeMorgan</h3>
+          <div class="formula-box">NAND = Universal Gate: AND-Invert = Invert-OR
+  NOT: (x·x)' = x'  |  AND: ((x·y)')' = x·y  |  OR: (x'·y')' = x+y
+
+NOR = Universal Gate: OR-Invert = Invert-AND
+  NOT: (x+x)' = x'  |  OR: ((x+y)')' = x+y  |  AND: (x'+y')' = x·y
+
+SOP → 2-level NAND-NAND  |  POS → 2-level NOR-NOR</div>
+          <div class="warn-box">⚠ NAND/NOR TIDAK asosiatif! (A NAND B) NAND C ≠ A NAND (B NAND C)</div>
+        </div>
+
+        <div class="cheat-section">
+          <h3>XOR/XNOR Identitas</h3>
+          <div class="formula-box">X⊕Y = X·Y' + X'·Y  |  XNOR = X·Y + X'·Y'
+X⊕0=X  |  X⊕1=X' (inverter!)  |  X⊕X=0  |  X⊕X'=1
+XOR komutatif & asosiatif. Digunakan: Adder, Parity, Counter</div>
+        </div>
+
+        <div class="cheat-section">
+          <h3>Half Adder & Full Adder</h3>
+          <div class="formula-box">Half Adder: S = X⊕Y,  C = X·Y
+Full Adder: S = X⊕Y⊕Cᵢₙ,  Cₒᵤₜ = X·Y + X·Cᵢₙ + Y·Cᵢₙ = X·Y + (X⊕Y)·Cᵢₙ
+Ripple Carry Adder: n Full Adder seri, carry mengalir dari LSB ke MSB</div>
+        </div>
+
+        <div class="cheat-section">
+          <h3>Combinational Design Procedure</h3>
+          <div class="formula-box">1. Specification → 2. Formulation (truth table) → 3. Optimization (K-map)
+→ 4. Technology Mapping (NAND/NOR) → 5. Verification</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════ -->
+    <!-- TOPIK 05 -->
+    <!-- ═══════════════════════════════════════════════ -->
+    <section id="topik5">
+      <div class="topik-header">
+        <div class="section-badge mb-2">Topik 05</div>
+        <h2>Combinational Circuits MSI & Sequential Logic</h2>
+        <div class="subtitle">Decoder, Encoder, MUX, DEMUX, Latch, Flip-Flop</div>
+      </div>
+      <div class="card p-5 space-y-4">
+
+        <div class="cheat-section">
+          <h3>4 Komponen MSI</h3>
+          <table class="mini-table">
+            <thead><tr><th>Komponen</th><th>Input</th><th>Selector</th><th>Output</th><th>Fungsi</th></tr></thead>
+            <tbody>
+              <tr><td class="hl">Decoder</td><td>n bit</td><td>—</td><td>maks 2ⁿ</td><td>Kode → Entitas</td></tr>
+              <tr><td class="hl">Encoder</td><td>maks 2ⁿ</td><td>—</td><td>n bit</td><td>Entitas → Kode</td></tr>
+              <tr><td class="hl">MUX</td><td>2ⁿ data</td><td>n bit</td><td>1</td><td>Banyak → Satu</td></tr>
+              <tr><td class="hl">DEMUX</td><td>1</td><td>n bit</td><td>2ⁿ</td><td>Satu → Banyak</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="cheat-section">
+          <h3>Decoder</h3>
+          <ul class="cheat-list">
+            <li>Setiap output = minterm dari input. Hanya 1 output HIGH pada satu waktu</li>
+            <li>Enable: 1-enable (aktif saat E=1), 0-enable / active-low (aktif saat E'=0)</li>
+            <li>Implementasi fungsi: Decoder n:2ⁿ + OR gate → sembarang fungsi n-input</li>
+            <li>Decoder besar dari kecil: MSB → enable, sisanya → input decoder kecil</li>
+          </ul>
+        </div>
+
+        <div class="cheat-section">
+          <h3>Encoder & Priority Encoder</h3>
+          <ul class="cheat-list">
+            <li>Encoder biasa: hanya 1 input boleh aktif pada satu waktu (undefined jika >1)</li>
+            <li>Priority Encoder: input prioritas tertinggi yang aktif menentukan output</li>
+            <li>Valid bit (V): menandakan ada/tidaknya input yang aktif</li>
+          </ul>
+        </div>
+
+        <div class="cheat-section">
+          <h3>Multiplexer (MUX)</h3>
+          <ul class="cheat-list">
+            <li>2ⁿ-to-1 MUX: n selection line memilih 1 dari 2ⁿ data input</li>
+            <li>MUX besar dari kecil: tree structure (4:1 dari 2:1)</li>
+            <li>Implementasi fungsi dgn MUX: variabel → selection lines, fungsi → data inputs</li>
+          </ul>
+        </div>
+
+        <div class="cheat-section">
+          <h3>Sequential Logic: Latch vs Flip-Flop</h3>
+          <table class="mini-table">
+            <thead><tr><th>Tipe</th><th>Trigger</th><th>Perbedaan</th></tr></thead>
+            <tbody>
+              <tr><td class="hl">Latch</td><td>Level-sensitive</td><td>Transparan saat enable aktif</td></tr>
+              <tr><td class="hl">Flip-Flop</td><td>Edge-triggered</td><td>Berubah hanya di tepi clock (↑ atau ↓)</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="cheat-section">
+          <h3>Jenis Latch & Flip-Flop</h3>
+          <div class="formula-box">SR Latch (NOR): S=1,R=0→Q=1 | S=0,R=1→Q=0 | S=0,R=0→No Change | S=1,R=1→INVALID
+SR Latch (NAND): S'=0,R'=1→Q=1 | S'=1,R'=0→Q=0 | S'=1,R'=1→No Change | S'=0,R'=0→INVALID
+D Latch: D=1→Q=1 | D=0→Q=0 (saat enable aktif)
+D Flip-Flop: Menangkap D saat tepi clock ↑ (positive-edge)
+JK FF: J=K=1→Toggle, J=1,K=0→Set, J=0,K=1→Reset, J=K=0→No Change
+T FF: T=1→Toggle, T=0→No Change</div>
+          <div class="warn-box">⚠ SR Latch: S=R=1 (NOR) atau S'=R'=0 (NAND) → KONDISI TERLARANG!</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════ -->
+    <!-- TOPIK 06 -->
+    <!-- ═══════════════════════════════════════════════ -->
+    <section id="topik6">
+      <div class="topik-header">
+        <div class="section-badge mb-2">Topik 06</div>
+        <h2>Registers, Counters & Sequential Design</h2>
+        <div class="subtitle">Register Transfer, Shift Register, Counter, State Machine</div>
+      </div>
+      <div class="card p-5 space-y-4">
+
+        <div class="cheat-section">
+          <h3>Register</h3>
+          <ul class="cheat-list">
+            <li><strong>Register:</strong> Kumpulan n flip-flop yang menyimpan n-bit data</li>
+            <li><strong>Load/Enable:</strong> Sinyal untuk mengizinkan penulisan data baru</li>
+            <li><strong>Parallel Load Register:</strong> Semua bit dimuat secara bersamaan pada clock edge</li>
+          </ul>
+        </div>
+
+        <div class="cheat-section">
+          <h3>Shift Register</h3>
+          <div class="formula-box">Serial-In Serial-Out (SISO): Data masuk & keluar 1 bit per clock
+Serial-In Parallel-Out (SIPO): Data masuk serial, keluar paralel
+Parallel-In Serial-Out (PISO): Data masuk paralel, keluar serial
+Parallel-In Parallel-Out (PIPO): = Register biasa
+
+Arah shift: Left Shift (×2) | Right Shift (÷2) | Bidirectional</div>
+        </div>
+
+        <div class="cheat-section">
+          <h3>Counter</h3>
+          <ul class="cheat-list">
+            <li><strong>Ripple (Asynchronous):</strong> Output FF ke-i menjadi clock FF ke-(i+1). Sederhana tapi lambat (delay propagasi)</li>
+            <li><strong>Synchronous:</strong> Semua FF berbagi clock yang sama. Lebih cepat & reliable</li>
+            <li><strong>Binary Counter:</strong> Hitung 0→1→2→...→2ⁿ-1→0 (modulo 2ⁿ)</li>
+            <li><strong>BCD Counter:</strong> Hitung 0→1→...→9→0 (modulo 10)</li>
+            <li><strong>Up/Down Counter:</strong> Bisa hitung naik atau turun tergantung sinyal kontrol</li>
+          </ul>
+        </div>
+
+        <div class="cheat-section">
+          <h3>Sequential Circuit Design</h3>
+          <div class="formula-box">Langkah Desain Sequential Circuit:
+1. State Diagram → 2. State Table → 3. State Assignment
+→ 4. Flip-Flop Input Equations (K-map) → 5. Output Equations → 6. Logic Diagram
+
+Mealy Machine: Output = f(state, input) → output berubah saat input berubah
+Moore Machine: Output = f(state) → output berubah hanya saat state berubah</div>
+        </div>
+
+        <div class="cheat-section">
+          <h3>Excitation Table (Flip-Flop Input)</h3>
+          <table class="mini-table">
+            <thead><tr><th>Q(t)</th><th>Q(t+1)</th><th>D</th><th>T</th><th>JK</th></tr></thead>
+            <tbody>
+              <tr><td>0</td><td>0</td><td>0</td><td>0</td><td>0X</td></tr>
+              <tr><td>0</td><td>1</td><td>1</td><td>1</td><td>1X</td></tr>
+              <tr><td>1</td><td>0</td><td>0</td><td>1</td><td>X1</td></tr>
+              <tr><td>1</td><td>1</td><td>1</td><td>0</td><td>X0</td></tr>
+            </tbody>
+          </table>
+          <div class="tip-box">💡 D FF paling simpel: D = Q(t+1). JK paling fleksibel karena banyak don't care.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════ -->
+    <!-- TOPIK 07 -->
+    <!-- ═══════════════════════════════════════════════ -->
+    <section id="topik7">
+      <div class="topik-header">
+        <div class="section-badge mb-2">Topik 07</div>
+        <h2>Memory & Programmable Logic Devices</h2>
+        <div class="subtitle">RAM, ROM, PLA, PAL, FPGA</div>
+      </div>
+      <div class="card p-5 space-y-4">
+
+        <div class="cheat-section">
+          <h3>Memory Classification</h3>
+          <ul class="cheat-list">
+            <li><strong>RAM (Random Access Memory):</strong> Read/Write, volatile</li>
+            <li><strong>SRAM:</strong> Flip-flop based, lebih cepat, lebih mahal, digunakan untuk cache</li>
+            <li><strong>DRAM:</strong> Capacitor based, perlu refresh, lebih murah per bit, digunakan untuk main memory</li>
+            <li><strong>ROM (Read Only Memory):</strong> Read only (umumnya), non-volatile</li>
+          </ul>
+        </div>
+
+        <div class="cheat-section">
+          <h3>Kapasitas Memory</h3>
+          <div class="formula-box">Memory 2ᵏ × n: k = jumlah address lines, n = word size (bit per lokasi)
+Total bit = 2ᵏ × n
+Contoh: 1K × 8 = 1024 lokasi × 8 bit = 8192 bit = 8 Kbit = 1 KByte
+Address lines = k, Data lines = n, Chip Select (CS), Read/Write (R/W̄)</div>
+        </div>
+
+        <div class="cheat-section">
+          <h3>Jenis ROM</h3>
+          <table class="mini-table">
+            <thead><tr><th>Tipe</th><th>Programmable?</th><th>Erasable?</th><th>Keterangan</th></tr></thead>
+            <tbody>
+              <tr><td>ROM</td><td>Pabrik</td><td>Tidak</td><td>Mask-programmed saat fabrikasi</td></tr>
+              <tr><td>PROM</td><td>1× user</td><td>Tidak</td><td>Fuse-based, sekali program</td></tr>
+              <tr><td>EPROM</td><td>User</td><td>UV Light</td><td>Bisa dihapus dengan sinar UV</td></tr>
+              <tr><td class="hl">EEPROM</td><td>User</td><td>Electrical</td><td>Hapus per byte, terbatas write cycles</td></tr>
+              <tr><td class="hl">Flash</td><td>User</td><td>Electrical</td><td>Hapus per block, USB/SSD</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="cheat-section">
+          <h3>Programmable Logic Devices (PLD)</h3>
+          <div class="formula-box">ROM: AND plane FIXED, OR plane PROGRAMMABLE
+  → Mengimplementasikan SEMUA minterm, memilih mana yg di-OR-kan
+PLA: AND plane PROGRAMMABLE, OR plane PROGRAMMABLE
+  → Paling fleksibel, bisa pilih product term & kombinasinya
+PAL: AND plane PROGRAMMABLE, OR plane FIXED
+  → Lebih murah dari PLA, product term dipilih, OR sudah ditentukan
+FPGA: Field-Programmable Gate Array
+  → Configurable Logic Blocks (CLB) + Interconnect, paling fleksibel</div>
+        </div>
+
+        <div class="cheat-section">
+          <h3>Implementasi Fungsi dengan ROM</h3>
+          <ul class="cheat-list">
+            <li>ROM sebagai lookup table: address = input kombinasi, data = output fungsi</li>
+            <li>ROM 2ⁿ × m dapat mengimplementasikan m fungsi n-variabel sekaligus</li>
+            <li>Tidak perlu minimasi! Setiap minterm sudah tersedia di AND plane</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════ -->
+    <!-- TOPIK 08 -->
+    <!-- ═══════════════════════════════════════════════ -->
+    <section id="topik8">
+      <div class="topik-header">
+        <div class="section-badge mb-2">Topik 08</div>
+        <h2>Pengenalan AVR & Arsitektur Komputer</h2>
+        <div class="subtitle">CPU Architecture, Register, Instruction Set, Opcode Encoding</div>
+      </div>
+      <div class="card p-5 space-y-4">
+
+        <div class="cheat-section">
+          <h3>Arsitektur Komputer Dasar</h3>
+          <ul class="cheat-list">
+            <li><strong>Von Neumann:</strong> Instruksi & data di memori yang sama → bottleneck</li>
+            <li><strong>Harvard:</strong> Memori instruksi & data terpisah → paralel, lebih cepat (AVR)</li>
+            <li><strong>CPU terdiri dari:</strong> ALU + Control Unit + Register File</li>
+            <li><strong>Stored-program concept:</strong> Program disimpan di memori sebagai data biner</li>
+          </ul>
+        </div>
+
+        <div class="cheat-section">
+          <h3>AVR ATmega328P Overview</h3>
+          <div class="formula-box">8-bit RISC microcontroller, Harvard Architecture
+32 General Purpose Registers: R0–R31 (8-bit each)
+Program Memory: 32KB Flash (16-bit instruction word)
+Data Memory: 2KB SRAM + 1KB EEPROM
+I/O Registers: 64 I/O addresses
+Clock: Up to 20 MHz. 1 instruction = 1 clock cycle (mostly)</div>
+        </div>
+
+        <div class="cheat-section">
+          <h3>Register Map AVR</h3>
+          <ul class="cheat-list">
+            <li><strong>R0–R15:</strong> Limited (tidak semua instruksi bisa pakai, misal LDI tidak bisa)</li>
+            <li><strong>R16–R31:</strong> Full access (semua instruksi bisa pakai)</li>
+            <li><strong>R26-R27 (X), R28-R29 (Y), R30-R31 (Z):</strong> Pointer registers (16-bit address)</li>
+            <li><strong>SREG:</strong> Status Register (C, Z, N, V, S, H, T, I)</li>
+            <li><strong>SP:</strong> Stack Pointer (16-bit)</li>
+            <li><strong>PC:</strong> Program Counter</li>
+          </ul>
+        </div>
+
+        <div class="cheat-section">
+          <h3>SREG Flags</h3>
+          <table class="mini-table">
+            <thead><tr><th>Flag</th><th>Nama</th><th>Fungsi</th></tr></thead>
+            <tbody>
+              <tr><td class="hl">C</td><td>Carry</td><td>Carry/Borrow dari operasi aritmatika</td></tr>
+              <tr><td class="hl">Z</td><td>Zero</td><td>Hasil = 0</td></tr>
+              <tr><td class="hl">N</td><td>Negative</td><td>MSB hasil = 1 (negatif di 2s complement)</td></tr>
+              <tr><td class="hl">V</td><td>Overflow</td><td>Overflow pada 2s complement</td></tr>
+              <tr><td>S</td><td>Sign</td><td>S = N ⊕ V (true sign)</td></tr>
+              <tr><td>H</td><td>Half Carry</td><td>Carry dari bit 3 ke bit 4 (BCD)</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="cheat-section">
+          <h3>Instruksi AVR Penting</h3>
+          <div class="formula-box">Data Transfer:
+  MOV Rd,Rr (copy register) | LDI Rd,K (load immediate, R16-R31 only)
+  LD Rd,X/Y/Z (load dari SRAM) | ST X/Y/Z,Rr (store ke SRAM)
+  IN Rd,A (baca I/O) | OUT A,Rr (tulis I/O)
+
+Arithmetic:
+  ADD Rd,Rr | ADC Rd,Rr (add with carry) | SUB Rd,Rr | SUBI Rd,K
+  INC Rd | DEC Rd | NEG Rd (2s complement)
+
+Logic:
+  AND Rd,Rr | ANDI Rd,K | OR Rd,Rr | ORI Rd,K
+  EOR Rd,Rr (XOR) | COM Rd (1s complement)
+
+Branch:
+  RJMP label | BREQ label (if Z=1) | BRNE label (if Z=0)
+  BRCS (if C=1) | BRCC (if C=0) | CP Rd,Rr (compare)</div>
+        </div>
+
+        <div class="cheat-section">
+          <h3>Opcode Encoding (16-bit)</h3>
+          <div class="formula-box">ADD Rd,Rr: 0000 11rd dddd rrrr
+  d = bit dari Rd (5 bit: d4..d0), r = bit dari Rr (5 bit: r4..r0)
+  Contoh: ADD R1,R5 → R1=00001, R5=00101
+  → 0000 1100 0001 0101 = 0x0C15
+
+LDI Rd,K: 1110 KKKK dddd KKKK
+  d = 4 bit (Rd offset dari R16, jadi R20=0100)
+  K = 8 bit immediate (split: K7-K4 | K3-K0)
+  Contoh: LDI R20,85 → d=0100, K=01010101
+  → 1110 0101 0100 0101 = 0xE545</div>
+          <div class="warn-box">⚠ LDI hanya bisa digunakan dengan R16–R31! Register R0–R15 tidak bisa menerima immediate.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <div class="text-center py-6" style="color:var(--text-dim);font-size:0.75rem;">
+      <p>DDAK UTS Cheatsheet · CSIM601251 · Fasilkom UI 2025/2026</p>
+      <p style="opacity:0.5;">Created for study purposes. Ctrl+P untuk cetak ke A4.</p>
+    </div>
+
+  </main>
+</div>
+
+<script>
+  // Smooth scroll for TOC links
+  document.querySelectorAll('.toc-link').forEach(link => {
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      const target = document.querySelector(link.getAttribute('href'));
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+
+  // Highlight current section in TOC
+  const sections = document.querySelectorAll('section[id]');
+  const tocLinks = document.querySelectorAll('.toc-link');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const id = entry.target.id;
+        tocLinks.forEach(l => l.style.borderLeftColor = 'transparent');
+        tocLinks.forEach(l => l.style.color = '#7ca3c8');
+        const activeLink = document.querySelector(`.toc-link[href="#${id}"]`);
+        if (activeLink) {
+          activeLink.style.borderLeftColor = '#22d3ee';
+          activeLink.style.color = '#22d3ee';
+        }
+      }
+    });
+  }, { rootMargin: '-80px 0px -60% 0px' });
+  sections.forEach(s => observer.observe(s));
+</script>
 </body>
 </html>
